@@ -63,19 +63,21 @@ module Retriever
 			linkArray = []
 			#scrap all html links from site, easy peezy
 			doc.xpath('//a/@href').each do |link|
+
 				#filter some malformed URLS that come in
 				link = link.to_s
 				if /[\b]*[http:\/\/]*[w]*[a-z0-9\-\_\.\!\/\%\=\&\?]+\b/ix.match(link)
 					linkArray.push(link)
 				end
 			end
-			linkArray.select!{ |linky| linky[/#{root}/]}
 			#sort and remove dupes
 			#if links do not contain domain, prepend the source domain name
 			#sourcedir_str = get_source_dir(url)
 			linkArray.each_with_index do |entry,i|
 				if (!(/^http/.match(entry)))
-					if (/^\//.match(entry))
+					if (/^www\./.match(entry))
+						linkArray[i] = "http://"+entry
+					elsif (/^\//.match(entry))
 						linkArray[i] = "http://" +root+ entry #sourcedir_str + entry
 					elsif /^\s/.match(entry)
 						linkArray[i] = "http://" +root+ entry.gsub(" ","%20")
@@ -87,8 +89,9 @@ module Retriever
 					linkArray.delete_at(i)
 				end
 			end
+			linkArray.select!{ |linky| linky.include?(root)}
 			linkArray.uniq!
-			lg("#{linkArray.size} unique links found")
+			lg("#{linkArray.size} unique internal links found")
 			return linkArray
 		end
 	class Sitemap
