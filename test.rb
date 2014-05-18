@@ -41,6 +41,6 @@ puts "Stopping after #{options[:maxpages]} pages" if options[:maxpages]
 puts "Performing task with options: #{options.inspect}"
 ARGV.each do|q|
    puts "######Initiating Crawl on #{q}..."
-   test = Retriever::Sitemap.new(q, options)
+   test = Retriever::FetchSitemap.new(q, options)
    puts "######End of Crawl"
  end
