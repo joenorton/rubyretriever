@@ -30,17 +30,15 @@ EXAMPLE USE
 -----------
    
  **Site Mapper**  
- ```ruby
- test = Retriever::FetchSitemap.new(q, options)
- ```  
- *Terminal:  ruby test.rb -v -l 1000 -o cnet http://www.cnet.com*  
+```sh
+ruby test.rb -v -l 1000 -o cnet http://www.cnet.com
+```  
   
   
  **File Harvesting**  
-```ruby
-test = Retriever::FetchFiles.new(q, options)
+```sh
+ruby test.rb -v -ext exe -l 1000 -o cnet http://www.cnet.com
 ```  
-*Terminal:  ruby test.rb -v -ext exe -l 1000 -o cnet http://www.cnet.com*  
   
 License
 -------
