@@ -97,15 +97,21 @@ module Retriever
 	class Sitemap
 		include Retriever
 		attr_reader :sitemap
-		def initialize(url,opts)
+		def initialize(url,options)
 			new_uri = URI(url)
 			@target = new_uri.to_s
 			@root = new_uri.host
 			@sitemap = [@target]
 			#opts
-			#@scantype = opts[:scantype]
-			#@filetype = opts[:filetype]
-			@maxPages = 10
+			if !options.empty?
+				@maxPages=options[:maxpages].to_i if options[:maxpages]
+				@v=true if options[:verbose]
+				@output=options[:filename] if options[:filename]
+			else
+				@maxPages = 1000
+				@v = false
+				@output = false
+			end	
 			@linkStack = fetchInternalLinks(fetchDoc(@target),@target,@root)
 			errlog("Bad URL -- #{@target}") if !@linkStack
 			@linkStack.delete(@target) if @linkStack.include?(@target)
@@ -114,26 +120,30 @@ module Retriever
 			while (@linkStack.size > 0 && @sitemap.size < @maxPages)
 				current_size = @sitemap.size
 				@linkStack.each_with_index do |url,i|
-					doc = fetchDoc(url)
-					break if !doc
-					linkx = fetchInternalLinks(doc,url,@root)
-					break if !linkx
-					linkx.each do |new_link|
-						if current_size < @maxPages
-							unique_link_flag = true
-							if @sitemap.include?(new_link)
-								unique_link_flag = false
-							end
-							if unique_link_flag
-								@linkStack.push(new_link)
-								@sitemap.push(new_link)
-								current_size += 1
+					if current_size < @maxPages
+						doc = fetchDoc(url)
+						break if !doc
+						linkx = fetchInternalLinks(doc,url,@root)
+						break if !linkx
+						linkx.each do |new_link|
+							if current_size < @maxPages
+								unique_link_flag = true
+								if @sitemap.include?(new_link)
+									unique_link_flag = false
+								end
+								if unique_link_flag
+									@linkStack.push(new_link)
+									@sitemap.push(new_link)
+									current_size += 1
+								end
 							end
 						end
 					end
 				end
 			end
 			@sitemap.sort_by! {|x| x.length}
+			self.dump(self.sitemap) if @v
+			self.write(@output,self.sitemap) if @output
 		end
 	end
 end
