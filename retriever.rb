@@ -43,6 +43,7 @@ module Retriever
 				puts
 			end
 			def fetchDoc(url)
+				return false if !url
 				begin
 					#grab site into Nokogiri object
 					doc = Nokogiri::HTML(open(url,'User-Agent' => 'RubyRetriever'))
@@ -65,7 +66,6 @@ module Retriever
 				linkArray = []
 				#scrap all html links from site, easy peezy
 				doc.xpath('//a/@href').each do |link|
-
 					#filter some malformed URLS that come in
 					link = link.to_s
 					if /[\b]*[http:\/\/]*[w]*[a-z0-9\-\_\.\!\/\%\=\&\?]+\b/ix.match(link)
@@ -118,21 +118,17 @@ module Retriever
 					#lg("looking at #{url}")
 					break if (current_size+1 > @maxPages)
 					doc = fetchDoc(url)
-					break if !doc
+					next if !doc
 					linkx = fetchInternalLinks(doc,url,@host)
-					break if !linkx
+					next if !linkx
 					linkx.each do |new_link|
-						if current_size < @maxPages
-							unique_link_flag = true
-							if @sitemap.include?(new_link)
-								unique_link_flag = false
-							end
-							if unique_link_flag
-								@linkStack.push(new_link)
-								@sitemap.push(new_link)
-								current_size += 1
-							end
+						break if (current_size+1 > @maxPages)
+						if @sitemap.include?(new_link)
+							next
 						end
+						@linkStack.push(new_link)
+						@sitemap.push(new_link)
+						current_size += 1
 					end
 				end
 			end
