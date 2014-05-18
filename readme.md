@@ -13,6 +13,10 @@ Usage: retriever.rb [options] Target_URL
     -e, --ext FILE_EXTENSION         set a file extension to look for on crawled pages  
     -h, --help                       Display this screen  
   
+test.rb
+-------
+Right now, the library relies on test.rb to collect options. Eventually a CLI class will be created so that this is unnecessary. I recommend just running things thru it for right now using the below example commands  
+  
 EXAMPLE USE  
 -----------
    
@@ -27,12 +31,8 @@ EXAMPLE USE
 ```ruby
 test = Retriever::FetchFiles.new(q, options)
 ```  
-*Teriminal:  ruby test.rb -v -ext exe -l 1000 -o cnet http://www.cnet.com*  
-
-test.rb
--------
-Right now, the library relies on test.rb to collect options. Eventually a CLI class will be created so that this is unnecessary.  
-
+*Terminal:  ruby test.rb -v -ext exe -l 1000 -o cnet http://www.cnet.com*  
+  
 License
 -------
 GNU GPLv3 http://www.gnu.org/licenses/gpl.txt
