@@ -1,11 +1,9 @@
 ##################################################################
-#####RubyRetriever -- automated web crawler focused on finding
-#####             	and downloading executables (namely, malware)
+#####RubyRetriever -- web crawler and file harvester
 #####created by Joe Norton
 #####http://softwarebyjoe.com
 ##LICENSING: GNU GPLv3  License##################################
 #! usr/bin/ruby
-require 'rubygems'
 require 'nokogiri'
 require 'open-uri'
 require 'optparse'

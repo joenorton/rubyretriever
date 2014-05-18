@@ -3,6 +3,15 @@ Ruby Retriever
 
 Web Crawler, Site Mapper, Filve Harvester, and all around nice buddy to have around.  
 Created by Joe Norton  
+
+requirements
+------------
+ruby  
+nokogiri  
+open-uri  
+optparse  
+uri  
+csv  
   
 command-line arguements
 -----------------------

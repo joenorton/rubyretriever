@@ -42,11 +42,12 @@ options = {}
 puts "Writting output to filename: #{options[:filename]}" if options[:filename]
 puts "Being verbose" if options[:verbose]
 puts "Stopping after #{options[:maxpages]} pages" if options[:maxpages]
+puts "Searching for file extension: #{options[:file_ext]} pages" if options[:file_ext]
  
 puts "Performing task with options: #{options.inspect}"
 ARGV.each do|q|
-   puts "######Initiating Crawl on #{q}"
+   puts "###### RubyRetriever is headed out to: #{q}"
    #test = Retriever::FetchFiles.new(q, options)
    test = Retriever::FetchSitemap.new(q, options)
-   puts "######End of Crawl"
+   puts "###### RubyRetriever is back home."
  end
