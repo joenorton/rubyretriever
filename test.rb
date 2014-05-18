@@ -20,6 +20,11 @@ options = {}
    opts.on( '-l', '--limit PAGE_LIMIT_#', 'set a max on the total number of crawled pages' ) do |maxpages|
      options[:maxpages] = maxpages
    end
+
+       options[:file_ext] = false
+   opts.on( '-e', '--ext FILE_EXTENSION', 'set a file extension to look for on crawled pages' ) do |file_ext|
+     options[:file_ext] = file_ext
+   end
  
    # This displays the help screen, all programs are
    # assumed to have this option.
@@ -40,7 +45,8 @@ puts "Stopping after #{options[:maxpages]} pages" if options[:maxpages]
  
 puts "Performing task with options: #{options.inspect}"
 ARGV.each do|q|
-   puts "######Initiating Crawl on #{q}..."
+   puts "######Initiating Crawl on #{q}"
+   #test = Retriever::FetchFiles.new(q, options)
    test = Retriever::FetchSitemap.new(q, options)
    puts "######End of Crawl"
  end
