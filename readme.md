@@ -34,11 +34,14 @@ EXAMPLE USE
 ruby test.rb -v -l 1000 -o cnet http://www.cnet.com
 ```  
   
+This would go to http://www.cnet.com and map it until it crawled a max of 1,000 pages, and then it would write it out to a csv named cnet.  
   
  **File Harvesting**  
 ```sh
 ruby test.rb -v -ext exe -l 1000 -o cnet http://www.cnet.com
 ```  
+  
+This would go to http://www.cnet.com and crawl it looking for filetype:EXE until it crawled a max of 1,000 pages, and then it would write out a list of filepaths to a csv named cnet.  
   
 License
 -------
