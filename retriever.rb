@@ -9,6 +9,8 @@ require 'open-uri'
 require 'optparse'
 require 'uri'
 require 'csv'
+require 'time'
+require 'timeout'
 
 require_relative('openuri_patch.rb')
 require_relative('file_processor.rb')
@@ -18,7 +20,9 @@ module Retriever
 			attr_reader :target, :host
 			#constants
 			LINK_RE = Regexp.new(/[\b]*[http:\/\/]*[w]*[a-z0-9\-\_\.\!\/\%\=\&\?]+\b/ix).freeze
+			PAGE_EXT_RE = Regexp.new(/\.(?:png|jpg|gif|mp4|exe|zip|pdf|ppt|doc|txt)\z/i).freeze
 			def initialize(url,options)
+				@start_time = Time.now
 				new_uri = URI(url)
 				@target = new_uri.to_s
 				@host = new_uri.host
@@ -40,11 +44,11 @@ module Retriever
 				puts "### #{msg}"
 			end
 			def dump(data)
+				puts data
 				puts "###############################"
 				puts "Data Dump: "
 				puts "Object Count: #{data.size}"
 				puts "###############################"
-				puts data
 				puts
 			end
 			def write(filename,data)
@@ -56,13 +60,14 @@ module Retriever
 				puts "###############################"
 				puts "File Created: #{filename}.csv"
 				puts "Object Count: #{data.size}"
+				puts "###############################"
 				puts
 			end
 			def fetchDoc(url)
 				return false if !url
 				begin
 					#grab site into Nokogiri object
-					doc = Nokogiri::HTML(open(url,'User-Agent' => 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)'))
+					doc = Nokogiri::HTML(open(url,'User-Agent' => 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)', :read_timeout=>5))
 				rescue StandardError => e
 					#puts e.message + " ## " + url
 					#the trap abrt is nescessary to handle the SSL error
@@ -79,7 +84,7 @@ module Retriever
 				#recieves nokogiri doc object, and string query
 				#returns array of links
 				linkArray = []
-				#scrap all html links from site, easy peezy
+				#scrape all html links from site, easy peezy
 				doc.xpath('//a/@href').each do |link|
 					#filter some malformed URLS that come in
 					link = link.to_s.strip.downcase
@@ -103,6 +108,9 @@ module Retriever
 				linkArray.uniq!
 				return linkArray
 			end
+			def parseInternalLinks(all_links,host_re)
+				all_links.select!{ |linky| (host_re =~ linky && (!(PAGE_EXT_RE =~ linky)))}
+			end
 		end
 	class FetchFiles < Fetch
 		attr_reader :fileStack
@@ -119,13 +127,13 @@ module Retriever
 			lg("#{@linkStack.size-1} new links found") if @v
 			tempFileCollection = parseFiles(all_links.dup,@file_re)
 			@fileStack.concat(tempFileCollection) if tempFileCollection.size>0
+			lg("#{@fileStack.size} new files found") if @v
 			errlog("Bad URL -- #{@target}") if !@linkStack
 			@linkStack.delete(@target) if @linkStack.include?(@target)
 			@linkStack = @linkStack.take(@maxPages) if (@linkStack.size+1 > @maxPages)
 			current_size = @already_crawled.size
 			while (@linkStack.size > 0 && current_size < @maxPages)
 				@linkStack.each do |url|
-					#lg("looking at #{url}")
 					break if (current_size+1 > @maxPages)
 					doc = fetchDoc(url)
 					next if !doc
@@ -140,17 +148,12 @@ module Retriever
 					next if linkx.empty?
 					new_links_arr = linkx-@already_crawled #set operations to see are these in our previous visited pages arr?
 					@linkStack.concat(new_links_arr) if !new_links_arr.empty?
-					#lg("#{new_links_arr.size} new links found") if (!new_links_arr.empty? && @v)
 				end
 			end
 			@fileStack.uniq!
 			@fileStack.sort_by! {|x| x.length} if @fileStack.size>1
+			lg("DONE - elapsed time: #{Time.now-@start_time} seconds")
 			self.dump(self.fileStack) if @v
-			#self.write(@output,self.paths) if @output
-		end
-		def parseInternalLinks(all_links,host_re)
-			all_links.select!{ |linky| (host_re =~ linky && (!(/\.(?:png|jpg|gif|mp4|exe|zip|pdf|ppt|doc|txt)\z/i =~ linky)))}
-			#lg("#{all_links.size} unique internal links found")
 		end
 		def parseFiles(all_links,file_re)
 			all_links.select!{ |linky| (file_re =~ linky)}
@@ -170,7 +173,6 @@ module Retriever
 			while (@linkStack.size > 0 && @sitemap.size < @maxPages)
 				current_size = @sitemap.size
 				@linkStack.each do |url|
-					#lg("looking at #{url}")
 					break if (current_size+1 > @maxPages)
 					doc = fetchDoc(url)
 					next if !doc
@@ -188,12 +190,13 @@ module Retriever
 			end
 			@sitemap.sort_by! {|x| x.length}
 			@sitemap = @sitemap.take(@maxPages) if (@sitemap.size+1 > @maxPages)
+			lg("DONE - elapsed time: #{Time.now-@start_time} seconds")
 			self.dump(self.sitemap) if @v
 			self.write(@output,self.sitemap) if @output
 		end
 		def fetchInternalLinks(doc,url,host_re)
 			linkArray = self.fetchLinks(doc,url)
-			return linkArray.select!{ |linky| (host_re =~ linky &&(!(/\.(?:png|jpg|gif|mp4|exe|zip|pdf|ppt|doc|txt)\z/i =~ linky)))} if !linkArray.empty?
+			return parseInternalLinks(linkArray,host_re)
 		end
 	end
 end

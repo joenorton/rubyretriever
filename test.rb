@@ -35,19 +35,25 @@ options = {}
  end
  
  optparse.parse!
- if ARGV[0].nil?
- 	abort("###Missing Required Argument\nUsage: retriever.rb [options] Target_URL")
- end
+if ARGV[0].nil?
+	abort("###Missing Required Argument\nUsage: retriever.rb [options] Target_URL")
+end
 
-puts "Writting output to filename: #{options[:filename]}" if options[:filename]
-puts "Being verbose" if options[:verbose]
-puts "Stopping after #{options[:maxpages]} pages" if options[:maxpages]
-puts "Searching for file extension: #{options[:file_ext]} pages" if options[:file_ext]
- 
-puts "Performing task with options: #{options.inspect}"
 ARGV.each do|q|
-   puts "###### RubyRetriever is headed out to: #{q}"
-   #test = Retriever::FetchFiles.new(q, options)
-   test = Retriever::FetchSitemap.new(q, options)
-   puts "###### RubyRetriever is back home."
+	if options[:verbose]
+		puts "###############################"
+		puts "### [RubyRetriever]"
+		puts "### Writting output to filename: #{options[:filename]}" if options[:filename]
+		puts "### Being verbose"
+		puts "### Stopping after #{options[:maxpages]} pages" if options[:maxpages]
+		puts "### Searching for file extension: #{options[:file_ext]} pages" if options[:file_ext]
+		puts "### Performing task with options: #{options.inspect}"
+	end
+	puts "###############################"
+	puts "### [RubyRetriever] go fetch #{q}"
+	#test = Retriever::FetchFiles.new(q, options)
+	test = Retriever::FetchSitemap.new(q, options)
+	puts "###############################"
+	puts "### [RubyRetriever] done playing, taking a nap."
+	puts
  end
