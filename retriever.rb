@@ -4,23 +4,22 @@
 #####http://softwarebyjoe.com
 ##LICENSING: GNU GPLv3  License##################################
 #! usr/bin/ruby
-require 'nokogiri'
+#require 'nokogiri'
 require 'open-uri'
 require 'optparse'
 require 'uri'
 require 'csv'
 require 'time'
-require 'timeout'
 
 require_relative('openuri_patch.rb')
 require_relative('file_processor.rb')
 
 module Retriever
 		class Fetch
-			attr_reader :target, :host
+			attr_reader :target, :host, :host_re
 			#constants
-			LINK_RE = Regexp.new(/[\b]*[http:\/\/]*[w]*[a-z0-9\-\_\.\!\/\%\=\&\?]+\b/ix).freeze
-			PAGE_EXT_RE = Regexp.new(/\.(?:png|jpg|gif|mp4|exe|zip|pdf|ppt|doc|txt)\z/i).freeze
+			LINK_RE = Regexp.new(/\shref=['|"]([^\s][a-z0-9\.\/\:\-\%\+\?\!\=\&\,\:\;\~]+)['|"][\s|\W]/ix).freeze
+			PAGE_EXT_RE = Regexp.new(/\.(?:)\z/i).freeze
 			def initialize(url,options)
 				@start_time = Time.now
 				new_uri = URI(url)
@@ -67,7 +66,8 @@ module Retriever
 				return false if !url
 				begin
 					#grab site into Nokogiri object
-					doc = Nokogiri::HTML(open(url,'User-Agent' => 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)', :read_timeout=>5))
+					doc = open(url,'User-Agent' => 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)', :read_timeout=>5).read
+					#doc = Nokogiri::HTML(open(url,'User-Agent' => 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)', :read_timeout=>5))
 				rescue StandardError => e
 					#puts e.message + " ## " + url
 					#the trap abrt is nescessary to handle the SSL error
@@ -84,32 +84,31 @@ module Retriever
 				#recieves nokogiri doc object, and string query
 				#returns array of links
 				linkArray = []
-				#scrape all html links from site, easy peezy
-				doc.xpath('//a/@href').each do |link|
+				doc.scan(LINK_RE) do |arr|
 					#filter some malformed URLS that come in
-					link = link.to_s.strip.downcase
-					if LINK_RE =~ link
-						if (!(/^http/ =~ link))
-							if (/^www\./ =~ link)
-								link = "http://"+link
-							elsif /^\/{1}[^\/]/ =~ link #link uses relative path
-								if /\/\z/ =~ url #when url ends with slash we have to trim it when appending the new path	
-									url = url[0..-2]
-								end
-								link = url+link #appending current url to relative paths
-							else
-								next
+					link = arr[0]
+					if (!(/^http/ =~ link))
+						if (/^www\./ =~ link)
+							link = "http://#{link}"
+						elsif /^\/{1}[^\/]/ =~ link #link uses relative path
+							if /\/\z/ =~ url #when url ends with slash we have to trim it when appending the new path	
+								url = url[0..-2]
 							end
+							link = url+link #appending current url to relative paths
+						elsif /^\/{2}[^\/]/ =~ link #link uses relative path
+							link = "http:#{link}" #appending current url to relative paths
+						else
+							next
 						end
-						next if /#[a-z0-9\_\-]*\z/ =~ link
-						linkArray.push(link)
 					end
+					next if /#[a-z0-9\_\-]*\z/ =~ link
+					linkArray.push(link)
 				end
 				linkArray.uniq!
 				return linkArray
 			end
 			def parseInternalLinks(all_links,host_re)
-				all_links.select!{ |linky| (host_re =~ linky && (!(PAGE_EXT_RE =~ linky)))}
+				all_links.select{ |linky| host_re =~ linky}
 			end
 		end
 	class FetchFiles < Fetch
@@ -156,7 +155,7 @@ module Retriever
 			self.dump(self.fileStack) if @v
 		end
 		def parseFiles(all_links,file_re)
-			all_links.select!{ |linky| (file_re =~ linky)}
+			all_links.select{ |linky| (file_re =~ linky)}
 		end
 	end
 	class FetchSitemap < Fetch
