@@ -13,26 +13,31 @@ doc = r.fetchDoc(r.target)
 links_collection = r.fetchLinks(test_html,r.target)
 filtered_links = r.parseInternalLinks(links_collection,r.host_re)
 
-describe "Fetch#new" do
-	it "creates target & host vars from URL" do
-		expect(r.target).to eq("http://www.cnet.com")
-		expect(r.host).to eq("www.cnet.com")
-	end
-end
-describe "Fetch#fetchDoc" do
+describe "Fetch" do
 
-	it "opens URL and returns source as String" do
-		expect(doc.class).to eq(String)
+	describe "#new" do
+		it "creates target & host vars from URL" do
+			expect(r.target).to eq("http://www.cnet.com")
+			expect(r.host).to eq("www.cnet.com")
+		end
 	end
-end
-describe "Fetch#fetchLinks" do
-	it "collects all unique href links on the page" do
-		expect(links_collection).to have(4).items
+
+	describe "#fetchDoc" do
+		it "opens URL and returns source as String" do
+			expect(doc.class).to eq(String)
+		end
 	end
-end
-describe "Fetch#fetchInternalLinks" do
-	it "filters internal page links only" do
-		expect(filtered_links).to have(3).items
+
+	describe "#fetchLinks" do
+		it "collects all unique href links on the page" do
+			expect(links_collection).to have(4).items
+		end
+	end
+
+	describe "#fetchInternalLinks" do
+		it "filters links by host" do
+			expect(filtered_links).to have(3).items
+		end
 	end
 
 end
