@@ -34,7 +34,7 @@ describe "Fetch" do
 		end
 	end
 
-	describe "#fetchInternalLinks" do
+	describe "#parseInternalLinks" do
 		it "filters links by host" do
 			expect(filtered_links).to have(3).items
 		end
