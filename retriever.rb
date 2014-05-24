@@ -22,7 +22,7 @@ module Retriever
 			attr_reader :target, :host, :host_re
 			#constants
 			LINK_RE = Regexp.new(/\shref=['|"]([^\s][a-z0-9\.\/\:\-\%\+\?\!\=\&\,\:\;\~]+)['|"][\s|\W]/ix).freeze
-			PAGE_EXT_RE = Regexp.new(/\.(?:css|js|png|gif|jpg|mp4|wmv|flv|mp3|wav|doc|txt)\z/i).freeze
+			PAGE_EXT_RE = Regexp.new(/\.(?:css|js|png|gif|jpg|mp4|wmv|flv|mp3|wav|doc|txt)/ix).freeze
 			def initialize(url,options)
 				@start_time = Time.now
 				new_uri = URI(url)
@@ -70,7 +70,6 @@ module Retriever
 				begin
 					#grab site into Nokogiri object
 					doc = open(url,'User-Agent' => 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)', :read_timeout=>5).read
-					#doc = Nokogiri::HTML(open(url,'User-Agent' => 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)', :read_timeout=>5))
 				rescue StandardError => e
 					#puts e.message + " ## " + url
 					#the trap abrt is nescessary to handle the SSL error
@@ -87,6 +86,7 @@ module Retriever
 				#recieves nokogiri doc object, and string query
 				#returns array of links
 				linkArray = []
+				url = "http://#{url}"
 				doc.scan(LINK_RE) do |arr|
 					#filter some malformed URLS that come in
 					link = arr[0]
@@ -133,7 +133,7 @@ module Retriever
 					collection.sort_by! {|x| x.length}
 				end
 			end
-			def crawl_and_collect(stack,collection,already_crawled,limit,host_re,file_ext_re,v)
+			def crawl_and_collect(stack,collection,already_crawled,limit,host,host_re,file_ext_re,v)
 				if already_crawled === '' 
 					simple = true 
 					current_size = collection.size
@@ -154,7 +154,7 @@ module Retriever
 							already_crawled.push(url)
 						end
 						lg("URL Crawled: #{url}") if v
-						lnks = fetchLinks(doc,url)
+						lnks = fetchLinks(doc,host)
 						if !simple
 							filez = parseFiles(lnks,file_ext_re)
 							collection.concat(filez) if !filez.empty?
@@ -179,10 +179,10 @@ module Retriever
 				collection.uniq!
 				return collection.sort_by {|x| x.length} if collection.size>1
 			end
-			def async_crawl_and_collect(stack,collection,already_crawled,limit,host_re,file_ext_re,v)
+			def async_crawl_and_collect(stack,collection,already_crawled,limit,host,host_re,file_ext_re,v)
 				current_size = collection.size
 				while (stack.size > 0 && current_size < limit)
-					new_links_arr = asyncGetWave(stack,v)
+					new_links_arr = asyncGetWave(stack,host,v)
 					next if new_links_arr.empty?
 					new_links_arr = new_links_arr-collection #set operations to see are these in our previous visited pages arr?
 					stack.concat(new_links_arr)
@@ -192,7 +192,7 @@ module Retriever
 				collection.uniq!
 				return collection.sort_by {|x| x.length} if collection.size>1
 			end
-			def asyncGetWave(link_arr,v)
+			def asyncGetWave(link_arr,host,v)
 				new_stuff = []
 				EM.synchrony do
 					lenny = 0
@@ -200,12 +200,12 @@ module Retriever
 				    urls = link_arr
 				    results = []
 				    # iterator will execute async blocks until completion, .each, .inject also work!
-				     EM::Synchrony::FiberIterator.new(urls, concurrency).each do |url|
-				       resp = EventMachine::HttpRequest.new(url).get
-				       lg("URL Crawled: #{url}") if v
-				       new_links_arr = parseInternalLinks(fetchLinks(resp.response,url),@host_re)
-				       	lg("#{new_links_arr.size} new links found") if v
-				    	results.push(new_links_arr)
+				    EM::Synchrony::FiberIterator.new(urls, concurrency).each do |url|
+						resp = EventMachine::HttpRequest.new(url).get
+						lg("URL Crawled: #{url}") if v
+						new_links_arr = parseInternalLinks(fetchLinks(resp.response,host),@host_re)
+						lg("#{new_links_arr.size} new links found") if v
+						results.push(new_links_arr)
 				    end
 				    new_stuff = results.flatten # all completed requests
 				    EventMachine.stop
@@ -233,7 +233,7 @@ module Retriever
 			errlog("Bad URL -- #{@target}") if !@linkStack
 			@linkStack.delete(@target) if @linkStack.include?(@target)
 			@linkStack = @linkStack.take(@maxPages) if (@linkStack.size+1 > @maxPages)
-			crawl_and_collect(@linkStack,@fileStack,@already_crawled,@maxPages,@host_re,@file_re,@v)
+			crawl_and_collect(@linkStack,@fileStack,@already_crawled,@maxPages,@host,@host_re,@file_re,@v)
 			lg("DONE - elapsed time: #{Time.now-@start_time} seconds")
 			self.dump(self.fileStack) if @v
 		end
@@ -246,17 +246,17 @@ module Retriever
 		def initialize(url,options)
 			super
 			@sitemap = [@target]
-			@linkStack = parseInternalLinks(fetchLinks(fetchDoc(@target),@target),@host_re)
+			@linkStack = parseInternalLinks(fetchLinks(fetchDoc(@target),@host),@host_re)
 			lg("#{@linkStack.size-1} new links found") if @v
 			errlog("Bad URL -- #{@target}") if !@linkStack
 			@linkStack.delete(@target) if @linkStack.include?(@target)
 			@linkStack = @linkStack.take(@maxPages) if (@linkStack.size+1 > @maxPages)
 			@sitemap.concat(@linkStack)
-			async_crawl_and_collect(@linkStack,@sitemap,'',@maxPages,@host_re,'',@v)
+			async_crawl_and_collect(@linkStack,@sitemap,'',@maxPages,@host,@host_re,'',@v)
 			@sitemap = @sitemap.take(@maxPages) if (@sitemap.size+1 > @maxPages)
 			lg("DONE - elapsed time: #{Time.now-@start_time} seconds")
 			self.dump(self.sitemap) if @v
-			#self.write(@output,self.sitemap) if @output
+			self.write(@output,self.sitemap) if @output
 		end
 	end
 end
