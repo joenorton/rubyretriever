@@ -3,19 +3,26 @@ Ruby Retriever
 
 Web Crawler, Site Mapper, File Harvester, and all around nice buddy to have around.  
 Written in Ruby  
-Created by Joe Norton  
 
 requirements
-------------
-nokogiri  
+------------ 
 open-uri  
 optparse  
 uri  
 csv  
+em-synchrony  
+em-synchrony/em-http  
+em-synchrony/fiber_iterator  
   
 command-line arguments
 -----------------------
-Usage: retriever.rb [options] Target_URL  
+Usage: test.rb [MODE FLAG] [options] Target_URL  
+
+Where MODE FLAG is either:  
+	-s, --sitemap  
+	-fh, --fileharvest  
+  
+and OPTIONS is the applicable:  
     -o, --out FILENAME                *Dump output to selected filename*  
     -v, --verbose                     *Output more information*  
     -l, --limit PAGE_LIMIT_#          *set a max on the total number of crawled pages*  
@@ -31,14 +38,14 @@ EXAMPLE USE
    
  **Site Mapper**  
 ```sh
-ruby test.rb -v -l 1000 -o cnet http://www.cnet.com
+ruby test.rb --sitemap -v -l 1000 -o cnet http://www.cnet.com
 ```  
   
 This would go to http://www.cnet.com and map it until it crawled a max of 1,000 pages, and then it would write it out to a csv named cnet.  
   
  **File Harvesting**  
 ```sh
-ruby test.rb -v -ext exe -l 1000 -o cnet http://www.cnet.com
+ruby test.rb --fileharvest -v -ext exe -l 1000 -o cnet http://www.cnet.com
 ```  
   
 This would go to http://www.cnet.com and crawl it looking for filetype:EXE until it crawled a max of 1,000 pages, and then it would write out a list of filepaths to a csv named cnet.  

@@ -50,21 +50,21 @@ if ARGV[0].nil?
 end
 
 ARGV.each do|q|
-	if options[:verbose]
-		puts "###############################"
-		puts "### [RubyRetriever]"
+  if options[:verbose]
+    puts "###############################"
+    puts "### [RubyRetriever]"
     puts "### Creating Sitemap" if options[:sitemap]
     puts "### Performing File Harvest" if options[:fileharvest]
     puts "### Searching for file extension: #{options[:file_ext]} pages" if (options[:file_ext] && options[:fileharvest])
-		puts "### Writting output to filename: #{options[:filename]}" if options[:filename]
-		puts "### Being verbose"
-		puts "### Stopping after #{options[:maxpages]} pages" if options[:maxpages]
-	end
-	puts "###############################"
-	puts "### [RubyRetriever] go fetch #{q}"
-	test = Retriever::FetchFiles.new(q, options) if options[:fileharvest]
-	test = Retriever::FetchSitemap.new(q, options)  if options[:sitemap]
-	puts "###############################"
-	puts "### [RubyRetriever] done playing, taking a nap."
-	puts
- end
+    puts "### Writting output to filename: #{options[:filename]}" if options[:filename]
+    puts "### Being verbose"
+    puts "### Stopping after #{options[:maxpages]} pages" if options[:maxpages]
+  end
+  puts "###############################"
+  puts "### [RubyRetriever] go fetch #{q}"
+  test = Retriever::FetchFiles.new(q, options) if options[:fileharvest]
+  test = Retriever::FetchSitemap.new(q, options)  if options[:sitemap]
+  puts "###############################"
+  puts "### [RubyRetriever] done playing, taking a nap."
+  puts
+end
