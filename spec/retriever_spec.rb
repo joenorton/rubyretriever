@@ -1,6 +1,6 @@
 require_relative '../retriever'
 
-r = Retriever::Fetch.new("http://www.cnet.com/reviews/",{})
+r = Retriever::Fetch.new("http://www.cnet.com/reviews/",{:file_ext => "exe"})
 test_html = "<a href='www.cnet.com/download.exe'>download</a>
 http://www.google.com 
 <a href='/test.html'>test</a>
@@ -11,11 +11,13 @@ http://www.google.com
  test.com
  <link rel='stylesheet' id='gforms_reset_css-css'  href='http://www.cnet.com/wp-content/plugins/gravityforms/css/formreset.css?ver=1.7.12' type='text/css' media='all' />"
 
-doc = r.fetchDoc(r.target)
-links_collection = r.fetchLinks(test_html,r.host)
-filtered_links = r.parseInternalLinks(links_collection,r.host_re)
+doc = r.fetchPage(r.target)
+links_collection = r.fetchLinks(test_html)
+filtered_links = r.parseInternalLinks(links_collection)
+file_list = r.parseFiles(links_collection)
 
 describe "Fetch" do
+
 	describe "#new" do
 		it "creates target & host vars from URL" do
 			expect(r.target).to eq("http://www.cnet.com/reviews/")
@@ -23,7 +25,7 @@ describe "Fetch" do
 		end
 	end
 
-	describe "#fetchDoc" do
+	describe "#fetchPage" do
 		it "opens URL and returns source as String" do
 			expect(doc.class).to eq(String)
 		end
@@ -47,6 +49,13 @@ describe "Fetch" do
 		it "filters out 'unvisitable' URLS like JS, Stylesheets, Images" do
 			filtered_links.each do |link| 
 				expect(link).to_not (include(".css",".js",".png",".gif",".jpg"))
+			end
+		end
+	end
+	describe "#parseFiles" do
+		it "filters links by filetype" do
+			file_list.each do |link|
+				expect(link).to include(".exe")
 			end
 		end
 	end

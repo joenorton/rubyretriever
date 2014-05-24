@@ -16,6 +16,16 @@ options = {}
      options[:verbose] = true
    end
  
+    options[:sitemap] = false
+   opts.on( '-s', '--sitemap', 'Crawl site and output sitemap' ) do
+     options[:sitemap] = true
+   end
+ 
+    options[:fileharvest] = false
+   opts.on( '-fh', '--fileharvest', 'Crawl site and collect links for files found' ) do
+     options[:fileharvest] = true
+   end
+
     options[:maxpages] = false
    opts.on( '-l', '--limit PAGE_LIMIT_#', 'set a max on the total number of crawled pages' ) do |maxpages|
      options[:maxpages] = maxpages
@@ -43,16 +53,17 @@ ARGV.each do|q|
 	if options[:verbose]
 		puts "###############################"
 		puts "### [RubyRetriever]"
+    puts "### Creating Sitemap" if options[:sitemap]
+    puts "### Performing File Harvest" if options[:fileharvest]
+    puts "### Searching for file extension: #{options[:file_ext]} pages" if (options[:file_ext] && options[:fileharvest])
 		puts "### Writting output to filename: #{options[:filename]}" if options[:filename]
 		puts "### Being verbose"
 		puts "### Stopping after #{options[:maxpages]} pages" if options[:maxpages]
-		puts "### Searching for file extension: #{options[:file_ext]} pages" if options[:file_ext]
-		puts "### Performing task with options: #{options.inspect}"
 	end
 	puts "###############################"
 	puts "### [RubyRetriever] go fetch #{q}"
-	#test = Retriever::FetchFiles.new(q, options)
-	test = Retriever::FetchSitemap.new(q, options)
+	test = Retriever::FetchFiles.new(q, options) if options[:fileharvest]
+	test = Retriever::FetchSitemap.new(q, options)  if options[:sitemap]
 	puts "###############################"
 	puts "### [RubyRetriever] done playing, taking a nap."
 	puts
