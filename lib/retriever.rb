@@ -13,6 +13,6 @@ require 'optparse'
 require 'uri'
 require 'csv'
 
-require_relative('fetch')
-require_relative('fetchfiles')
-require_relative('fetchsitemap')
+require_relative('./retriever/fetch')
+require_relative('./retriever/fetchfiles')
+require_relative('./retriever/fetchsitemap')

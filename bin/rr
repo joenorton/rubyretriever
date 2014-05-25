@@ -1,5 +1,5 @@
 #! /usr/bin/env ruby
-require_relative('./lib/retriever.rb')
+require_relative('../lib/retriever.rb')
 options = {}
  optparse = OptionParser.new do|opts|
    # Set a banner, displayed at the top
@@ -56,7 +56,7 @@ options = {}
  
  optparse.parse!
 if ARGV[0].nil?
-	abort("###Missing Required Argument\nUsage: ./rr [options] Target_URL")
+	abort("###Missing Required Argument\nUsage: ./rr [mode] [options] Target_URL")
 end
 
 ARGV.each do|q|
