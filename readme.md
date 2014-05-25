@@ -1,6 +1,11 @@
 RubyRetriever  
 ==============
 
+Now an official RubyGem!
+```sh
+gem install rubyretriever  
+```  
+
 Web Crawler, Site Mapper, File Harvester & Autodownloader, and all around nice buddy to have around.  
 Soon to add some high level scraping options.  
 
@@ -14,29 +19,28 @@ RubyRetriever does NOT respect robots.txt, and RubyRetriever currently - by defa
 EXAMPLE USE  
 -----------
 ```sh
-git clone http://github.com/joenorton/rubyretriever  
-cd rubyretriever  
-./rr [MODE] [OPTIONS] Target_URL  
+gem install rubyretriever  
+rr [OPTIONS] Target_URL  
 ```  
    
  **Site Mapper**  
 ```sh
-./rr --sitemap --progress --limit 1000 --output cnet http://www.cnet.com
+rr --sitemap --progress --limit 1000 --output cnet http://www.cnet.com
 ```  
 OR -- SAME COMMAND  
 ```sh
-./rr -s -p -l 1000 -o cnet http://www.cnet.com
+rr -s -p -l 1000 -o cnet http://www.cnet.com
 ```  
   
 This would go to http://www.cnet.com and map it until it crawled a max of 1,000 pages, and then it would write it out to a csv named cnet.  
   
  **File Harvesting**  
 ```sh
-./rr --fileharvest --ext exe --progress --limit 1000 --output cnet http://www.cnet.com
+rr --fileharvest --ext exe --progress --limit 1000 --output cnet http://www.cnet.com
 ```  
 OR -- SAME COMMAND  
 ```sh
-./rr -fh -e exe -p -l 1000 -o cnet http://www.cnet.com
+rr -fh -e exe -p -l 1000 -o cnet http://www.cnet.com
 ```  
   
 This would go to http://www.cnet.com and crawl it looking for filetype:EXE until it crawled a max of 1,000 pages, and then it would write out a list of filepaths to a csv named cnet.  
@@ -44,7 +48,7 @@ This would go to http://www.cnet.com and crawl it looking for filetype:EXE until
 
 command-line arguments
 -----------------------
-Usage: ./rr [MODE] [OPTIONS] Target_URL  
+Usage: rr [MODE] [OPTIONS] Target_URL  
 
 Where MODE FLAG is either:  
 	-s, --sitemap  
