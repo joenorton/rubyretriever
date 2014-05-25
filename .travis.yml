@@ -1,4 +1,0 @@
-language: ruby
-install: gem install em-synchrony
-install: gem install ruby-progressbar
-script: bundle exec rspec spec
