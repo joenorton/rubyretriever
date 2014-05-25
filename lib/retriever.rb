@@ -10,7 +10,6 @@ require "em-synchrony/fiber_iterator"
 require 'ruby-progressbar'
 require 'open-uri'
 require 'optparse'
-require 'time'
 require 'uri'
 require 'csv'
 

@@ -60,14 +60,14 @@ and OPTIONS is the applicable:
   
 Current Requirements
 ------------ 
-open-uri  
-optparse  
-uri  
-csv  
 em-synchrony  
 em-synchrony/em-http  
 em-synchrony/fiber_iterator  
 ruby-progressbar  
+open-uri  
+optparse  
+uri  
+csv  
 
 License
 -------
