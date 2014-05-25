@@ -9,6 +9,9 @@
 /test/version_tmp/
 /tmp/
 
+## Specific to my annoying computer
+.DS_Store
+
 ## Specific to RubyMotion:
 .dat*
 .repl_history
