@@ -4,7 +4,7 @@ module Retriever
 		#constants
 		HTTP_RE = Regexp.new(/^http/i).freeze
 		HREF_CONTENTS_RE = Regexp.new(/\shref=['|"]([^\s][a-z0-9\.\/\:\-\%\+\?\!\=\&\,\:\;\~\_]+)['|"][\s|\W]/ix).freeze
-		PAGE_EXT_RE = Regexp.new(/\.(?:css|js|png|gif|jpg|mp4|wmv|flv|mp3|wav|doc|txt|ico)/ix).freeze
+		NONPAGE_EXT_RE = Regexp.new(/\.(?:css|js|png|gif|jpg|mp4|wmv|flv|mp3|wav|doc|txt|ico)/ix).freeze
 		SINGLE_SLASH_RE = Regexp.new(/^\/{1}[^\/]/).freeze
 		DOUBLE_SLASH_RE = Regexp.new(/^\/{2}[^\/]/).freeze
 		NO_SLASH_PAGE_RE = Regexp.new(/^[a-z0-9\-\_\=\?\.]+\z/ix).freeze
@@ -30,10 +30,10 @@ module Retriever
 				tempExtStr = "."+@file_ext+'\z'
 				@file_re = Regexp.new(tempExtStr).freeze
 			else
-				errlog("Cannot AUTODOWNLOAD when not in FILEHARVEST MODE") if @autodown
+				errlog("Cannot AUTODOWNLOAD when not in FILEHARVEST MODE") if @autodown #when FH is not true, and autodown is true
 			end
 			if @prgrss
-				errlog("CANNOT RUN VERBOSE & PROGRESSBAR AT SAME TIME, CHOOSE ONE, -v or -p") if @v
+				errlog("CANNOT RUN VERBOSE & PROGRESSBAR AT SAME TIME, CHOOSE ONE, -v or -p") if @v #verbose & progressbar conflict
 				prgressVars = {
 					:title => "Pages Crawled",
 					:starting_at => 1,
@@ -129,7 +129,7 @@ module Retriever
 		end
 		def parseInternalLinks(all_links)
 			if all_links
-				all_links.select{ |linky| (@host_re =~ linky && (!(PAGE_EXT_RE =~linky)))}
+				all_links.select{ |linky| (@host_re =~ linky && (!(NONPAGE_EXT_RE =~linky)))}
 			else
 				return false
 			end
@@ -143,12 +143,11 @@ module Retriever
 				@sitemap.concat(new_links_arr) if @s
 			end
 		end
-		def asyncGetWave()
+		def asyncGetWave() #send a new wave of GET requests, using current @linkStack
 			new_stuff = []
 			EM.synchrony do
 				lenny = 0
 			    concurrency = 10
-			    # iterator will execute async blocks until completion, .each, .inject also work!
 			    EM::Synchrony::FiberIterator.new(@linkStack, concurrency).each do |url|
 			    	if @already_crawled.include?(url)
 			    		@linkStack.delete(url)
@@ -157,10 +156,10 @@ module Retriever
 			    	next if (@already_crawled.size >= @maxPages)
 			    	resp = EventMachine::HttpRequest.new(url).get
 					lg("URL Crawled: #{url}")
+					@already_crawled.push(url)
 					if @prgrss
 						@progressbar.increment if @already_crawled.size < @maxPages
 					end
-					@already_crawled.push(url)
 					new_links_arr = self.fetchLinks(resp.response)
 					if new_links_arr
 						lg("#{new_links_arr.size} new links found")
