@@ -1,6 +1,6 @@
-require_relative '../retriever'
+require_relative '../lib/retriever'
 
-r = Retriever::Fetch.new("http://www.cnet.com/reviews/",{:file_ext => "exe"})
+r = Retriever::Fetch.new("http://www.cnet.com/reviews/",{:file_ext => "exe",:maxpages => "100"})
 test_html = "<a href='www.cnet.com/download.exe'>download</a>
 http://www.google.com 
 <a href='/test.html'>test</a>
@@ -9,7 +9,8 @@ http://www.google.com
 <a href='http://www.cnet.com/products/gadgets/'>gadgets </a>
  <a href='http://www.yahoo.com/test/'>yahoo</a> 
  test.com
- <link rel='stylesheet' id='gforms_reset_css-css'  href='http://www.cnet.com/wp-content/plugins/gravityforms/css/formreset.css?ver=1.7.12' type='text/css' media='all' />"
+ <link rel='stylesheet' id='gforms_reset_css-css'  href='http://www.cnet.com/wp-content/plugins/gravityforms/css/formreset.css?ver=1.7.12' type='text/css' media='all' />
+ <a href='cpage_18'>about</a>"
 
 doc = r.fetchPage(r.target)
 links_collection = r.fetchLinks(test_html)
@@ -19,9 +20,10 @@ file_list = r.parseFiles(links_collection)
 describe "Fetch" do
 
 	describe "#new" do
-		it "creates target & host vars from URL" do
+		it "sets target, host, and max page vars" do
 			expect(r.target).to eq("http://www.cnet.com/reviews/")
 			expect(r.host).to eq("www.cnet.com")
+			expect(r.maxPages).to eq(100)
 		end
 	end
 
@@ -33,10 +35,10 @@ describe "Fetch" do
 
 	describe "#fetchLinks" do
 		it "collects all unique href links on the page" do
-			expect(links_collection).to have(5).items
+			expect(links_collection).to have(6).items
 		end
 		it "returns relative urls with full path based on hostname" do
-			expect(links_collection[1]).to eq("http://www.cnet.com/test.html")
+			expect(links_collection).to include("http://www.cnet.com/test.html","http://www.cnet.com/cpage_18")
 		end
 	end
 

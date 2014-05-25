@@ -12,29 +12,31 @@ require 'time'
 require "em-synchrony"
 require "em-synchrony/em-http"
 require "em-synchrony/fiber_iterator"
+require 'ruby-progressbar'
 
 require_relative('openuri_patch')
 require_relative('file_processor')
 
 module Retriever
 		class Fetch
-			attr_reader :target, :host, :host_re
+			attr_reader :target, :host, :host_re, :maxPages
 			#constants
-			LINK_RE = Regexp.new(/\shref=['|"]([^\s][a-z0-9\.\/\:\-\%\+\?\!\=\&\,\:\;\~]+)['|"][\s|\W]/ix).freeze
-			PAGE_EXT_RE = Regexp.new(/\.(?:css|js|png|gif|jpg|mp4|wmv|flv|mp3|wav|doc|txt)/ix).freeze
+			LINK_RE = Regexp.new(/\shref=['|"]([^\s][a-z0-9\.\/\:\-\%\+\?\!\=\&\,\:\;\~\_]+)['|"][\s|\W]/ix).freeze
+			PAGE_EXT_RE = Regexp.new(/\.(?:css|js|png|gif|jpg|mp4|wmv|flv|mp3|wav|doc|txt|ico)/ix).freeze
 			def initialize(url,options)
-				@start_time = Time.now
 				new_uri = URI(url)
 				@target = new_uri.to_s
 				@host = new_uri.host
 				if options.empty?
-					@maxPages = 1000
+					@prgrss = false
+					@maxPages = 100
 					@v = false
 					@output = false
 					@fh = false
 					@s = true
 					@file_ext = false
 				else
+					@prgrss = options[:progress] if options[:progress]
 					@maxPages=options[:maxpages].to_i if options[:maxpages]
 					@v=true if options[:verbose]
 					@output=options[:filename] if options[:filename]
@@ -44,9 +46,18 @@ module Retriever
 				end
 				@host_re = Regexp.new(host).freeze
 				if @fh
+					errlog("Please provide a FILETYPE. It is required for file harvest mode.") if !@file_ext
 					tempExtStr = "."+@file_ext+'\z'
 					@file_re = Regexp.new(tempExtStr).freeze
 				end
+				prgressVars = {
+					:title => "Pages Crawled",
+					:starting_at => 1,
+					:total => @maxPages,
+					:format => '%a |%b>%i| %c/%C %t',
+				}
+				@progressbar = ProgressBar.create(prgressVars) if @prgrss
+				@already_crawled = [@target]
 			end
 			def errlog(msg)
 				raise "ERROR: #{msg}"
@@ -55,10 +66,19 @@ module Retriever
 				puts "### #{msg}" if @v
 			end
 			def dump(data)
-				puts data
 				puts "###############################"
-				puts "Data Dump: "
-				puts "Object Count: #{data.size}"
+				if @s
+					puts "#{@target} Sitemap"
+					puts "Page Count: #{data.size}"
+				elsif @fh
+					puts "#{@target} File Paths"
+					puts "of filetype: #{@file_ext}"
+					puts "File Count: #{data.size}"
+				else
+					puts "ERROR"
+				end
+				puts "###############################"
+				puts data
 				puts "###############################"
 				puts
 			end
@@ -93,15 +113,17 @@ module Retriever
 					lg("URL Crawled: #{url}")
 			    	EventMachine.stop
 				end
-				return resp.response
+				if resp.response == ""
+					errlog("Domain is not working. Try the non-WWW version.")
+				end
+				return resp.response #.force_encoding('UTF-8') #ran into issues with some sites without forcing UTF8 encoding
 			end
 			def fetchLinks(doc)
 				return false if !doc
 				#recieves nokogiri doc object, and string query
 				#returns array of links
 				linkArray = []
-				doc.scan(LINK_RE) do |arr|
-					#filter some malformed URLS that come in
+				doc.scan(LINK_RE) do |arr|  #filter some malformed URLS that come in, this is meant to be a loose filter to catch all reasonable HREF attributes.
 					link = arr[0]
 					if (!(/^http/ =~ link))
 						if (/^www\./ =~ link)
@@ -110,6 +132,8 @@ module Retriever
 							link = "http://#{@host}"+link #appending hostname to relative paths
 						elsif /^\/{2}[^\/]/ =~ link #link begins with '//' (maybe a messed up link?)
 							link = "http:#{link}" #appending current url to relative paths
+						elsif (/^[a-z0-9\-\_\=\?\.]+\z/ix =~ link) #link uses relative path with no slashes at all, people actually this - imagine that.
+							link = "http://#{@host}"+"/"+link #appending hostname and slashy to create full paths
 						else
 							next
 						end
@@ -117,7 +141,6 @@ module Retriever
 					linkArray.push(link)
 				end
 				linkArray.uniq!
-				return linkArray
 			end
 			def parseInternalLinks(all_links)
 				if all_links
@@ -126,89 +149,13 @@ module Retriever
 					return false
 				end
 			end
-			def crawl_site_collect_links(stack,collection)
-				current_size = collection.size
-				while (stack.size > 0 && current_size < limit)
-					stack.each do |url|
-						break if (current_size+1 > limit)
-						doc = fetchPage(url)
-						next if !doc
-						lg("URL Crawled: #{url}")
-						linkx = self.fetchInternalLinks(doc)
-						next if linkx.empty?
-						new_links_arr = linkx - collection #set operations to see are these in our previous visited pages arr?
-						 if !new_links_arr.empty?
-						 	stack.concat(new_links_arr)
-							collection.concat(new_links_arr)
-							lg("#{new_links_arr.size} new links found")
-							current_size += new_links_arr.size
-						end
-					end
-					collection.sort_by! {|x| x.length}
-				end
-			end
-			def crawl_and_collect(collection)
-				if already_crawled === '' 
-					simple = true 
-					current_size = collection.size
-				else 
-					simple = false
-					current_size = already_crawled.size
-				end
-				while (stack.size > 0 && current_size < limit)
-					stack.each do |url|
-						break if (current_size+1 > limit)
-						doc = fetchPage(url)
-						next if !doc
-						if simple
-							next if collection.include?(url)
-							collection.push(url)
-						else
-							next if already_crawled.include?(url)
-							already_crawled.push(url)
-						end
-						lg("URL Crawled: #{url}")
-						lnks = self.fetchLinks(doc,host)
-						if !simple
-							filez = self.parseFiles(lnks,file_ext_re)
-							collection.concat(filez) if !filez.empty?
-							lg("#{filez.size} files found")
-						end
-						current_size += 1
-						linkx = self.parseInternalLinks(lnks)
-						next if linkx.empty?
-						if simple
-							new_links_arr = linkx-collection
-						else
-							new_links_arr = linkx-already_crawled
-						end#set operations to see are these in our previous visited pages arr?
-						stack.concat(new_links_arr) if !new_links_arr.empty?
-						if simple
-							collection.concat(new_links_arr)
-							lg("#{new_links_arr.size} new links found")
-							current_size += new_links_arr.size
-						end
-					end
-				end
-				collection.uniq!
-				return collection.sort_by {|x| x.length} if collection.size>1
-			end
-			def async_crawl_and_collect(collection)
-				current_size = collection.size
-				while (@linkStack.size > 0 && current_size < @maxPages)
-					puts "just went thru while loop"
-					new_links_arr = self.asyncGetWave() if @s
-					new_links_arr = self.asyncFHGetWave() if @fh
-					next if new_links_arr.empty?
-					new_links_arr = new_links_arr-@linkStack
-					new_link_arr = new_links_arr-collection #set operations to see are these in our previous visited pages arr?
+			def async_crawl_and_collect()
+				while (@linkStack.size > 0 && @already_crawled.size < @maxPages)
+					new_links_arr = self.asyncGetWave()
+					next if (new_links_arr.nil? || new_links_arr.empty?)
+					new_link_arr = new_links_arr-@already_crawled-@linkStack#set operations to see are these in our previous visited pages arr?
 					@linkStack.concat(new_links_arr)
-					collection.concat(new_links_arr) if @s
-					current_size += new_links_arr.size
-				end
-				if @s
-					collection.uniq!
-					return collection.sort_by {|x| x.length} if collection.size>1
+					@sitemap.concat(new_links_arr) if @s
 				end
 			end
 			def asyncGetWave()
@@ -219,36 +166,28 @@ module Retriever
 				    results = []
 				    # iterator will execute async blocks until completion, .each, .inject also work!
 				    EM::Synchrony::FiberIterator.new(@linkStack, concurrency).each do |url|
+				    	if @already_crawled.include?(url)
+				    		@linkStack.delete(url)
+				    		next
+				    	end
+				    	next if (@already_crawled.size >= @maxPages)
 				    	resp = EventMachine::HttpRequest.new(url).get
 						lg("URL Crawled: #{url}")
-						new_links_arr = self.parseInternalLinks(self.fetchLinks(resp.response))
+						if @prgrss
+							@progressbar.increment if @already_crawled.size < @maxPages
+						end
+						@already_crawled.push(url)
+						new_links_arr = self.fetchLinks(resp.response)
 						if new_links_arr
 							lg("#{new_links_arr.size} new links found")
-							results.push(new_links_arr)
+							internal_links_arr = self.parseInternalLinks(new_links_arr)
+							results.push(internal_links_arr)
+							if @fh
+								filez = self.parseFiles(new_links_arr)
+								@fileStack.concat(filez) if !filez.empty?
+								lg("#{filez.size} files found")
+							end
 						end
-				    end
-				    new_stuff = results.flatten # all completed requests
-				    EventMachine.stop
-				end
-				new_stuff.uniq!
-			end
-			def asyncFHGetWave()
-				new_stuff = []
-				EM.synchrony do
-					lenny = 0
-				    concurrency = 10
-				    results = []
-				    # iterator will execute async blocks until completion, .each, .inject also work!
-				    EM::Synchrony::FiberIterator.new(@linkStack, concurrency).each do |url|
-				    	resp = EventMachine::HttpRequest.new(url).get
-						lg("URL Crawled: #{url}")
-						new_links_arr = self.fetchLinks(resp.response)
-						lg("#{new_links_arr.size} new links found")
-						internal_links_arr = self.parseInternalLinks(new_links_arr)
-						filez = self.parseFiles(new_links_arr)
-						@fileStack.concat(filez) if !filez.empty?
-						lg("#{filez.size} files found")
-						results.push(internal_links_arr)
 				    end
 				    new_stuff = results.flatten # all completed requests
 				    EventMachine.stop
@@ -262,11 +201,9 @@ module Retriever
 	class FetchFiles < Fetch
 		attr_reader :fileStack
 		def initialize(url,options)
-			super	
+			super
 			@fileStack = []
-			@already_crawled = [@target]
-			doc = fetchPage(@target)
-			all_links = self.fetchLinks(doc)
+			all_links = self.fetchLinks(fetchPage(@target))
 			@linkStack = self.parseInternalLinks(all_links)
 			self.lg("#{@linkStack.size-1} new links found")
 			tempFileCollection = self.parseFiles(all_links)
@@ -274,11 +211,12 @@ module Retriever
 			self.lg("#{@fileStack.size} new files found")
 			errlog("Bad URL -- #{@target}") if !@linkStack
 			@linkStack.delete(@target) if @linkStack.include?(@target)
-			#@linkStack = @linkStack.take(@maxPages) if (@linkStack.size+1 > @maxPages)
-			self.async_crawl_and_collect(@fileStack)
+			@linkStack = @linkStack.take(@maxPages) if (@linkStack.size+1 > @maxPages)
+			self.async_crawl_and_collect()
+			@fileStack.sort_by! {|x| x.length}
 			@fileStack.uniq!
-			self.lg("DONE - elapsed time: #{Time.now-@start_time} seconds")
-			self.dump(self.fileStack) if @v
+			self.dump(self.fileStack)
+			self.write(@output,self.fileStack) if @output
 		end
 	end
 	class FetchSitemap < Fetch
@@ -292,10 +230,11 @@ module Retriever
 			@linkStack.delete(@target) if @linkStack.include?(@target)
 			@linkStack = @linkStack.take(@maxPages) if (@linkStack.size+1 > @maxPages)
 			@sitemap.concat(@linkStack)
-			self.async_crawl_and_collect(@sitemap)
+			self.async_crawl_and_collect()
+			@sitemap.sort_by!	 {|x| x.length} if @sitemap.size>1
+			@sitemap.uniq!
 			@sitemap = @sitemap.take(@maxPages) if (@sitemap.size+1 > @maxPages)
-			self.lg("DONE - elapsed time: #{Time.now-@start_time} seconds")
-			self.dump(self.sitemap) if @v
+			self.dump(self.sitemap)
 			self.write(@output,self.sitemap) if @output
 		end
 	end
