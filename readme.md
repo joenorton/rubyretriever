@@ -1,19 +1,15 @@
-Ruby Retriever  
+RubyRetriever  
 ==============
 
-Web Crawler, Site Mapper, File Harvester, and all around nice buddy to have around.  
-Written in Ruby  
+Web Crawler, Site Mapper, File Harvester & Autodownloader, and all around nice buddy to have around.  
+Soon to add some high level scraping options.  
 
-requirements
------------- 
-open-uri  
-optparse  
-uri  
-csv  
-em-synchrony  
-em-synchrony/em-http  
-em-synchrony/fiber_iterator  
-ruby-progressbar  
+RubyRetriever uses aynchronous HTTP requests, thanks to eventmachine and Synphony fibers, to crawl webpages *very quickly*.  
+
+This is the 2nd or 3rd reincarnation of the RubyRetriever autdownloader project. It started out as a executable autodownloader, intended for malware research. From there it has morphed to become a more well-rounded web-crawler and general purpose file harvesting utility.  
+
+RubyRetriever does NOT respect robots.txt, and RubyRetriever currently - by default - launches up to 10 parallel GET requests at once. This is a feature, do not abuse it. Use at own risk.
+
   
 EXAMPLE USE  
 -----------
@@ -62,6 +58,17 @@ and OPTIONS is the applicable:
     -e, --ext FILE_EXTENSION            *set a file extension to look for on crawled pages*  
     -h, --help                          *Display this screen*  
   
+Current Requirements
+------------ 
+open-uri  
+optparse  
+uri  
+csv  
+em-synchrony  
+em-synchrony/em-http  
+em-synchrony/fiber_iterator  
+ruby-progressbar  
+
 License
 -------
 GNU GPLv3 http://www.gnu.org/licenses/gpl.txt
