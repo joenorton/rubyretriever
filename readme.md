@@ -4,7 +4,7 @@ RubyRetriever
 Web Crawler, Site Mapper, File Harvester & Autodownloader, and all around nice buddy to have around.  
 Soon to add some high level scraping options.  
 
-RubyRetriever uses aynchronous HTTP requests, thanks to eventmachine and Synphony fibers, to crawl webpages *very quickly*.  
+RubyRetriever uses aynchronous HTTP requests, thanks to eventmachine and Synchrony fibers, to crawl webpages *very quickly*.  
 
 This is the 2nd or 3rd reincarnation of the RubyRetriever autodownloader project. It started out as a executable autodownloader, intended for malware research. From there it has morphed to become a more well-rounded web-crawler and general purpose file harvesting utility.  
 
