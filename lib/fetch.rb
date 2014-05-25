@@ -101,12 +101,12 @@ module Retriever
 			if resp.response == ""
 				errlog("Domain is not working. Try the non-WWW version.")
 			end
-			return resp.response #.force_encoding('UTF-8') #ran into issues with some sites without forcing UTF8 encoding
+			return resp.response.encode('UTF-8', :invalid => :replace, :undef => :replace) #.force_encoding('UTF-8') #ran into issues with some sites without forcing UTF8 encoding, and also issues with it. Not sure atm.
 		end
+		#recieves page source as string
+		#returns array of unique href links
 		def fetchLinks(doc)
 			return false if !doc
-			#recieves nokogiri doc object, and string query
-			#returns array of links
 			linkArray = []
 			doc.scan(HREF_CONTENTS_RE) do |arr|  #filter some malformed URLS that come in, this is meant to be a loose filter to catch all reasonable HREF attributes.
 				link = arr[0]
@@ -135,7 +135,17 @@ module Retriever
 			end
 		end
 		def async_crawl_and_collect()
-			while (@linkStack.size > 0 && @already_crawled.size < @maxPages)
+			while (@already_crawled.size < @maxPages)
+				if @linkStack.empty?
+					if @prgrss
+						@progressbar.log("Can't find any more links. Site might be completely mapped.")
+					else
+						lg("Can't find any more links. Site might be completely mapped.")
+					end
+					break;
+				end
+				#puts "New loop"
+				#puts @linkStack
 				new_links_arr = self.asyncGetWave()
 				next if (new_links_arr.nil? || new_links_arr.empty?)
 				new_link_arr = new_links_arr-@already_crawled-@linkStack#set operations to see are these in our previous visited pages arr?
@@ -149,14 +159,15 @@ module Retriever
 				lenny = 0
 			    concurrency = 10
 			    EM::Synchrony::FiberIterator.new(@linkStack, concurrency).each do |url|
+			    	next if (@already_crawled.size >= @maxPages)
 			    	if @already_crawled.include?(url)
 			    		@linkStack.delete(url)
 			    		next
+			    	else
+			    		@already_crawled.push(url)
 			    	end
-			    	next if (@already_crawled.size >= @maxPages)
 			    	resp = EventMachine::HttpRequest.new(url).get
 					lg("URL Crawled: #{url}")
-					@already_crawled.push(url)
 					if @prgrss
 						@progressbar.increment if @already_crawled.size < @maxPages
 					end

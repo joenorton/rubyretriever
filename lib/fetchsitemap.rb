@@ -18,7 +18,6 @@ module Retriever
 			@sitemap.uniq!
 			@sitemap = @sitemap.take(@maxPages) if (@sitemap.size+1 > @maxPages)
 
-			@progressbar.finish if @prgrss
 			self.dump(self.sitemap)
 			self.write(@output,self.sitemap) if @output
 		end

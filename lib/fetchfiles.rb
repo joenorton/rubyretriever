@@ -21,7 +21,6 @@ module Retriever
 			@fileStack.sort_by! {|x| x.length}
 			@fileStack.uniq!
 
-			@progressbar.finish if @prgrss
 			self.dump(self.fileStack)
 			self.write(@output,self.fileStack) if @output
 			self.autodownload()
