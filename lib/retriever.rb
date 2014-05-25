@@ -21,42 +21,43 @@ module Retriever
 		class Fetch
 			attr_reader :target, :host, :host_re, :maxPages
 			#constants
-			LINK_RE = Regexp.new(/\shref=['|"]([^\s][a-z0-9\.\/\:\-\%\+\?\!\=\&\,\:\;\~\_]+)['|"][\s|\W]/ix).freeze
+			HTTP_RE = Regexp.new(/^http/i).freeze
+			HREF_CONTENTS_RE = Regexp.new(/\shref=['|"]([^\s][a-z0-9\.\/\:\-\%\+\?\!\=\&\,\:\;\~\_]+)['|"][\s|\W]/ix).freeze
 			PAGE_EXT_RE = Regexp.new(/\.(?:css|js|png|gif|jpg|mp4|wmv|flv|mp3|wav|doc|txt|ico)/ix).freeze
+			SINGLE_SLASH_RE = Regexp.new(/^\/{1}[^\/]/).freeze
+			DOUBLE_SLASH_RE = Regexp.new(/^\/{2}[^\/]/).freeze
+			NO_SLASH_PAGE_RE = Regexp.new(/^[a-z0-9\-\_\=\?\.]+\z/ix).freeze
+			DUB_DUB_DUB_DOT_RE = Regexp.new(/^www\./i).freeze
+
 			def initialize(url,options)
 				new_uri = URI(url)
 				@target = new_uri.to_s
 				@host = new_uri.host
-				if options.empty?
-					@prgrss = false
-					@maxPages = 100
-					@v = false
-					@output = false
-					@fh = false
-					@s = true
-					@file_ext = false
-				else
-					@prgrss = options[:progress] if options[:progress]
-					@maxPages=options[:maxpages].to_i if options[:maxpages]
-					@v=true if options[:verbose]
-					@output=options[:filename] if options[:filename]
-					@fh=true if options[:fileharvest]
-					@s=true if options[:sitemap]
-					@file_ext = options[:file_ext] if options[:file_ext]
-				end
+				#OPTIONS
+				@prgrss = options[:progress] ? options[:progress] : false
+				@maxPages = options[:maxpages] ? options[:maxpages] : 100
+				@v= options[:verbose] ? true : false
+				@output=options[:filename] ? options[:filename] : false
+				@fh = options[:fileharvest] ? true : false
+				@s = options[:sitemap] ? true : false
+				@file_ext = options[:file_ext] ? options[:file_ext] : false
+				#
 				@host_re = Regexp.new(host).freeze
 				if @fh
 					errlog("Please provide a FILETYPE. It is required for file harvest mode.") if !@file_ext
 					tempExtStr = "."+@file_ext+'\z'
 					@file_re = Regexp.new(tempExtStr).freeze
 				end
-				prgressVars = {
-					:title => "Pages Crawled",
-					:starting_at => 1,
-					:total => @maxPages,
-					:format => '%a |%b>%i| %c/%C %t',
-				}
-				@progressbar = ProgressBar.create(prgressVars) if @prgrss
+				if @prgrss
+					errlog("CANNOT RUN VERBOSE & PROGRESSBAR AT SAME TIME, CHOOSE ONE, -v or -p") if @v
+					prgressVars = {
+						:title => "Pages Crawled",
+						:starting_at => 1,
+						:total => @maxPages,
+						:format => '%a |%b>%i| %c/%C %t',
+					}
+					@progressbar = ProgressBar.create(prgressVars)
+				end
 				@already_crawled = [@target]
 			end
 			def errlog(msg)
@@ -71,8 +72,8 @@ module Retriever
 					puts "#{@target} Sitemap"
 					puts "Page Count: #{data.size}"
 				elsif @fh
-					puts "#{@target} File Paths"
-					puts "of filetype: #{@file_ext}"
+					puts "Target URL: #{@target}"
+					puts "Filetype: #{@file_ext}"
 					puts "File Count: #{data.size}"
 				else
 					puts "ERROR"
@@ -123,16 +124,16 @@ module Retriever
 				#recieves nokogiri doc object, and string query
 				#returns array of links
 				linkArray = []
-				doc.scan(LINK_RE) do |arr|  #filter some malformed URLS that come in, this is meant to be a loose filter to catch all reasonable HREF attributes.
+				doc.scan(HREF_CONTENTS_RE) do |arr|  #filter some malformed URLS that come in, this is meant to be a loose filter to catch all reasonable HREF attributes.
 					link = arr[0]
-					if (!(/^http/ =~ link))
-						if (/^www\./ =~ link)
+					if (!(HTTP_RE =~ link))
+						if (DUB_DUB_DUB_DOT_RE =~ link)
 							link = "http://#{link}"
-						elsif /^\/{1}[^\/]/ =~ link #link uses relative path
+						elsif SINGLE_SLASH_RE =~ link #link uses relative path
 							link = "http://#{@host}"+link #appending hostname to relative paths
-						elsif /^\/{2}[^\/]/ =~ link #link begins with '//' (maybe a messed up link?)
+						elsif DOUBLE_SLASH_RE =~ link #link begins with '//' (maybe a messed up link?)
 							link = "http:#{link}" #appending current url to relative paths
-						elsif (/^[a-z0-9\-\_\=\?\.]+\z/ix =~ link) #link uses relative path with no slashes at all, people actually this - imagine that.
+						elsif (NO_SLASH_PAGE_RE =~ link) #link uses relative path with no slashes at all, people actually this - imagine that.
 							link = "http://#{@host}"+"/"+link #appending hostname and slashy to create full paths
 						else
 							next
@@ -163,7 +164,6 @@ module Retriever
 				EM.synchrony do
 					lenny = 0
 				    concurrency = 10
-				    results = []
 				    # iterator will execute async blocks until completion, .each, .inject also work!
 				    EM::Synchrony::FiberIterator.new(@linkStack, concurrency).each do |url|
 				    	if @already_crawled.include?(url)
@@ -181,7 +181,7 @@ module Retriever
 						if new_links_arr
 							lg("#{new_links_arr.size} new links found")
 							internal_links_arr = self.parseInternalLinks(new_links_arr)
-							results.push(internal_links_arr)
+							new_stuff.push(internal_links_arr)
 							if @fh
 								filez = self.parseFiles(new_links_arr)
 								@fileStack.concat(filez) if !filez.empty?
@@ -189,7 +189,7 @@ module Retriever
 							end
 						end
 				    end
-				    new_stuff = results.flatten # all completed requests
+				    new_stuff = new_stuff.flatten # all completed requests
 				    EventMachine.stop
 				end
 				new_stuff.uniq!
@@ -206,15 +206,21 @@ module Retriever
 			all_links = self.fetchLinks(fetchPage(@target))
 			@linkStack = self.parseInternalLinks(all_links)
 			self.lg("#{@linkStack.size-1} new links found")
+
 			tempFileCollection = self.parseFiles(all_links)
 			@fileStack.concat(tempFileCollection) if tempFileCollection.size>0
 			self.lg("#{@fileStack.size} new files found")
 			errlog("Bad URL -- #{@target}") if !@linkStack
+
 			@linkStack.delete(@target) if @linkStack.include?(@target)
 			@linkStack = @linkStack.take(@maxPages) if (@linkStack.size+1 > @maxPages)
+
 			self.async_crawl_and_collect()
+
 			@fileStack.sort_by! {|x| x.length}
 			@fileStack.uniq!
+
+			@progressbar.finish if @prgrss
 			self.dump(self.fileStack)
 			self.write(@output,self.fileStack) if @output
 		end
@@ -227,13 +233,18 @@ module Retriever
 			@linkStack = self.parseInternalLinks(self.fetchLinks(fetchPage(@target)))
 			self.lg("#{@linkStack.size-1} new links found")
 			errlog("Bad URL -- #{@target}") if !@linkStack
+
 			@linkStack.delete(@target) if @linkStack.include?(@target)
 			@linkStack = @linkStack.take(@maxPages) if (@linkStack.size+1 > @maxPages)
 			@sitemap.concat(@linkStack)
+
 			self.async_crawl_and_collect()
+
 			@sitemap.sort_by!	 {|x| x.length} if @sitemap.size>1
 			@sitemap.uniq!
 			@sitemap = @sitemap.take(@maxPages) if (@sitemap.size+1 > @maxPages)
+
+			@progressbar.finish if @prgrss
 			self.dump(self.sitemap)
 			self.write(@output,self.sitemap) if @output
 		end
