@@ -40,6 +40,11 @@ options = {}
    opts.on( '-e', '--ext FILE_EXTENSION', 'set a file extension to look for on crawled pages' ) do |file_ext|
      options[:file_ext] = file_ext
    end
+
+   options[:autodown] = false
+   opts.on( '-a', '--autodown', 'Automatically download all files of filetype located' ) do
+     options[:autodown] = true
+   end
  
    # This displays the help screen, all programs are
    # assumed to have this option.
