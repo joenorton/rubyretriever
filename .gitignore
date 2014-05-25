@@ -11,6 +11,25 @@
 
 ## Specific to my annoying computer
 .DS_Store
+__MACOSX
+.DS_Store
+
+.project
+.settings
+.classpath
+.sass-cache/
+
+# OS generated files #
+######################
+*/.DS_Store
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
 
 ## Specific to RubyMotion:
 .dat*
