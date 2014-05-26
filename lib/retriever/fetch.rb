@@ -42,7 +42,8 @@ module Retriever
 				}
 				@progressbar = ProgressBar.create(prgressVars)
 			end
-			@already_crawled = [@target]
+			@already_crawled = BloomFilter::Native.new(:size => 1000000, :hashes => 5, :seed => 1, :bucket => 8, :raise => false)
+			@already_crawled.insert(@target)
 		end
 		def errlog(msg)
 			raise "ERROR: #{msg}"
@@ -148,7 +149,7 @@ module Retriever
 				#puts @linkStack
 				new_links_arr = self.asyncGetWave()
 				next if (new_links_arr.nil? || new_links_arr.empty?)
-				new_link_arr = new_links_arr-@already_crawled-@linkStack#set operations to see are these in our previous visited pages arr?
+				new_link_arr = new_links_arr-@linkStack#set operations to see are these in our previous visited pages arr?
 				@linkStack.concat(new_links_arr)
 				@sitemap.concat(new_links_arr) if @s
 			end
@@ -164,7 +165,7 @@ module Retriever
 			    		@linkStack.delete(url)
 			    		next
 			    	else
-			    		@already_crawled.push(url)
+			    		@already_crawled.insert(url)
 			    	end
 			    	resp = EventMachine::HttpRequest.new(url).get
 					lg("URL Crawled: #{url}")
