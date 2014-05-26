@@ -1,9 +1,9 @@
 RubyRetriever  [![Gem Version](https://badge.fury.io/rb/RubyRetriever.svg)](http://badge.fury.io/rb/RubyRetriever)  
 ==============
 
-Now an official RubyGem!  
+Now an official RubyGem! --make sure to use camel-casing--    
 ```sh
-gem install rubyretriever  
+gem install RubyRetriever  
 ```  
 
 Web Crawler, Site Mapper, File Harvester & Autodownloader, and all around nice buddy to have around.  
@@ -19,7 +19,7 @@ RubyRetriever does NOT respect robots.txt, and RubyRetriever currently - by defa
 HOW IT WORKS 
 -----------
 ```sh
-gem install rubyretriever  
+gem install RubyRetriever  
 rr [MODE] [OPTIONS] Target_URL  
 ```  
    
