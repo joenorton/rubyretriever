@@ -1,7 +1,7 @@
-RubyRetriever  
+RubyRetriever  [![Gem Version](https://badge.fury.io/rb/RubyRetriever.svg)](http://badge.fury.io/rb/RubyRetriever)  
 ==============
 
-Now an official RubyGem! [![Gem Version](https://badge.fury.io/rb/RubyRetriever.svg)](http://badge.fury.io/rb/RubyRetriever)  
+Now an official RubyGem!  
 ```sh
 gem install rubyretriever  
 ```  
