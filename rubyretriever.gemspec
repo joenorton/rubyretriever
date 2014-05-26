@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.authors     = ["Joe Norton"]
   s.email       = ["joe@softwarebyjoe.com"]
   s.homepage    =
-    'http://github.com/joenorton/rubyretriever'
+    'http://www.softwarebyjoe.com/rubyretriever/'
   s.license       = 'MIT'
    # If you need to check in files that aren't .rb files, add them here
   s.files        = Dir["{lib}/**/*.rb", "bin/*", "LICENSE", "*.md","{spec}/*.rb"]

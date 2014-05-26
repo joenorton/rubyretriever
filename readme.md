@@ -1,21 +1,11 @@
-RubyRetriever  [![Gem Version](https://badge.fury.io/rb/rubyretriever.svg)](http://badge.fury.io/rb/rubyretriever)  
+[RubyRetriever] (http://www.softwarebyjoe.com/rubyretriever/)  [![Gem Version](https://badge.fury.io/rb/rubyretriever.svg)](http://badge.fury.io/rb/rubyretriever)  
 ==============
 
-Now an official RubyGem!   
-```sh
-gem install rubyretriever  
-```  
-Update (5/26):  
-Version 0.0.10 - fixes a bug that wouldn't allow sitemaps to write out to file correctly.
-
-Update (5/25):  
- Version 0.0.6 - Switches to using a Bloom Filter to keep track of past 'visited pages'. I saw this in [Arachnid] (https://github.com/dchuk/Arachnid) and realized it's a much better idea for performance and implemented it immediately. Hat tip [dchuk] (https://github.com/dchuk/)  
-
-About
-=====
-
 RubyRetriever is a Web Crawler, Site Mapper, File Harvester & Autodownloader, and all around nice buddy to have around.  
-Soon to add some high level scraping options.  
+By Joe Norton, and some awesome [contributors] (https://github.com/joenorton/rubyretriever/graphs/contributors)  
+  
+ABOUT
+=====
 
 RubyRetriever uses aynchronous HTTP requests, thanks to eventmachine and Synchrony fibers, to crawl webpages *very quickly*.  
 
@@ -24,14 +14,14 @@ This is the 2nd or 3rd reincarnation of the RubyRetriever autodownloader project
 RubyRetriever does NOT respect robots.txt, and RubyRetriever currently - by default - launches up to 10 parallel GET requests at once. This is a feature, do not abuse it. Use at own risk.
 
   
-HOW IT WORKS 
+USAGE 
 -----------
+Install the gem
 ```sh
-gem install rubyretriever  
-rr [MODE] [OPTIONS] Target_URL  
+gem install rubyretriever
 ```  
    
- **Site Mapper**  
+ **Example: Sitemap mode**  
 ```sh
 rr --sitemap --progress --limit 1000 --output cnet http://www.cnet.com
 ```  
@@ -42,7 +32,7 @@ rr -s -p -l 1000 -o cnet http://www.cnet.com
   
 This would go to http://www.cnet.com and map it until it crawled a max of 1,000 pages, and then it would write it out to a csv named cnet.  
   
- **File Harvesting**  
+ **Example: File Harvesting mode**  
 ```sh
 rr --files --ext pdf --progress --limit 1000 --output hubspot http://www.hubspot.com
 ```  
