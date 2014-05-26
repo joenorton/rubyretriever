@@ -1,9 +1,13 @@
 require 'eventmachine'
 require 'em-synchrony'
 require 'em-http-request'
+require 'uri'
+require 'retriever/link'
 
 module Retriever
   class Page
+    HREF_CONTENTS_RE = Regexp.new(/\shref=['|"]([^\s][a-z0-9\.\/\:\-\%\+\?\!\=\&\,\:\;\~\_]+)['|"][\s|\W]/ix).freeze
+
     def initialize(url, verbose)
       @url = url
       @v = verbose
@@ -21,6 +25,20 @@ module Retriever
       source
     end
 
+    def links
+      hrefs.map do |match|  #filter some malformed URLS that come in, this is meant to be a loose filter to catch all reasonable HREF attributes.
+        link = match[0]
+
+        Link.new(host, link).path
+      end.uniq
+    end
+
+    def hrefs
+      return [] unless source
+
+      source.scan(HREF_CONTENTS_RE)
+    end
+
     def source
       EM.synchrony do
         _source
@@ -36,7 +54,7 @@ module Retriever
       @source ||= EventMachine::HttpRequest.new(url).get.response
 
       if @source == ""
-        errlog("Domain is not working. Try the non-WWW version.")
+        log("Domain is not working. Try the non-WWW version.")
       end
 
       return @source
@@ -52,5 +70,9 @@ module Retriever
 
     private
     attr_reader :url
+
+    def host
+      URI(url).host
+    end
   end
 end
