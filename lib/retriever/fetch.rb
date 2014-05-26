@@ -89,7 +89,7 @@ module Retriever
     end
 
 		def fetchPage(url)
-      return PageFetcher.new(url).call
+      return PageFetcher.new(url, @v).call
     end
 
 		#recieves page source as string

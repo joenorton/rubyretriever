@@ -1,10 +1,15 @@
+require 'eventmachine'
+require 'em-synchrony'
+require 'em-http-request'
+
 module Retriever
   class PageFetcher
-    def initialize(url)
+    def initialize(url, verbose)
       @url = url
+      @v = verbose
     end
 
-    def lg(msg)
+    def log(msg)
       puts "### #{msg}" if @v
     end
 
@@ -13,26 +18,32 @@ module Retriever
     end
 
     def call
-      resp = false
       EM.synchrony do
-        begin
-          resp = EventMachine::HttpRequest.new(url).get
-        rescue StandardError => e
-          #puts e.message + " ## " + url
-          #the trap abrt is nescessary to handle the SSL error
-          #for some ungodly reason it's the only way I found to handle it
-          trap("ABRT"){
-            puts "#{url} failed SSL Certification Verification"
-          }
-          return false
-        end
-        lg("URL Crawled: #{url}")
+        response
+
+        log "URL Crawled: #{url}"
         EventMachine.stop
       end
-      if resp.response == ""
+
+      response.encode('UTF-8', :invalid => :replace, :undef => :replace) #.force_encoding('UTF-8') #ran into issues
+    end
+
+    def response
+      @response ||= EventMachine::HttpRequest.new(url).get.response
+
+      if @response == ""
         errlog("Domain is not working. Try the non-WWW version.")
       end
-      return resp.response.encode('UTF-8', :invalid => :replace, :undef => :replace) #.force_encoding('UTF-8') #ran into issues
+
+      return @response
+    rescue StandardError => e
+
+      # the trap abrt is nescessary to handle the SSL error
+      # for some ungodly reason it's the only way I found to handle it
+      trap("ABRT"){
+        puts "#{url} failed SSL Certification Verification"
+      }
+      raise e
     end
 
     private
