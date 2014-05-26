@@ -24,4 +24,5 @@ Gem::Specification.new do |s|
     # If you have other dependencies, add them here
     gem "em-synchrony"
     gem "ruby-progressbar"
+    gem "bloomfilter-rb"
 end

@@ -12,6 +12,7 @@ require 'open-uri'
 require 'optparse'
 require 'uri'
 require 'csv'
+require 'bloomfilter-rb'
 
 require_relative('./retriever/fetch')
 require_relative('./retriever/fetchfiles')
