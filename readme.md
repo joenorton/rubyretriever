@@ -40,7 +40,7 @@ rr --files --ext pdf --progress --limit 1000 --output hubspot http://www.hubspot
 ```  
 OR -- SAME COMMAND  
 ```sh
-rr -f -e exe -p -l 1000 -o hubspot http://www.hubspot.com
+rr -f -e pdf -p -l 1000 -o hubspot http://www.hubspot.com
 ```  
   
 This would go to http://www.hubspot.com and crawl it looking for filetype:PDF until it crawled a max of 1,000 pages, and then it would write out a list of filepaths to a csv named hubspot, and then it would go ahead and try and download each of those files to a new 'rr-downloads' folder  
