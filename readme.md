@@ -69,4 +69,4 @@ ruby-progressbar
 
 License
 -------
-GNU GPLv3 http://www.gnu.org/licenses/gpl.txt
+MIT http://opensource.org/licenses/MIT
