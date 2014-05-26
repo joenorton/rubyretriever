@@ -1,11 +1,9 @@
 [RubyRetriever] (http://www.softwarebyjoe.com/rubyretriever/)  [![Gem Version](https://badge.fury.io/rb/rubyretriever.svg)](http://badge.fury.io/rb/rubyretriever)  
 ==============
 
+By Joe Norton  
+
 RubyRetriever is a Web Crawler, Site Mapper, File Harvester & Autodownloader, and all around nice buddy to have around.  
-By Joe Norton, and some awesome [contributors] (https://github.com/joenorton/rubyretriever/graphs/contributors)  
-  
-ABOUT
-=====
 
 RubyRetriever uses aynchronous HTTP requests, thanks to eventmachine and Synchrony fibers, to crawl webpages *very quickly*.  
 
