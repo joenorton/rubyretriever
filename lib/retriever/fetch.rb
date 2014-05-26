@@ -76,7 +76,7 @@ module Retriever
 				  end
 				end
 				puts "###############################"
-				puts "File Created: #{filename}.csv"
+				puts "File Created: #{@output}.csv"
 				puts "Object Count: #{data.size}"
 				puts "###############################"
 				puts
