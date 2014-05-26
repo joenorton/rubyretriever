@@ -5,9 +5,11 @@ Now an official RubyGem!
 ```sh
 gem install rubyretriever  
 ```  
+Update (5/26):  
+Version 0.0.10 - fixes a bug that wouldn't allow sitemaps to write out to file correctly.
 
 Update (5/25):  
- Version 0.06 - Switches to using a Bloom Filter to keep track of past 'visited pages'. I saw this in [Arachnid] (https://github.com/dchuk/Arachnid) and realized it's a much better idea for performance and implemented it immediately. Hat tip [dchuk] (https://github.com/dchuk/)  
+ Version 0.0.6 - Switches to using a Bloom Filter to keep track of past 'visited pages'. I saw this in [Arachnid] (https://github.com/dchuk/Arachnid) and realized it's a much better idea for performance and implemented it immediately. Hat tip [dchuk] (https://github.com/dchuk/)  
 
 About
 =====
