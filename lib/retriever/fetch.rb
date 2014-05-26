@@ -88,14 +88,6 @@ module Retriever
 			end
     end
 
-		def parseInternalLinks(all_links)
-			if all_links
-				all_links.select{ |linky| (@host_re =~ linky && (!(NONPAGE_EXT_RE =~linky)))}
-			else
-				return false
-			end
-    end
-
 		def async_crawl_and_collect()
 			while (@already_crawled.size < @maxPages)
 				if @linkStack.empty?

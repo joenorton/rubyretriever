@@ -37,7 +37,11 @@ module Retriever
     end
 
     def internal_links
-      links.select{ |link| link.match(host) && !(NONPAGE_EXT_RE =~ link) }
+      links.select { |link| link.match(host) }
+    end
+
+    def visitable_internal_links
+      internal_links.select { |link| !(NONPAGE_EXT_RE =~ link) }
     end
 
     def hrefs

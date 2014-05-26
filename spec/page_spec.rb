@@ -90,4 +90,24 @@ SOURCE
       expect(internal_links).to be_empty
     end
   end
+
+  describe "#visitable_internal_links" do
+    let(:page) do
+      page = Retriever::Page.new("http://www.cnet.com/reviews/", false)
+      page.stub(:source) { @source }
+
+      page
+    end
+
+    let(:visitable_internal_links) { page.visitable_internal_links }
+
+    it "filters out 'unvisitable' URLS like JS, Stylesheets, Images" do
+      @source = (<<SOURCE).strip
+<link rel='stylesheet' id='gforms_reset_css-css'  href='http://www.cnet.com/wp-content/plugins/gravityforms/css/formreset.css?ver=1.7.12' type='text/css' media='all' />
+SOURCE
+
+      expect(visitable_internal_links).to be_empty
+    end
+
+  end
 end

@@ -21,7 +21,7 @@ http://www.google.com
     page.stub(:source) { test_html }
     @doc = page.source
     @links_collection = page.links
-    @filtered_links = page.internal_links
+    @filtered_links = page.visitable_internal_links
     @file_list = @r.parseFiles(@links_collection)
   end
 

@@ -1,10 +1,15 @@
+require 'retriever/page'
+
 module Retriever
 	class FetchSitemap < Fetch
 		attr_reader :sitemap
 		def initialize(url,options)
 			super
 			@sitemap = [@target]
-			@linkStack = self.parseInternalLinks(self.fetchLinks(fetchPage(@target)))
+
+      page = Page.new(@target, @v)
+			@linkStack = page.visitable_internal_links
+
 			self.lg("#{@linkStack.size-1} new links found")
 			errlog("Bad URL -- #{@target}") if !@linkStack
 

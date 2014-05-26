@@ -6,8 +6,10 @@ module Retriever
 		def initialize(url,options)
 			super
 			@fileStack = []
-			all_links = Page.new(@target, @v).links
-			@linkStack = self.parseInternalLinks(all_links)
+
+      page = Page.new(@target, @v)
+			all_links = page.links
+			@linkStack = page.visitable_internal_links
 			self.lg("#{@linkStack.size-1} new links found")
 
 			tempFileCollection = self.parseFiles(all_links)
