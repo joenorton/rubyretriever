@@ -3,7 +3,7 @@ require 'em-synchrony'
 require 'em-http-request'
 
 module Retriever
-  class PageFetcher
+  class Page
     def initialize(url, verbose)
       @url = url
       @v = verbose
@@ -18,24 +18,28 @@ module Retriever
     end
 
     def call
+      source
+    end
+
+    def source
       EM.synchrony do
-        response
+        _source
 
         log "URL Crawled: #{url}"
         EventMachine.stop
       end
 
-      response.encode('UTF-8', :invalid => :replace, :undef => :replace) #.force_encoding('UTF-8') #ran into issues
+      _source.encode('UTF-8', :invalid => :replace, :undef => :replace) #.force_encoding('UTF-8') #ran into issues
     end
 
-    def response
-      @response ||= EventMachine::HttpRequest.new(url).get.response
+    def _source
+      @source ||= EventMachine::HttpRequest.new(url).get.response
 
-      if @response == ""
+      if @source == ""
         errlog("Domain is not working. Try the non-WWW version.")
       end
 
-      return @response
+      return @source
     rescue StandardError => e
 
       # the trap abrt is nescessary to handle the SSL error

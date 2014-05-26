@@ -1,4 +1,4 @@
-require 'retriever/page_fetcher'
+require 'retriever/page'
 
 module Retriever
 	class Fetch
@@ -89,7 +89,7 @@ module Retriever
     end
 
 		def fetchPage(url)
-      return PageFetcher.new(url, @v).call
+      return Page.new(url, @v).call
     end
 
 		#recieves page source as string
