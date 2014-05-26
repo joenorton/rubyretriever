@@ -1,11 +1,11 @@
 Gem::Specification.new do |s|
   s.required_ruby_version = '>= 1.8.6'
   s.platform    = Gem::Platform::RUBY
-  s.version     = '0.0.2'
+  s.version     = '0.0.3'
   s.name        = 'RubyRetriever'
   s.date        = '2014-05-25'
   s.summary     = "Ruby Web Crawler & File Harvester"
-  s.description = "Creates sitemaps, or scoure entire sites for a certain filetype."
+  s.description = "General purpose web crawler, site mapper, and file harvester"
   s.authors     = ["Joe Norton"]
   s.email       = ["joe@softwarebyjoe.com"]
   s.homepage    =

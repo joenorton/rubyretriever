@@ -4,7 +4,7 @@ options = {}
  optparse = OptionParser.new do|opts|
    # Set a banner, displayed at the top
    # of the help screen.
-   opts.banner = "Usage: retriever.rb [options] Target_URL"
+   opts.banner = "Usage: rr [options] Target_URL"
  
     options[:filename] = nil
    opts.on( '-o', '--out FILENAME', 'Dump output to selected filename' ) do|filename|
@@ -56,7 +56,7 @@ options = {}
  
  optparse.parse!
 if ARGV[0].nil?
-	abort("###Missing Required Argument\nUsage: ./rr [mode] [options] Target_URL")
+	abort("###Missing Required Argument\nUsage: rr [mode] [options] Target_URL")
 end
 
 ARGV.each do|q|
