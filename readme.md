@@ -7,7 +7,7 @@ gem install RubyRetriever
 ```  
 
 Update (5/25):  
- Version 0.06 - Switches to using a Bloom Filter to keep track of past 'visited pages'. I saw this in [Arachnid] [https://github.com/dchuk/Arachnid] and realized it's a much better idea for performance and implemented it immediately. Hat tip [dchuk] [https://github.com/dchuk/]  
+ Version 0.06 - Switches to using a Bloom Filter to keep track of past 'visited pages'. I saw this in (Arachnid) (https://github.com/dchuk/Arachnid) and realized it's a much better idea for performance and implemented it immediately. Hat tip (dchuk) (https://github.com/dchuk/)  
 
 About
 =====
