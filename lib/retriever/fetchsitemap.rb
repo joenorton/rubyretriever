@@ -19,7 +19,7 @@ module Retriever
 			@sitemap = @sitemap.take(@maxPages) if (@sitemap.size+1 > @maxPages)
 
 			self.dump(self.sitemap)
-			self.write(@output,self.sitemap) if @output
+			self.write(self.sitemap) if @output
 		end
 	end
 end
