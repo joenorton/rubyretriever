@@ -1,11 +1,12 @@
 #! /usr/bin/env ruby
-require_relative('../lib/retriever.rb')
+require 'optparse'
+require 'retriever'
 options = {}
  optparse = OptionParser.new do|opts|
    # Set a banner, displayed at the top
    # of the help screen.
    opts.banner = "Usage: rr [options] Target_URL"
- 
+
     options[:filename] = nil
    opts.on( '-o', '--out FILENAME', 'Dump output to selected filename' ) do|filename|
      options[:filename] = filename
@@ -20,12 +21,12 @@ options = {}
    opts.on( '-p', '--progressbar', 'Output more information' ) do
      options[:progress] = true
    end
- 
+
   options[:sitemap] = false
    opts.on( '-s', '--sitemap', 'Crawl site and output sitemap' ) do
      options[:sitemap] = true
    end
- 
+
   options[:fileharvest] = false
    opts.on( '-f', '--files', 'Crawl site and collect links for files found' ) do
      options[:fileharvest] = true
@@ -45,7 +46,7 @@ options = {}
    opts.on( '-a', '--autodown', 'Automatically download all files of filetype located' ) do
      options[:autodown] = true
    end
- 
+
    # This displays the help screen, all programs are
    # assumed to have this option.
    opts.on( '-h', '--help', 'Display this screen' ) do
@@ -53,7 +54,7 @@ options = {}
      exit
    end
  end
- 
+
  optparse.parse!
 if ARGV[0].nil?
 	abort("###Missing Required Argument\nUsage: rr [mode] [options] Target_URL")

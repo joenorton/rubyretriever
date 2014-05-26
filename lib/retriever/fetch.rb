@@ -1,3 +1,6 @@
+require 'retriever/page'
+require 'bloomfilter-rb'
+
 module Retriever
 	class Fetch
 		attr_reader :target, :host, :host_re, :maxPages
@@ -44,13 +47,15 @@ module Retriever
 			end
 			@already_crawled = BloomFilter::Native.new(:size => 1000000, :hashes => 5, :seed => 1, :bucket => 8, :raise => false)
 			@already_crawled.insert(@target)
-		end
+    end
 		def errlog(msg)
 			raise "ERROR: #{msg}"
-		end
+    end
+
 		def lg(msg)
 			puts "### #{msg}" if @v
-		end
+    end
+
 		def dump(data)
 			puts "###############################"
 			if @s
@@ -67,7 +72,8 @@ module Retriever
 			puts data
 			puts "###############################"
 			puts
-		end
+    end
+
 		def write(data)
 			if @output
 				CSV.open("#{@output}.csv", "w") do |csv|
@@ -81,60 +87,8 @@ module Retriever
 				puts "###############################"
 				puts
 			end
-		end
-		def fetchPage(url)
-			resp = false
-			EM.synchrony do
-				begin
-					resp = EventMachine::HttpRequest.new(url).get
-				rescue StandardError => e
-					#puts e.message + " ## " + url
-					#the trap abrt is nescessary to handle the SSL error
-					#for some ungodly reason it's the only way I found to handle it
-					trap("ABRT"){
-						puts "#{url} failed SSL Certification Verification"
-					}
-					return false
-				end
-				lg("URL Crawled: #{url}")
-		    	EventMachine.stop
-			end
-			if resp.response == ""
-				errlog("Domain is not working. Try the non-WWW version.")
-			end
-			return resp.response.encode('UTF-8', :invalid => :replace, :undef => :replace) #.force_encoding('UTF-8') #ran into issues with some sites without forcing UTF8 encoding, and also issues with it. Not sure atm.
-		end
-		#recieves page source as string
-		#returns array of unique href links
-		def fetchLinks(doc)
-			return false if !doc
-			linkArray = []
-			doc.scan(HREF_CONTENTS_RE) do |arr|  #filter some malformed URLS that come in, this is meant to be a loose filter to catch all reasonable HREF attributes.
-				link = arr[0]
-				if (!(HTTP_RE =~ link))
-					if (DUB_DUB_DUB_DOT_RE =~ link)
-						link = "http://#{link}"
-					elsif SINGLE_SLASH_RE =~ link #link uses relative path
-						link = "http://#{@host}"+link #appending hostname to relative paths
-					elsif DOUBLE_SLASH_RE =~ link #link begins with '//' (maybe a messed up link?)
-						link = "http:#{link}" #appending current url to relative paths
-					elsif (NO_SLASH_PAGE_RE =~ link) #link uses relative path with no slashes at all, people actually this - imagine that.
-						link = "http://#{@host}"+"/"+link #appending hostname and slashy to create full paths
-					else
-						next
-					end
-				end
-				linkArray.push(link)
-			end
-			linkArray.uniq!
-		end
-		def parseInternalLinks(all_links)
-			if all_links
-				all_links.select{ |linky| (@host_re =~ linky && (!(NONPAGE_EXT_RE =~linky)))}
-			else
-				return false
-			end
-		end
+    end
+
 		def async_crawl_and_collect()
 			while (@already_crawled.size < @maxPages)
 				if @linkStack.empty?
@@ -153,7 +107,8 @@ module Retriever
 				@linkStack.concat(new_links_arr)
 				@sitemap.concat(new_links_arr) if @s
 			end
-		end
+    end
+
 		def asyncGetWave() #send a new wave of GET requests, using current @linkStack
 			new_stuff = []
 			EM.synchrony do
@@ -188,7 +143,8 @@ module Retriever
 			    EventMachine.stop
 			end
 			new_stuff.uniq!
-		end
+    end
+
 		def parseFiles(all_links)
 			all_links.select{ |linky| (@file_re =~ linky)}
 		end
