@@ -4,9 +4,12 @@ require 'em-http-request'
 require 'uri'
 require 'retriever/link'
 
+
+
 module Retriever
   class Page
     HREF_CONTENTS_RE = Regexp.new(/\shref=['|"]([^\s][a-z0-9\.\/\:\-\%\+\?\!\=\&\,\:\;\~\_]+)['|"][\s|\W]/ix).freeze
+    NONPAGE_EXT_RE = Regexp.new(/\.(?:css|js|png|gif|jpg|mp4|wmv|flv|mp3|wav|doc|txt|ico)/ix).freeze
 
     def initialize(url, verbose)
       @url = url
@@ -31,6 +34,10 @@ module Retriever
 
         Link.new(host, link).path
       end.uniq
+    end
+
+    def internal_links
+      links.select{ |link| link.match(host) && !(NONPAGE_EXT_RE =~ link) }
     end
 
     def hrefs

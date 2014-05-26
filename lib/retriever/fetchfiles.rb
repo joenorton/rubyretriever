@@ -1,10 +1,12 @@
+require 'retriever/page'
+
 module Retriever
 	class FetchFiles < Fetch
 		attr_reader :fileStack
 		def initialize(url,options)
 			super
 			@fileStack = []
-			all_links = self.fetchLinks(fetchPage(@target))
+			all_links = Page.new(@target, @v).links
 			@linkStack = self.parseInternalLinks(all_links)
 			self.lg("#{@linkStack.size-1} new links found")
 
@@ -53,7 +55,7 @@ module Retriever
 			end
 			file_counter = 0
 			@fileStack.each do |entry|
-				begin	
+				begin
 					self.download_file(entry)
 					file_counter+=1
 					lg("		File [#{file_counter} of #{lenny}]")

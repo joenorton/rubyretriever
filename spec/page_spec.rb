@@ -71,4 +71,23 @@ SOURCE
       expect(links).to include("http://www.cnet.com/test.html","http://www.cnet.com/cpage_18")
     end
   end
+
+  describe "#internal_links" do
+    let(:page) do
+      page = Retriever::Page.new("http://www.cnet.com/reviews/", false)
+      page.stub(:source) { @source }
+
+      page
+    end
+
+    let(:internal_links) { page.internal_links }
+
+    it "doesn't include links with a different host" do
+      @source = (<<SOURCE).strip
+<a href='http://www.yahoo.com/test/'>yahoo</a>
+SOURCE
+
+      expect(internal_links).to be_empty
+    end
+  end
 end
