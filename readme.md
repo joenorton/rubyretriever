@@ -68,5 +68,5 @@ em-synchrony
 ruby-progressbar  
 
 License
--------
-MIT http://opensource.org/licenses/MIT
+-------  
+See included 'LICENSE' file. It's the MIT license.
