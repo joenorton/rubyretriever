@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.required_ruby_version = '>= 1.8.6'
   s.platform    = Gem::Platform::RUBY
-  s.version     = '0.0.4'
+  s.version     = '0.0.5'
   s.name        = 'RubyRetriever'
   s.date        = '2014-05-25'
   s.summary     = "Ruby Web Crawler & File Harvester"
