@@ -1,4 +1,5 @@
 require 'retriever/page'
+require 'bloomfilter-rb'
 
 module Retriever
 	class Fetch
