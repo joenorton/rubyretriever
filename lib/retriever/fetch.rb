@@ -1,3 +1,5 @@
+require 'retriever/page_fetcher'
+
 module Retriever
 	class Fetch
 		attr_reader :target, :host, :host_re, :maxPages
@@ -44,13 +46,15 @@ module Retriever
 			end
 			@already_crawled = BloomFilter::Native.new(:size => 1000000, :hashes => 5, :seed => 1, :bucket => 8, :raise => false)
 			@already_crawled.insert(@target)
-		end
+    end
 		def errlog(msg)
 			raise "ERROR: #{msg}"
-		end
+    end
+
 		def lg(msg)
 			puts "### #{msg}" if @v
-		end
+    end
+
 		def dump(data)
 			puts "###############################"
 			if @s
@@ -67,7 +71,8 @@ module Retriever
 			puts data
 			puts "###############################"
 			puts
-		end
+    end
+
 		def write(data)
 			if @output
 				CSV.open("#{@output}.csv", "w") do |csv|
@@ -81,29 +86,12 @@ module Retriever
 				puts "###############################"
 				puts
 			end
-		end
+    end
+
 		def fetchPage(url)
-			resp = false
-			EM.synchrony do
-				begin
-					resp = EventMachine::HttpRequest.new(url).get
-				rescue StandardError => e
-					#puts e.message + " ## " + url
-					#the trap abrt is nescessary to handle the SSL error
-					#for some ungodly reason it's the only way I found to handle it
-					trap("ABRT"){
-						puts "#{url} failed SSL Certification Verification"
-					}
-					return false
-				end
-				lg("URL Crawled: #{url}")
-		    	EventMachine.stop
-			end
-			if resp.response == ""
-				errlog("Domain is not working. Try the non-WWW version.")
-			end
-			return resp.response.encode('UTF-8', :invalid => :replace, :undef => :replace) #.force_encoding('UTF-8') #ran into issues with some sites without forcing UTF8 encoding, and also issues with it. Not sure atm.
-		end
+      return PageFetcher.new(url).call
+    end
+
 		#recieves page source as string
 		#returns array of unique href links
 		def fetchLinks(doc)
@@ -127,14 +115,16 @@ module Retriever
 				linkArray.push(link)
 			end
 			linkArray.uniq!
-		end
+    end
+
 		def parseInternalLinks(all_links)
 			if all_links
 				all_links.select{ |linky| (@host_re =~ linky && (!(NONPAGE_EXT_RE =~linky)))}
 			else
 				return false
 			end
-		end
+    end
+
 		def async_crawl_and_collect()
 			while (@already_crawled.size < @maxPages)
 				if @linkStack.empty?
@@ -153,7 +143,8 @@ module Retriever
 				@linkStack.concat(new_links_arr)
 				@sitemap.concat(new_links_arr) if @s
 			end
-		end
+    end
+
 		def asyncGetWave() #send a new wave of GET requests, using current @linkStack
 			new_stuff = []
 			EM.synchrony do
@@ -188,7 +179,8 @@ module Retriever
 			    EventMachine.stop
 			end
 			new_stuff.uniq!
-		end
+    end
+
 		def parseFiles(all_links)
 			all_links.select{ |linky| (@file_re =~ linky)}
 		end
