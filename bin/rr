@@ -27,7 +27,7 @@ options = {}
    end
  
   options[:fileharvest] = false
-   opts.on( '-fh', '--fileharvest', 'Crawl site and collect links for files found' ) do
+   opts.on( '-f', '--files', 'Crawl site and collect links for files found' ) do
      options[:fileharvest] = true
    end
 

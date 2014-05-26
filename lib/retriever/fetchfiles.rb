@@ -25,10 +25,22 @@ module Retriever
 			self.write(@output,self.fileStack) if @output
 			self.autodownload()
 		end
+		def download_file(path)
+			arr = path.split('/')
+			shortname = arr.pop
+			puts "Initiating Download to: #{'/rr-downloads/' + shortname}"
+			File.open(shortname, "wb") do |saved_file|
+			  # the following "open" is provided by open-uri
+			  open(path) do |read_file|
+			    saved_file.write(read_file.read)
+			  end
+			end
+			puts "	SUCCESS: Download Complete"
+		end
 		def autodownload()
 			lenny = @fileStack.count
 			puts "###################"
-			puts "### Initiation Autodownload..."
+			puts "### Initiating Autodownload..."
 			puts "###################"
 			puts "#{lenny} - #{@file_ext}'s Located"
 			puts "###################"
@@ -42,29 +54,17 @@ module Retriever
 			file_counter = 0
 			@fileStack.each do |entry|
 				begin	
-					download_file(entry)
+					self.download_file(entry)
 					file_counter+=1
 					lg("		File [#{file_counter} of #{lenny}]")
 					puts
 				rescue StandardError => e
-					puts "ERROR: failed to download - #{entry}#"
+					puts "ERROR: failed to download - #{entry}"
 					puts e.message
 					puts
 				end
 			end
 			Dir.chdir("..")
-		end
-		def download_files(arr)
-			arr = path.split('/')
-			shortname = arr.pop
-			puts "Initiating Download to: #{'/rr-downloads/' + shortname}"
-			File.open(shortname, "wb") do |saved_file|
-			  # the following "open" is provided by open-uri
-			  open(path) do |read_file|
-			    saved_file.write(read_file.read)
-			  end
-			end
-			puts "	SUCCESS: Download Complete"
 		end
 	end
 end

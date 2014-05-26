@@ -16,11 +16,11 @@ This is the 2nd or 3rd reincarnation of the RubyRetriever autodownloader project
 RubyRetriever does NOT respect robots.txt, and RubyRetriever currently - by default - launches up to 10 parallel GET requests at once. This is a feature, do not abuse it. Use at own risk.
 
   
-EXAMPLE USE  
+HOW IT WORKS 
 -----------
 ```sh
 gem install rubyretriever  
-rr [OPTIONS] Target_URL  
+rr [MODE] [OPTIONS] Target_URL  
 ```  
    
  **Site Mapper**  
@@ -36,14 +36,14 @@ This would go to http://www.cnet.com and map it until it crawled a max of 1,000 
   
  **File Harvesting**  
 ```sh
-rr --fileharvest --ext exe --progress --limit 1000 --output cnet http://www.cnet.com
+rr --files --ext pdf --progress --limit 1000 --output hubspot http://www.hubspot.com
 ```  
 OR -- SAME COMMAND  
 ```sh
-rr -fh -e exe -p -l 1000 -o cnet http://www.cnet.com
+rr -f -e exe -p -l 1000 -o hubspot http://www.hubspot.com
 ```  
   
-This would go to http://www.cnet.com and crawl it looking for filetype:EXE until it crawled a max of 1,000 pages, and then it would write out a list of filepaths to a csv named cnet.  
+This would go to http://www.hubspot.com and crawl it looking for filetype:PDF until it crawled a max of 1,000 pages, and then it would write out a list of filepaths to a csv named hubspot, and then it would go ahead and try and download each of those files to a new 'rr-downloads' folder  
   
 
 command-line arguments
@@ -52,7 +52,7 @@ Usage: rr [MODE] [OPTIONS] Target_URL
 
 Where MODE FLAG is either:  
 	-s, --sitemap  
-	-fh, --fileharvest  
+	-f, --files
   
 and OPTIONS is the applicable:  
     -o, --out FILENAME                  *Dump output to selected filename*  
