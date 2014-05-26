@@ -11,7 +11,7 @@
 /rr-downloads/
 
 ## Specific to my annoying computer
-.DS_Store
+/lib/.DS_Store
 __MACOSX
 .DS_Store
 
