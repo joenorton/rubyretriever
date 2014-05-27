@@ -19,14 +19,14 @@ gem install rubyretriever
    
  **Example: Sitemap mode**  
 ```sh
-rr --sitemap --progress --limit 1000 --output cnet http://www.cnet.com
+rr --sitemap --progress --limit 100 --output cnet http://www.cnet.com
 ```  
 OR -- SAME COMMAND  
 ```sh
-rr -s -p -l 1000 -o cnet http://www.cnet.com
+rr -s -p -l 100 -o cnet http://www.cnet.com
 ```  
   
-This would go to http://www.cnet.com and map it until it crawled a max of 1,000 pages, and then it would write it out to a csv named cnet.  
+This would go to http://www.cnet.com and map it until it crawled a max of 100 pages, and then it would write it out to a csv named cnet.  
   
  **Example: File Harvesting mode**  
 ```sh
