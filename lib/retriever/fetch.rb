@@ -19,18 +19,20 @@ module Retriever
 			@maxPages = options[:maxpages] ? options[:maxpages].to_i : 100
 			@v= options[:verbose] ? true : false
 			@output=options[:filename] ? options[:filename] : false
-			@fh = options[:fileharvest] ? true : false
-			@s = options[:sitemap] ? true : false
-			@file_ext = options[:file_ext] ? options[:file_ext] : false
+			@fh = options[:fileharvest] ? options[:fileharvest] : false
+			@file_ext = @fh.to_s
+			@s = options[:sitemap] ? options[:sitemap] : false
 			@autodown = options[:autodown] ? true : false
 			#
 			@host_re = Regexp.new(host).freeze
 			if @fh
-				errlog("Please provide a FILETYPE. It is required for file harvest mode.") if !@file_ext
 				tempExtStr = "."+@file_ext+'\z'
 				@file_re = Regexp.new(tempExtStr).freeze
 			else
 				errlog("Cannot AUTODOWNLOAD when not in FILEHARVEST MODE") if @autodown #when FH is not true, and autodown is true
+				if !@output
+					@output = "rr-#{@host.split('.')[1]}"
+				end
 			end
 			if @prgrss
 				errlog("CANNOT RUN VERBOSE & PROGRESSBAR AT SAME TIME, CHOOSE ONE, -v or -p") if @v #verbose & progressbar conflict
@@ -153,6 +155,7 @@ module Retriever
 				@linkStack.concat(new_links_arr)
 				@sitemap.concat(new_links_arr) if @s
 			end
+			@progressbar.finish
 		end
 		def asyncGetWave() #send a new wave of GET requests, using current @linkStack
 			new_stuff = []

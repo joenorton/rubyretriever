@@ -1,5 +1,5 @@
 #! /usr/bin/env ruby
-require_relative('../lib/retriever.rb')
+require 'retriever'
 options = {}
  optparse = OptionParser.new do|opts|
    # Set a banner, displayed at the top
@@ -22,13 +22,13 @@ options = {}
    end
  
   options[:sitemap] = false
-   opts.on( '-s', '--sitemap', 'Crawl site and output sitemap' ) do
-     options[:sitemap] = true
+   opts.on( '-s', '--sitemap FORMAT', 'Crawl site and output sitemap' ) do |output_type|
+     options[:sitemap] = output_type
    end
  
   options[:fileharvest] = false
-   opts.on( '-f', '--files', 'Crawl site and collect links for files found' ) do
-     options[:fileharvest] = true
+   opts.on( '-f', '--files FILETYPE', 'Crawl site and collect links for files found' ) do |file_ext|
+     options[:fileharvest] = file_ext
    end
 
   options[:maxpages] = false
@@ -36,13 +36,8 @@ options = {}
      options[:maxpages] = maxpages
    end
 
-  options[:file_ext] = false
-   opts.on( '-e', '--ext FILE_EXTENSION', 'set a file extension to look for on crawled pages' ) do |file_ext|
-     options[:file_ext] = file_ext
-   end
-
    options[:autodown] = false
-   opts.on( '-a', '--autodown', 'Automatically download all files of filetype located' ) do
+   opts.on( '-a', '--auto', 'Automatically download all files of filetype located' ) do
      options[:autodown] = true
    end
  
@@ -64,8 +59,9 @@ ARGV.each do|q|
     puts "###############################"
     puts "### [RubyRetriever]"
     puts "### Creating Sitemap" if options[:sitemap]
+    puts "### Outputting in format: #{options[:sitemap]}" if options[:sitemap]
     puts "### Performing File Harvest" if options[:fileharvest]
-    puts "### Searching for file extension: #{options[:file_ext]} pages" if (options[:file_ext])
+    puts "### Searching for file extension: #{options[:fileharvest]} pages" if (options[:fileharvest])
     puts "### Writting output to filename: #{options[:filename]}" if options[:filename]
     puts "### Being verbose"
     puts "### Stopping after #{options[:maxpages]} pages" if options[:maxpages]

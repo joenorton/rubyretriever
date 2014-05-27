@@ -23,7 +23,7 @@ module Retriever
 
 			self.dump(self.fileStack)
 			self.write(@output,self.fileStack) if @output
-			self.autodownload()
+			self.autodownload() if @autodown
 		end
 		def download_file(path)
 			arr = path.split('/')

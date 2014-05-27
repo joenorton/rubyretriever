@@ -19,7 +19,22 @@ module Retriever
 			@sitemap = @sitemap.take(@maxPages) if (@sitemap.size+1 > @maxPages)
 
 			self.dump(self.sitemap)
-			self.write(self.sitemap) if @output
+			self.write(self.sitemap) if /CSV/i =~ @s
+			self.gen_xml(self.sitemap) if /XML/i =~ @s
+		end
+		def gen_xml(data)
+			f = File.open("sitemap-#{@host.split('.')[1]}.xml", 'w+')
+			f << "<?xml version='1.0' encoding='UTF-8'?><urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>"
+				data.each do |url|
+					f << "<url><loc>#{url}</loc></url>"
+				end
+			f << "</urlset>"
+			f.close
+			puts "###############################"
+			puts "File Created: sitemap-#{@host.split('.')[1]}.xml"
+			puts "Object Count: #{@sitemap.size}"
+			puts "###############################"
+			puts
 		end
 	end
 end
