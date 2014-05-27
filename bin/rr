@@ -4,8 +4,15 @@ options = {}
  optparse = OptionParser.new do|opts|
    # Set a banner, displayed at the top
    # of the help screen.
-   opts.banner = "Usage: rr [options] Target_URL"
- 
+   opts.banner = "Usage: rr [MODE FLAG] [options] Target_URL"
+  options[:sitemap] = false
+   opts.on( '-s', '--sitemap FORMAT', 'MODE FLAG: Sitemap mode - Crawl site and output sitemap, format choices: CSV or XML' ) do |output_type|
+     options[:sitemap] = output_type
+   end
+  options[:fileharvest] = false
+   opts.on( '-f', '--files FILETYPE', 'MODE FLAG: Fileharvest mode - Crawl site and collect links for files found, extension for filetype' ) do |file_ext|
+     options[:fileharvest] = file_ext
+   end
     options[:filename] = nil
    opts.on( '-o', '--out FILENAME', 'Dump output to selected filename' ) do|filename|
      options[:filename] = filename
@@ -15,32 +22,18 @@ options = {}
    opts.on( '-v', '--verbose', 'Output more information' ) do
      options[:verbose] = true
    end
-
    options[:progress] = false
-   opts.on( '-p', '--progressbar', 'Output more information' ) do
+   opts.on( '-p', '--progress', 'Output progress bar' ) do
      options[:progress] = true
    end
- 
-  options[:sitemap] = false
-   opts.on( '-s', '--sitemap FORMAT', 'Crawl site and output sitemap' ) do |output_type|
-     options[:sitemap] = output_type
-   end
- 
-  options[:fileharvest] = false
-   opts.on( '-f', '--files FILETYPE', 'Crawl site and collect links for files found' ) do |file_ext|
-     options[:fileharvest] = file_ext
-   end
-
   options[:maxpages] = false
    opts.on( '-l', '--limit PAGE_LIMIT_#', 'set a max on the total number of crawled pages' ) do |maxpages|
      options[:maxpages] = maxpages
    end
-
    options[:autodown] = false
    opts.on( '-a', '--auto', 'Automatically download all files of filetype located' ) do
      options[:autodown] = true
    end
- 
    # This displays the help screen, all programs are
    # assumed to have this option.
    opts.on( '-h', '--help', 'Display this screen' ) do

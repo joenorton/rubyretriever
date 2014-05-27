@@ -1,4 +1,5 @@
 language: ruby
+install: bundle install
 install: gem install rspec
 install: gem install em-synchrony
 install: gem install ruby-progressbar
