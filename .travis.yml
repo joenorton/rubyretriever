@@ -1,6 +1,7 @@
 language: ruby
 cache: bundler
-install: ruby -S bundle install
+before_install: gem install rspec
+install: bundle install
 install: gem install em-synchrony
 install: gem install ruby-progressbar
 install: gem install bloomfilter-rb

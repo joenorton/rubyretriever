@@ -16,7 +16,6 @@ module Retriever
 
 			@sitemap.sort_by!	 {|x| x.length} if @sitemap.size>1
 			@sitemap.uniq!
-			@sitemap = @sitemap.take(@maxPages) if (@sitemap.size+1 > @maxPages)
 
 			self.dump(self.sitemap)
 			self.write(self.sitemap) if /CSV/i =~ @s
