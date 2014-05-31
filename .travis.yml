@@ -1,6 +1,5 @@
 language: ruby
-install: bundle install
-install: gem install rspec
+install: bundle install --without development --deployment
 install: gem install em-synchrony
 install: gem install ruby-progressbar
 install: gem install bloomfilter-rb
