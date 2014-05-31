@@ -155,7 +155,7 @@ module Retriever
 				@linkStack.concat(new_links_arr)
 				@sitemap.concat(new_links_arr) if @s
 			end
-			@progressbar.finish
+			@progressbar.finish if @prgrss
 		end
 		def asyncGetWave() #send a new wave of GET requests, using current @linkStack
 			new_stuff = []
@@ -167,11 +167,10 @@ module Retriever
 			    	if @already_crawled.include?(url)
 			    		@linkStack.delete(url)
 			    		next
-			    	else
-			    		@already_crawled.insert(url)
 			    	end
 			    	resp = EventMachine::HttpRequest.new(url).get
 					lg("URL Crawled: #{url}")
+			    	@already_crawled.insert(url)
 					if @prgrss
 						@progressbar.increment if @already_crawled.size < @maxPages
 					end
