@@ -1,6 +1,7 @@
-[RubyRetriever] (http://www.softwarebyjoe.com/rubyretriever/)  [![Gem Version](https://badge.fury.io/rb/rubyretriever.svg)](http://badge.fury.io/rb/rubyretriever)  
+[RubyRetriever] (http://www.softwarebyjoe.com/rubyretriever/)  
 ==============
-
+[![Gem Version](https://badge.fury.io/rb/rubyretriever.svg)](http://badge.fury.io/rb/rubyretriever)  [![Build Status](https://travis-ci.org/joenorton/rubyretriever.svg?branch=master)](https://travis-ci.org/joenorton/rubyretriever)  
+  
 By Joe Norton  
 
 RubyRetriever is a Web Crawler, Site Mapper, File Harvester & Autodownloader, and all around nice buddy to have around.  
