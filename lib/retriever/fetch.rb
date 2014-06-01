@@ -110,25 +110,10 @@ module Retriever
 		#returns array of unique href links
 		def fetchLinks(doc)
 			return false if !doc
-			linkArray = []
-			doc.scan(HREF_CONTENTS_RE) do |arr|  #filter some malformed URLS that come in, this is meant to be a loose filter to catch all reasonable HREF attributes.
-				link = arr[0]
-				if (!(HTTP_RE =~ link))
-					if (DUB_DUB_DUB_DOT_RE =~ link)
-						link = "http://#{link}"
-					elsif SINGLE_SLASH_RE =~ link #link uses relative path
-						link = "http://#{@host}"+link #appending hostname to relative paths
-					elsif DOUBLE_SLASH_RE =~ link #link begins with '//' (maybe a messed up link?)
-						link = "http:#{link}" #appending current url to relative paths
-					elsif (NO_SLASH_PAGE_RE =~ link) #link uses relative path with no slashes at all, people actually this - imagine that.
-						link = "http://#{@host}"+"/"+link #appending hostname and slashy to create full paths
-					else
-						next
-					end
-				end
-				linkArray.push(link)
-			end
-			linkArray.uniq!
+			doc.scan(HREF_CONTENTS_RE).map do |match|  #filter some malformed URLS that come in, this is meant to be a loose filter to catch all reasonable HREF attributes.
+				link = match[0]
+				Link.new(@host, link).path
+			end.uniq
 		end
 		def parseInternalLinks(all_links)
 			if all_links

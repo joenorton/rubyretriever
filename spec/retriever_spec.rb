@@ -1,4 +1,4 @@
-require_relative '../lib/retriever'
+require 'retriever'
 
 r = Retriever::Fetch.new("http://www.cnet.com/reviews/",{:file_ext => "exe",:maxpages => "100"})
 test_html = "<a href='www.cnet.com/download.exe'>download</a>
@@ -37,9 +37,6 @@ describe "Fetch" do
 		it "collects all unique href links on the page" do
 			expect(links_collection).to have(6).items
 		end
-		it "returns relative urls with full path based on hostname" do
-			expect(links_collection).to include("http://www.cnet.com/test.html","http://www.cnet.com/cpage_18")
-		end
 	end
 
 	describe "#parseInternalLinks" do
@@ -61,5 +58,4 @@ describe "Fetch" do
 			end
 		end
 	end
-
 end
