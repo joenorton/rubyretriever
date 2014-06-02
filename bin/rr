@@ -1,5 +1,6 @@
 #! /usr/bin/env ruby
 require 'retriever'
+require 'optparse'
 options = {}
  optparse = OptionParser.new do|opts|
    # Set a banner, displayed at the top
@@ -61,8 +62,8 @@ ARGV.each do|q|
   end
   puts "###############################"
   puts "### [RubyRetriever] go fetch #{q}"
-  test = Retriever::FetchFiles.new(q, options) if options[:fileharvest]
-  test = Retriever::FetchSitemap.new(q, options)  if options[:sitemap]
+  Retriever::FetchFiles.new(q, options) if options[:fileharvest]
+  Retriever::FetchSitemap.new(q, options) if options[:sitemap]
   puts "### [RubyRetriever] is done."
   puts "###############################"
   puts

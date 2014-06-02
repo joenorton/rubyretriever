@@ -1,6 +1,6 @@
 require 'retriever'
 
-describe "Links" do
+describe "Link" do
 
     r = Retriever::Fetch.new("http://www.cnet.com/reviews/", {})
     let(:links) { r.fetchLinks(@source) }

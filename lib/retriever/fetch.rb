@@ -1,19 +1,20 @@
+require 'em-synchrony'
+require 'em-synchrony/em-http'
+require 'em-synchrony/fiber_iterator'
+require 'ruby-progressbar'
+require 'open-uri'
+require 'csv'
+require 'bloomfilter-rb'
+
 module Retriever
 	class Fetch
-		attr_reader :target, :host, :host_re, :maxPages
+		attr_reader :maxPages, :t
 		#constants
-		HTTP_RE = Regexp.new(/^http/i).freeze
 		HREF_CONTENTS_RE = Regexp.new(/\shref=['|"]([^\s][a-z0-9\.\/\:\-\%\+\?\!\=\&\,\:\;\~\_]+)['|"][\s|\W]/ix).freeze
 		NONPAGE_EXT_RE = Regexp.new(/\.(?:css|js|png|gif|jpg|mp4|wmv|flv|mp3|wav|doc|txt|ico)/ix).freeze
-		SINGLE_SLASH_RE = Regexp.new(/^\/{1}[^\/]/).freeze
-		DOUBLE_SLASH_RE = Regexp.new(/^\/{2}[^\/]/).freeze
-		NO_SLASH_PAGE_RE = Regexp.new(/^[a-z0-9\-\_\=\?\.]+\z/ix).freeze
-		DUB_DUB_DUB_DOT_RE = Regexp.new(/^www\./i).freeze
 
 		def initialize(url,options)
-			new_uri = URI(url)
-			@target = new_uri.to_s
-			@host = new_uri.host
+			@t = Retriever::Target.new(url)
 			#OPTIONS
 			@prgrss = options[:progress] ? options[:progress] : false
 			@maxPages = options[:maxpages] ? options[:maxpages].to_i : 100
@@ -24,14 +25,13 @@ module Retriever
 			@s = options[:sitemap] ? options[:sitemap] : false
 			@autodown = options[:autodown] ? true : false
 			#
-			@host_re = Regexp.new(host).freeze
 			if @fh
 				tempExtStr = "."+@file_ext+'\z'
 				@file_re = Regexp.new(tempExtStr).freeze
 			else
 				errlog("Cannot AUTODOWNLOAD when not in FILEHARVEST MODE") if @autodown #when FH is not true, and autodown is true
 				if !@output
-					@output = "rr-#{@host.split('.')[1]}"
+					@output = "rr-#{@t.host.split('.')[1]}"
 				end
 			end
 			if @prgrss
@@ -45,7 +45,7 @@ module Retriever
 				@progressbar = ProgressBar.create(prgressVars)
 			end
 			@already_crawled = BloomFilter::Native.new(:size => 1000000, :hashes => 5, :seed => 1, :bucket => 8, :raise => false)
-			@already_crawled.insert(@target)
+			@already_crawled.insert(@t.target)
 		end
 		def errlog(msg)
 			raise "ERROR: #{msg}"
@@ -56,10 +56,10 @@ module Retriever
 		def dump(data)
 			puts "###############################"
 			if @s
-				puts "#{@target} Sitemap"
+				puts "#{@t.target} Sitemap"
 				puts "Page Count: #{data.size}"
 			elsif @fh
-				puts "Target URL: #{@target}"
+				puts "Target URL: #{@t.target}"
 				puts "Filetype: #{@file_ext}"
 				puts "File Count: #{data.size}"
 			else
@@ -84,43 +84,20 @@ module Retriever
 				puts
 			end
 		end
-		def fetchPage(url)
-			resp = false
-			EM.synchrony do
-				begin
-					resp = EventMachine::HttpRequest.new(url).get
-				rescue StandardError => e
-					#puts e.message + " ## " + url
-					#the trap abrt is nescessary to handle the SSL error
-					#for some ungodly reason it's the only way I found to handle it
-					trap("ABRT"){
-						puts "#{url} failed SSL Certification Verification"
-					}
-					return false
-				end
-				lg("URL Crawled: #{url}")
-		    	EventMachine.stop
-			end
-			if resp.response == ""
-				errlog("Domain is not working. Try the non-WWW version.")
-			end
-			return resp.response.encode('UTF-8', :invalid => :replace, :undef => :replace) #.force_encoding('UTF-8') #ran into issues with some sites without forcing UTF8 encoding, and also issues with it. Not sure atm.
-		end
 		#recieves page source as string
 		#returns array of unique href links
 		def fetchLinks(doc)
 			return false if !doc
 			doc.scan(HREF_CONTENTS_RE).map do |match|  #filter some malformed URLS that come in, this is meant to be a loose filter to catch all reasonable HREF attributes.
 				link = match[0]
-				Link.new(@host, link).path
+				Link.new(@t.host, link).path
 			end.uniq
 		end
 		def parseInternalLinks(all_links)
-			if all_links
-				all_links.select{ |linky| (@host_re =~ linky && (!(NONPAGE_EXT_RE =~linky)))}
-			else
-				return false
-			end
+				all_links.select{ |linky| (@t.host_re =~ linky) }
+		end
+		def parseInternalVisitableLinks(all_links)
+				parseInternalLinks(all_links).select{ |linky| (!(NONPAGE_EXT_RE =~linky)) }
 		end
 		def async_crawl_and_collect()
 			while (@already_crawled.size < @maxPages)
@@ -132,8 +109,6 @@ module Retriever
 					end
 					break;
 				end
-				#puts "New loop"
-				#puts @linkStack
 				new_links_arr = self.asyncGetWave()
 				next if (new_links_arr.nil? || new_links_arr.empty?)
 				new_link_arr = new_links_arr-@linkStack#set operations to see are these in our previous visited pages arr?

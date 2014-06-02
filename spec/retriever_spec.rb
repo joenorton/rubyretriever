@@ -12,26 +12,9 @@ http://www.google.com
  <link rel='stylesheet' id='gforms_reset_css-css'  href='http://www.cnet.com/wp-content/plugins/gravityforms/css/formreset.css?ver=1.7.12' type='text/css' media='all' />
  <a href='cpage_18'>about</a>"
 
-doc = r.fetchPage(r.target)
 links_collection = r.fetchLinks(test_html)
-filtered_links = r.parseInternalLinks(links_collection)
-file_list = r.parseFiles(links_collection)
 
 describe "Fetch" do
-
-	describe "#new" do
-		it "sets target, host, and max page vars" do
-			expect(r.target).to eq("http://www.cnet.com/reviews/")
-			expect(r.host).to eq("www.cnet.com")
-			expect(r.maxPages).to eq(100)
-		end
-	end
-
-	describe "#fetchPage" do
-		it "opens URL and returns source as String" do
-			expect(doc.class).to eq(String)
-		end
-	end
 
 	describe "#fetchLinks" do
 		it "collects all unique href links on the page" do
@@ -40,22 +23,30 @@ describe "Fetch" do
 	end
 
 	describe "#parseInternalLinks" do
+		let (:filtered_links) {r.parseInternalLinks(links_collection)}
 		it "filters links by host" do
 			filtered_links.each do |link| 
-				expect(link).to include(r.host)
+				expect(link).to include("www.cnet.com")
 			end
 		end
+	end
+
+	describe "#parseInternalVisitableLinks" do
+		let (:filtered_links) {r.parseInternalVisitableLinks(links_collection)}
 		it "filters out 'unvisitable' URLS like JS, Stylesheets, Images" do
 			filtered_links.each do |link| 
 				expect(link).to_not (include(".css",".js",".png",".gif",".jpg"))
 			end
 		end
 	end
+
 	describe "#parseFiles" do
+		let(:file_list) {r.parseFiles(links_collection)}
 		it "filters links by filetype" do
 			file_list.each do |link|
 				expect(link).to include(".exe")
 			end
 		end
 	end
+
 end

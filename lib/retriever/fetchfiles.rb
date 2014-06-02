@@ -4,16 +4,17 @@ module Retriever
 		def initialize(url,options)
 			super
 			@fileStack = []
-			all_links = self.fetchLinks(fetchPage(@target))
-			@linkStack = self.parseInternalLinks(all_links)
+			all_links = self.fetchLinks(@t.source)
+			@linkStack = self.parseInternalVisitableLinks(all_links)
+			lg("URL Crawled: #{@t.target}")
 			self.lg("#{@linkStack.size-1} new links found")
 
 			tempFileCollection = self.parseFiles(all_links)
 			@fileStack.concat(tempFileCollection) if tempFileCollection.size>0
 			self.lg("#{@fileStack.size} new files found")
-			errlog("Bad URL -- #{@target}") if !@linkStack
+			errlog("Bad URL -- #{@t.target}") if !@linkStack
 
-			@linkStack.delete(@target) if @linkStack.include?(@target)
+			@linkStack.delete(@t.target) if @linkStack.include?(@t.target)
 			@linkStack = @linkStack.take(@maxPages) if (@linkStack.size+1 > @maxPages)
 
 			self.async_crawl_and_collect()
