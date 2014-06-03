@@ -1,7 +1,7 @@
 require 'retriever'
 require 'open-uri'
 
-t = Retriever::Target.new("http://www.cnet.com/reviews/")
+t = Retriever::Target.new("http://www.cnet.com/reviews/",/\.exe\z/)
 
 describe "Target" do
 
@@ -15,6 +15,10 @@ describe "Target" do
 
     it "creates host_re var" do
       expect(t.host_re).to eq(/www.cnet.com/)
+    end
+
+    it "creates file_re var (when provided)" do
+      expect(t.file_re).to eq(/\.exe\z/)
     end
 
     it "adds protocol to Target URL if none given" do

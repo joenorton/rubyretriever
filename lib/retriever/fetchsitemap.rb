@@ -4,7 +4,8 @@ module Retriever
 		def initialize(url,options)
 			super
 			@sitemap = [@t.target]
-			@linkStack = self.parseInternalVisitableLinks(self.fetchLinks(@t.source))
+			page_one = Retriever::Page.new(@t.source,@t)
+			@linkStack = page_one.parseInternalVisitable
 			lg("URL Crawled: #{@t.target}")
 			self.lg("#{@linkStack.size-1} new links found")
 			errlog("Bad URL -- #{@t.target}") if !@linkStack

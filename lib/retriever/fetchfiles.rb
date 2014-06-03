@@ -4,12 +4,12 @@ module Retriever
 		def initialize(url,options)
 			super
 			@fileStack = []
-			all_links = self.fetchLinks(@t.source)
-			@linkStack = self.parseInternalVisitableLinks(all_links)
+			page_one = Retriever::Page.new(@t.source,@t)
+			@linkStack = page_one.parseInternalVisitable
 			lg("URL Crawled: #{@t.target}")
 			self.lg("#{@linkStack.size-1} new links found")
 
-			tempFileCollection = self.parseFiles(all_links)
+			tempFileCollection = page_one.parseFiles
 			@fileStack.concat(tempFileCollection) if tempFileCollection.size>0
 			self.lg("#{@fileStack.size} new files found")
 			errlog("Bad URL -- #{@t.target}") if !@linkStack

@@ -9,12 +9,8 @@ require 'bloomfilter-rb'
 module Retriever
 	class Fetch
 		attr_reader :maxPages, :t
-		#constants
-		HREF_CONTENTS_RE = Regexp.new(/\shref=['|"]([^\s][a-z0-9\.\/\:\-\%\+\?\!\=\&\,\:\;\~\_]+)['|"][\s|\W]/ix).freeze
-		NONPAGE_EXT_RE = Regexp.new(/\.(?:css|js|png|gif|jpg|mp4|wmv|flv|mp3|wav|doc|txt|ico)/ix).freeze
 
 		def initialize(url,options)
-			@t = Retriever::Target.new(url)
 			#OPTIONS
 			@prgrss = options[:progress] ? options[:progress] : false
 			@maxPages = options[:maxpages] ? options[:maxpages].to_i : 100
@@ -30,9 +26,6 @@ module Retriever
 				@file_re = Regexp.new(tempExtStr).freeze
 			else
 				errlog("Cannot AUTODOWNLOAD when not in FILEHARVEST MODE") if @autodown #when FH is not true, and autodown is true
-				if !@output
-					@output = "rr-#{@t.host.split('.')[1]}"
-				end
 			end
 			if @prgrss
 				errlog("CANNOT RUN VERBOSE & PROGRESSBAR AT SAME TIME, CHOOSE ONE, -v or -p") if @v #verbose & progressbar conflict
@@ -44,8 +37,12 @@ module Retriever
 				}
 				@progressbar = ProgressBar.create(prgressVars)
 			end
+			@t = Retriever::Target.new(url,@file_re)
 			@already_crawled = BloomFilter::Native.new(:size => 1000000, :hashes => 5, :seed => 1, :bucket => 8, :raise => false)
 			@already_crawled.insert(@t.target)
+			if (@fh && !output)
+				@output = "rr-#{@t.host.split('.')[1]}"
+			end
 		end
 		def errlog(msg)
 			raise "ERROR: #{msg}"
@@ -84,21 +81,6 @@ module Retriever
 				puts
 			end
 		end
-		#recieves page source as string
-		#returns array of unique href links
-		def fetchLinks(doc)
-			return false if !doc
-			doc.scan(HREF_CONTENTS_RE).map do |match|  #filter some malformed URLS that come in, this is meant to be a loose filter to catch all reasonable HREF attributes.
-				link = match[0]
-				Link.new(@t.host, link).path
-			end.uniq
-		end
-		def parseInternalLinks(all_links)
-				all_links.select{ |linky| (@t.host_re =~ linky) }
-		end
-		def parseInternalVisitableLinks(all_links)
-				parseInternalLinks(all_links).select{ |linky| (!(NONPAGE_EXT_RE =~linky)) }
-		end
 		def async_crawl_and_collect()
 			while (@already_crawled.size < @maxPages)
 				if @linkStack.empty?
@@ -129,18 +111,19 @@ module Retriever
 			    		next
 			    	end
 			    	resp = EventMachine::HttpRequest.new(url).get
+			    	new_page = Retriever::Page.new(resp,@t)
 					lg("URL Crawled: #{url}")
 			    	@already_crawled.insert(url)
 					if @prgrss
 						@progressbar.increment if @already_crawled.size < @maxPages
 					end
-					new_links_arr = self.fetchLinks(resp.response)
+					new_links_arr = new_page.links
 					if new_links_arr
 						lg("#{new_links_arr.size} new links found")
-						internal_links_arr = self.parseInternalLinks(new_links_arr)
+						internal_links_arr = new_page.parseInternalLinks
 						new_stuff.push(internal_links_arr)
 						if @fh
-							filez = self.parseFiles(new_links_arr)
+							filez = new_page.parseFiles
 							@fileStack.concat(filez) if !filez.empty?
 							lg("#{filez.size} files found")
 						end
@@ -150,9 +133,6 @@ module Retriever
 			    EventMachine.stop
 			end
 			new_stuff.uniq!
-		end
-		def parseFiles(all_links)
-			all_links.select{ |linky| (@file_re =~ linky)}
 		end
 	end
 end
