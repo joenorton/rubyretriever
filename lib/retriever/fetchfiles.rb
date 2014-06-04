@@ -17,14 +17,14 @@ module Retriever
 			@linkStack.delete(@t.target) if @linkStack.include?(@t.target)
 			@linkStack = @linkStack.take(@maxPages) if (@linkStack.size+1 > @maxPages)
 
-			self.async_crawl_and_collect()
+			async_crawl_and_collect()
 
 			@fileStack.sort_by! {|x| x.length}
 			@fileStack.uniq!
 
-			self.dump(self.fileStack)
-			self.write(@output,self.fileStack) if @output
-			self.autodownload() if @autodown
+			dump(@fileStack)
+			write(@fileStack) if @output
+			autodownload() if @autodown
 		end
 		def download_file(path)
 			arr = path.split('/')

@@ -41,7 +41,7 @@ module Retriever
 			@t = Retriever::Target.new(url,@file_re)
 			@already_crawled = BloomFilter::Native.new(:size => 1000000, :hashes => 5, :seed => 1, :bucket => 8, :raise => false)
 			@already_crawled.insert(@t.target)
-			if (@fh && !output)
+			if (@fh && !@output)
 				@output = "rr-#{@t.host.split('.')[1]}"
 			end
 		end

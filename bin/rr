@@ -7,15 +7,15 @@ options = {}
    # of the help screen.
    opts.banner = "Usage: rr [MODE FLAG] [options] Target_URL"
   options[:sitemap] = false
-   opts.on( '-s', '--sitemap FORMAT', 'MODE FLAG: Sitemap mode - Crawl site and output sitemap, format choices: CSV or XML' ) do |output_type|
+   opts.on( '-s', '--sitemap FORMAT', 'MODE FLAG: Sitemap mode' ) do |output_type|
      options[:sitemap] = output_type
    end
   options[:fileharvest] = false
-   opts.on( '-f', '--files FILETYPE', 'MODE FLAG: Fileharvest mode - Crawl site and collect links for files found, extension for filetype' ) do |file_ext|
+   opts.on( '-f', '--files FILETYPE', 'MODE FLAG: Fileharvest mode' ) do |file_ext|
      options[:fileharvest] = file_ext
    end
    options[:seo] = false
-   opts.on( '-e', '--seo', 'MODE FLAG: SEO mode - collects page titles, meta descriptions and other on-page SEO metrics' ) do
+   opts.on( '-e', '--seo', 'MODE FLAG: SEO mode' ) do
      options[:seo] = true
    end
     options[:filename] = nil

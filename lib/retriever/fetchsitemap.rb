@@ -14,14 +14,14 @@ module Retriever
 			@linkStack = @linkStack.take(@maxPages) if (@linkStack.size+1 > @maxPages)
 			@sitemap.concat(@linkStack)
 
-			self.async_crawl_and_collect()
+			async_crawl_and_collect()
 
 			@sitemap.sort_by!	 {|x| x.length} if @sitemap.size>1
 			@sitemap.uniq!
 
-			self.dump(self.sitemap)
-			self.write(self.sitemap) if /CSV/i =~ @s
-			self.gen_xml(self.sitemap) if /XML/i =~ @s
+			dump(@sitemap)
+			write(@sitemap) if /CSV/i =~ @s
+			gen_xml(@sitemap) if /XML/i =~ @s
 		end
 		def gen_xml(data)
 			f = File.open("sitemap-#{@t.host.split('.')[1]}.xml", 'w+')
