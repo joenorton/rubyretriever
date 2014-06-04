@@ -19,6 +19,7 @@ module Retriever
 			@fh = options[:fileharvest] ? options[:fileharvest] : false
 			@file_ext = @fh.to_s
 			@s = options[:sitemap] ? options[:sitemap] : false
+			@seo = options[:seo] ? true : false
 			@autodown = options[:autodown] ? true : false
 			#
 			if @fh
@@ -59,6 +60,9 @@ module Retriever
 				puts "Target URL: #{@t.target}"
 				puts "Filetype: #{@file_ext}"
 				puts "File Count: #{data.size}"
+			elsif @seo
+				puts "#{@t.target} SEO Metrics"
+				puts "Page Count: #{data.size}"
 			else
 				puts "ERROR"
 			end
@@ -111,16 +115,26 @@ module Retriever
 			    		next
 			    	end
 			    	resp = EventMachine::HttpRequest.new(url).get
-			    	new_page = Retriever::Page.new(resp,@t)
+			    	if !resp.response_header['CONTENT_TYPE'].include?("text/html") #if webpage is not text/html, let's not continue and lets also make sure we dont re-queue it
+			    		@already_crawled.insert(url)
+			    		@linkStack.delete(url)
+			    		next
+			    	end
+			    	new_page = Retriever::Page.new(resp.response,@t)
 					lg("URL Crawled: #{url}")
 			    	@already_crawled.insert(url)
 					if @prgrss
 						@progressbar.increment if @already_crawled.size < @maxPages
 					end
-					new_links_arr = new_page.links
-					if new_links_arr
-						lg("#{new_links_arr.size} new links found")
-						internal_links_arr = new_page.parseInternalLinks
+					if @seo
+						seos = [url]
+						seos.concat(new_page.parseSEO)
+						@seoStack.push(seos)
+						lg("#{@seoStack.size} pages scraped")
+					end
+					if new_page.links
+						lg("#{new_page.links.size} new links found")
+						internal_links_arr = new_page.parseInternalVisitable
 						new_stuff.push(internal_links_arr)
 						if @fh
 							filez = new_page.parseFiles

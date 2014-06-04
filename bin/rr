@@ -14,6 +14,10 @@ options = {}
    opts.on( '-f', '--files FILETYPE', 'MODE FLAG: Fileharvest mode - Crawl site and collect links for files found, extension for filetype' ) do |file_ext|
      options[:fileharvest] = file_ext
    end
+   options[:seo] = false
+   opts.on( '-e', '--seo', 'MODE FLAG: SEO mode - collects page titles, meta descriptions and other on-page SEO metrics' ) do
+     options[:seo] = true
+   end
     options[:filename] = nil
    opts.on( '-o', '--out FILENAME', 'Dump output to selected filename' ) do|filename|
      options[:filename] = filename
@@ -56,6 +60,7 @@ ARGV.each do|q|
     puts "### Outputting in format: #{options[:sitemap]}" if options[:sitemap]
     puts "### Performing File Harvest" if options[:fileharvest]
     puts "### Searching for file extension: #{options[:fileharvest]} pages" if (options[:fileharvest])
+    puts "### Performing SEO Scrape" if options[:seo]   
     puts "### Writting output to filename: #{options[:filename]}" if options[:filename]
     puts "### Being verbose"
     puts "### Stopping after #{options[:maxpages]} pages" if options[:maxpages]
@@ -64,6 +69,7 @@ ARGV.each do|q|
   puts "### [RubyRetriever] go fetch #{q}"
   Retriever::FetchFiles.new(q, options) if options[:fileharvest]
   Retriever::FetchSitemap.new(q, options) if options[:sitemap]
+  Retriever::FetchSEO.new(q, options) if options[:seo]
   puts "### [RubyRetriever] is done."
   puts "###############################"
   puts
