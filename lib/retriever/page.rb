@@ -12,7 +12,7 @@ module Retriever
     H1_RE = Regexp.new(/<h1>(.*)<\/h1>/i).freeze
     H2_RE = Regexp.new(/<h2>(.*)<\/h2>/i).freeze
 
-    attr_reader :links, :parseInternal, :parseInternalVisitable, :parseFiles, :parseSEO
+    attr_reader :links, :source, :t
 
     def initialize(source,t)
       @t = t
@@ -48,8 +48,7 @@ module Retriever
       desc = DESC_RE =~ @source ? @source.match(DESC_RE)[1] : ""
       h1 = H1_RE =~ @source ? @source.match(H1_RE)[1] : ""
       h2 = H2_RE =~ @source ? @source.match(H2_RE)[1] : ""
-      seo = [title,desc,h1,h2]
-      return seo
+      return [title,desc,h1,h2]
     end
   end
 

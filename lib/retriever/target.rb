@@ -24,9 +24,6 @@ module Retriever
       begin
         resp = open(@target)
       rescue StandardError => e
-        #puts e.message + " ## " + url
-        #the trap abrt is nescessary to handle the SSL error
-        #for some ungodly reason it's the only way I found to handle it
         trap("ABRT"){
           puts "#{@target} failed SSL Certification Verification"
         }

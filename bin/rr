@@ -1,14 +1,16 @@
 #! /usr/bin/env ruby
+
 require 'retriever'
 require 'optparse'
+
 options = {}
  optparse = OptionParser.new do|opts|
    # Set a banner, displayed at the top
    # of the help screen.
    opts.banner = "Usage: rr [MODE FLAG] [options] Target_URL"
   options[:sitemap] = false
-   opts.on( '-s', '--sitemap FORMAT', 'MODE FLAG: Sitemap mode' ) do |output_type|
-     options[:sitemap] = output_type
+   opts.on( '-s', '--sitemap [FORMAT]', 'MODE FLAG: Sitemap mode' ) do |output_type|
+     options[:sitemap] = output_type||''
    end
   options[:fileharvest] = false
    opts.on( '-f', '--files FILETYPE', 'MODE FLAG: Fileharvest mode' ) do |file_ext|
@@ -63,7 +65,7 @@ ARGV.each do|q|
     puts "### Performing SEO Scrape" if options[:seo]   
     puts "### Writting output to filename: #{options[:filename]}" if options[:filename]
     puts "### Being verbose"
-    puts "### Stopping after #{options[:maxpages]} pages" if options[:maxpages]
+    puts "### Stopping after #{options[:maxpages]} pages"
   end
   puts "###############################"
   puts "### [RubyRetriever] go fetch #{q}"
