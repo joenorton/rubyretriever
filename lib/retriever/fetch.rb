@@ -11,6 +11,7 @@ module Retriever
 		attr_reader :maxPages, :t
 
 		def initialize(url,options)
+			@unsuccessful_connections_count = 0
 			#OPTIONS
 			@prgrss = options[:progress] ? options[:progress] : false
 			@maxPages = options[:maxpages] ? options[:maxpages].to_i : 100
@@ -66,8 +67,11 @@ module Retriever
 			else
 				fail "ERROR - Cannot dump - Mode Not Found"
 			end
+			puts "#{@unsuccessful_connections_count} unsuccessful connections" if @v
 			puts "###############################"
-			puts @data
+			@data.each do |line|
+				puts line
+			end
 			puts "###############################"
 			puts
 		end
@@ -116,9 +120,11 @@ module Retriever
 			    	end
 			    	resp = EventMachine::HttpRequest.new(url).get
 			    	next if !resp
-			    	if !resp.response_header['CONTENT_TYPE'].include?("text/html") #if webpage is not text/html, let's not continue and lets also make sure we dont re-queue it
+			    	if (resp.response_header.successful?&&!(resp.response_header['CONTENT_TYPE'].include?("text/html"))) #if webpage is not text/html, let's not continue and lets also make sure we dont re-queue it
 			    		@already_crawled.insert(url)
 			    		@linkStack.delete(url)
+			    		lg("UNSUCCESSFUL CONNTECTION -- #{url}")
+			    		@unsuccessful_connections_count += 1
 			    		next
 			    	end
 			    	new_page = Retriever::Page.new(resp.response,@t)
