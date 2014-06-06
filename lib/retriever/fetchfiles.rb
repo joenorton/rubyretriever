@@ -6,17 +6,17 @@ module Retriever
 			page_one = Retriever::Page.new(@t.source,@t)
 			@linkStack = page_one.parseInternalVisitable
 			lg("URL Crawled: #{@t.target}")
-			self.lg("#{@linkStack.size-1} new links found")
+			lg("#{@linkStack.size-1} new links found")
 
 			tempFileCollection = page_one.parseFiles
 			@data.concat(tempFileCollection) if tempFileCollection.size>0
-			self.lg("#{@data.size} new files found")
+			lg("#{@data.size} new files found")
 			errlog("Bad URL -- #{@t.target}") if !@linkStack
 
 			@linkStack.delete(@t.target) if @linkStack.include?(@t.target)
 			@linkStack = @linkStack.take(@maxPages) if (@linkStack.size+1 > @maxPages)
 
-			async_crawl_and_collect()
+			self.async_crawl_and_collect()
 
 			@data.sort_by! {|x| x.length}
 			@data.uniq!

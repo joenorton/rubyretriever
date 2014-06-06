@@ -99,7 +99,7 @@ module Retriever
 				next if (new_links_arr.nil? || new_links_arr.empty?)
 				new_link_arr = new_links_arr-@linkStack#set operations to see are these in our previous visited pages arr?
 				@linkStack.concat(new_links_arr)
-				@sitemap.concat(new_links_arr) if @s
+				@data.concat(new_links_arr) if @s
 			end
 			@progressbar.finish if @prgrss
 		end
@@ -115,6 +115,7 @@ module Retriever
 			    		next
 			    	end
 			    	resp = EventMachine::HttpRequest.new(url).get
+			    	next if !resp
 			    	if !resp.response_header['CONTENT_TYPE'].include?("text/html") #if webpage is not text/html, let's not continue and lets also make sure we dont re-queue it
 			    		@already_crawled.insert(url)
 			    		@linkStack.delete(url)
@@ -129,8 +130,8 @@ module Retriever
 					if @seo
 						seos = [url]
 						seos.concat(new_page.parseSEO)
-						@seoStack.push(seos)
-						lg("#{@seoStack.size} pages scraped")
+						@data.push(seos)
+						lg("#{@data.size} pages scraped")
 					end
 					if new_page.links
 						lg("#{new_page.links.size} new links found")
@@ -138,7 +139,7 @@ module Retriever
 						new_stuff.push(internal_links_arr)
 						if @fh
 							filez = new_page.parseFiles
-							@fileStack.concat(filez) if !filez.empty?
+							@data.concat(filez) if !filez.empty?
 							lg("#{filez.size} files found")
 						end
 					end

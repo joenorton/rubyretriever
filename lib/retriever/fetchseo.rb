@@ -15,7 +15,7 @@ module Retriever
 			@linkStack.delete(@t.target) if @linkStack.include?(@t.target)
 			@linkStack = @linkStack.take(@maxPages) if (@linkStack.size+1 > @maxPages)
 
-			async_crawl_and_collect()
+			self.async_crawl_and_collect()
 
 			@data.sort_by! {|x| x[0].length}
 		end

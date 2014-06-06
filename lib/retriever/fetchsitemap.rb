@@ -13,7 +13,7 @@ module Retriever
 			@linkStack = @linkStack.take(@maxPages) if (@linkStack.size+1 > @maxPages)
 			@data.concat(@linkStack)
 
-			async_crawl_and_collect()
+			self.async_crawl_and_collect()
 
 			@data.sort_by!	 {|x| x.length} if @data.size>1
 			@data.uniq!
