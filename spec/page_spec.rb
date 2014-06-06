@@ -54,4 +54,41 @@ SOURCE
     end
   end
 
+    describe "#title" do
+      let (:page){Retriever::Page.new(@source,t)}
+    it "returns page title" do
+                  @source = (<<SOURCE).strip
+<title>test</title>
+SOURCE
+        expect(page.title).to eq('test')
+    end
+  end
+      describe "#desc" do
+      let (:page){Retriever::Page.new(@source,t)}
+    it "returns meta description" do
+                  @source = (<<SOURCE).strip
+<meta name='description' content="test2 ">
+SOURCE
+        expect(page.desc).to eq('test2 ')
+    end
+  end
+        describe "#h1" do
+      let (:page){Retriever::Page.new(@source,t)}
+    it "returns h1 text" do
+                  @source = (<<SOURCE).strip
+<h1>test 3</h1>
+SOURCE
+        expect(page.h1).to eq('test 3')
+    end
+  end
+        describe "#h2" do
+      let (:page){Retriever::Page.new(@source,t)}
+    it "returns h2 text" do
+                  @source = (<<SOURCE).strip
+<h2> test 4 </h2>
+SOURCE
+        expect(page.h2).to eq(' test 4 ')
+    end
+  end
+
 end
