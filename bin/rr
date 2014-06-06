@@ -69,9 +69,7 @@ ARGV.each do|q|
   end
   puts "###############################"
   puts "### [RubyRetriever] go fetch #{q}"
-  Retriever::FetchFiles.new(q, options) if options[:fileharvest]
-  Retriever::FetchSitemap.new(q, options) if options[:sitemap]
-  Retriever::FetchSEO.new(q, options) if options[:seo]
+  Retriever::CLI.new(q, options)
   puts "### [RubyRetriever] is done."
   puts "###############################"
   puts

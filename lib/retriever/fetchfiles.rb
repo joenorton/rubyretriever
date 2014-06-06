@@ -1,17 +1,16 @@
 module Retriever
 	class FetchFiles < Fetch
-		attr_reader :fileStack
 		def initialize(url,options)
 			super
-			@fileStack = []
+			@data = []
 			page_one = Retriever::Page.new(@t.source,@t)
 			@linkStack = page_one.parseInternalVisitable
 			lg("URL Crawled: #{@t.target}")
 			self.lg("#{@linkStack.size-1} new links found")
 
 			tempFileCollection = page_one.parseFiles
-			@fileStack.concat(tempFileCollection) if tempFileCollection.size>0
-			self.lg("#{@fileStack.size} new files found")
+			@data.concat(tempFileCollection) if tempFileCollection.size>0
+			self.lg("#{@data.size} new files found")
 			errlog("Bad URL -- #{@t.target}") if !@linkStack
 
 			@linkStack.delete(@t.target) if @linkStack.include?(@t.target)
@@ -19,12 +18,8 @@ module Retriever
 
 			async_crawl_and_collect()
 
-			@fileStack.sort_by! {|x| x.length}
-			@fileStack.uniq!
-
-			dump(@fileStack)
-			write(@fileStack) if @output
-			autodownload() if @autodown
+			@data.sort_by! {|x| x.length}
+			@data.uniq!
 		end
 		def download_file(path)
 			arr = path.split('/')
@@ -39,7 +34,7 @@ module Retriever
 			puts "	SUCCESS: Download Complete"
 		end
 		def autodownload()
-			lenny = @fileStack.count
+			lenny = @data.count
 			puts "###################"
 			puts "### Initiating Autodownload..."
 			puts "###################"
@@ -53,7 +48,7 @@ module Retriever
 			 Dir.chdir("rr-downloads")
 			end
 			file_counter = 0
-			@fileStack.each do |entry|
+			@data.each do |entry|
 				begin	
 					self.download_file(entry)
 					file_counter+=1

@@ -51,36 +51,36 @@ module Retriever
 		def lg(msg)
 			puts "### #{msg}" if @v
 		end
-		def dump(data)
+		def dump
 			puts "###############################"
 			if @s
 				puts "#{@t.target} Sitemap"
-				puts "Page Count: #{data.size}"
+				puts "Page Count: #{@data.size}"
 			elsif @fh
 				puts "Target URL: #{@t.target}"
 				puts "Filetype: #{@file_ext}"
-				puts "File Count: #{data.size}"
+				puts "File Count: #{@data.size}"
 			elsif @seo
 				puts "#{@t.target} SEO Metrics"
-				puts "Page Count: #{data.size}"
+				puts "Page Count: #{@data.size}"
 			else
-				puts "ERROR"
+				fail "ERROR - Cannot dump - Mode Not Found"
 			end
 			puts "###############################"
-			puts data
+			puts @data
 			puts "###############################"
 			puts
 		end
-		def write(data)
+		def write
 			if @output
 				CSV.open("#{@output}.csv", "w") do |csv|
-				  data.each do |entry|
+				  @data.each do |entry|
 				  	csv << [entry]
 				  end
 				end
 				puts "###############################"
 				puts "File Created: #{@output}.csv"
-				puts "Object Count: #{data.size}"
+				puts "Object Count: #{@data.size}"
 				puts "###############################"
 				puts
 			end
