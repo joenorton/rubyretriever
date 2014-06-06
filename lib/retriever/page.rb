@@ -43,21 +43,26 @@ module Retriever
       links.select{ |linky| (@t.file_re =~ linky)}
     end
 
-    def parseSEO
-      return [title,desc,h1,h2]
-    end
     def title
       TITLE_RE =~ @source ? @source.match(TITLE_RE)[1] : ""
     end
+
     def desc
       DESC_RE =~ @source ? @source.match(DESC_RE)[1] : ""
     end
+
     def h1
       H1_RE =~ @source ? @source.match(H1_RE)[1] : ""
     end
+
     def h2
       H2_RE =~ @source ? @source.match(H2_RE)[1] : ""
     end
+
+    def parseSEO
+      return [title,desc,h1,h2]
+    end
+    
   end
 
 end
