@@ -6,7 +6,7 @@ module Retriever
 			page_one = Retriever::Page.new(@t.source,@t)
 			@linkStack = page_one.parseInternalVisitable
 			lg("URL Crawled: #{@t.target}")
-			self.lg("#{@linkStack.size-1} new links found")
+			lg("#{@linkStack.size-1} new links found")
 			errlog("Bad URL -- #{@t.target}") if !@linkStack
 
 			@linkStack.delete(@t.target) if @linkStack.include?(@t.target)
