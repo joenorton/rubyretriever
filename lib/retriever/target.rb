@@ -15,7 +15,7 @@ module Retriever
       new_uri = URI(url)
       @target = new_uri.to_s
       @host = new_uri.host
-      @host_re = Regexp.new(@host).freeze
+      @host_re = Regexp.new(@host)
       @file_re ||= file_re
     end
 
@@ -30,7 +30,11 @@ module Retriever
         return false
       end
       if (@target != resp.base_uri.to_s)
-          fail "Domain redirecting to new host: #{resp.base_uri.to_s}" if (!(@host_re =~ resp.base_uri.to_s))
+          #lg("Domain redirecting to new host: #{resp.base_uri.to_s}")
+          new_t = Retriever::Target.new(resp.base_uri.to_s)
+          @host = new_t.host
+          @target = new_t.target
+          @host_re = new_t.host_re
       end
       resp = resp.read
       if resp == ""

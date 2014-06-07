@@ -11,7 +11,12 @@ module Retriever
 		attr_reader :maxPages, :t
 
 		def initialize(url,options)
-			@unsuccessful_connections_count = 0
+			@connection_tally = {
+				:success => 0,
+				:error => 0,
+				:error_client => 0,
+				:error_server => 0
+			}
 			#OPTIONS
 			@prgrss = options[:progress] ? options[:progress] : false
 			@maxPages = options[:maxpages] ? options[:maxpages].to_i : 100
@@ -54,6 +59,9 @@ module Retriever
 		end
 		def dump
 			puts "###############################"
+			puts "Connection Tally:"
+			puts @connection_tally.to_s
+			puts "###############################"
 			if @s
 				puts "#{@t.target} Sitemap"
 				puts "Page Count: #{@data.size}"
@@ -67,7 +75,6 @@ module Retriever
 			else
 				fail "ERROR - Cannot dump - Mode Not Found"
 			end
-			puts "#{@unsuccessful_connections_count} unsuccessful connections" if @v
 			puts "###############################"
 			@data.each do |line|
 				puts line
@@ -107,7 +114,7 @@ module Retriever
 				new_links_arr = self.asyncGetWave()
 				next if (new_links_arr.nil? || new_links_arr.empty?)
 				new_link_arr = new_links_arr-@linkStack#set operations to see are these in our previous visited pages arr?
-				@linkStack.concat(new_links_arr)
+				@linkStack.concat(new_links_arr).uniq!
 				@data.concat(new_links_arr) if @s
 			end
 			@progressbar.finish if @prgrss
@@ -115,11 +122,11 @@ module Retriever
 		def good_response?(resp, url) #returns true is resp is ok to continue process, false is we need to 'next' it
 			return false if !resp
 			if resp.response_header.redirection? #we got redirected
-				lg("Redirected")
 				loc = resp.response_header.location
+				lg("#{url} Redirected to #{loc}")
 				if t.host_re =~ loc #if being redirected to same host, let's add to linkstack
 			    	@linkStack.push(loc) if !@already_crawled.include?(loc) #but only if we haven't already crawled it
-			    	lg("Added to linkStack for later:  #{loc}")
+			    	lg("--Added to linkStack for later")
 			    	return false
 			    end
 			    lg("Redirection outside of target host. No - go. #{loc}")
@@ -127,7 +134,9 @@ module Retriever
 			end
 			if (!resp.response_header.successful?) #if webpage is not text/html, let's not continue and lets also make sure we dont re-queue it
 				lg("UNSUCCESSFUL CONNECTION -- #{url}")
-				@unsuccessful_connections_count += 1
+				@connection_tally[:error] += 1
+				@connection_tally[:error_server] += 1 if resp.response_header.server_error?
+				@connection_tally[:error_client] += 1 if resp.response_header.client_error?
 				return false
 			end
 			if (!(resp.response_header['CONTENT_TYPE'].include?("text/html"))) #if webpage is not text/html, let's not continue and lets also make sure we dont re-queue it
@@ -136,6 +145,7 @@ module Retriever
 				lg("Page Not text/html -- #{url}")
 				return false
 			end
+			@connection_tally[:success] += 1
 			return true
 		end
 
@@ -153,7 +163,7 @@ module Retriever
 			    	resp = EventMachine::HttpRequest.new(url).get
 			    	next if !good_response?(resp,url)
 			    	new_page = Retriever::Page.new(resp.response,@t)
-					lg("URL Crawled: #{url}")
+			    	lg("Page Fetched: #{url}")
 			    	@already_crawled.insert(url)
 					if @prgrss
 						@progressbar.increment if @already_crawled.size < @maxPages
@@ -162,16 +172,16 @@ module Retriever
 						seos = [url]
 						seos.concat(new_page.parseSEO)
 						@data.push(seos)
-						lg("#{@data.size} pages scraped")
+						lg("--page SEO scraped")
 					end
 					if new_page.links
-						lg("#{new_page.links.size} new links found")
+						lg("--#{new_page.links.size} links found")
 						internal_links_arr = new_page.parseInternalVisitable
 						new_stuff.push(internal_links_arr)
 						if @fh
 							filez = new_page.parseFiles
 							@data.concat(filez) if !filez.empty?
-							lg("#{filez.size} files found")
+							lg("--#{filez.size} files found")
 						end
 					end
 			    end
