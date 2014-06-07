@@ -40,7 +40,7 @@ rr -f pdf -p -l 1000 http://www.hubspot.com
   
 This would go to http://www.hubspot.com and crawl it looking for filetype:PDF until it crawled a max of 1,000 pages, and then it would write out a list of filepaths to a csv named hubspot (based on the website host name. Optionally we could have the script then go and autodownload all the files by adding the -a/--auto flag -- however this current example would just dump to stdout a list of all the PDF's found.
 
-    **Example: SEO mode**  
+**Example: SEO mode**  
 ```sh
 rr --seo --progress --limit 10 --out cnet-seo http://www.cnet.com
 ```  
