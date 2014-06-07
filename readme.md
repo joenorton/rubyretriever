@@ -17,7 +17,7 @@ Install the gem
 ```sh
 gem install rubyretriever
 ```  
-   
+
  **Example: Sitemap mode**  
 ```sh
 rr --sitemap CSV --progress --limit 100 http://www.cnet.com
@@ -31,7 +31,7 @@ This would go to http://www.cnet.com and map it until it crawled a max of 100 pa
   
  **Example: File Harvesting mode**  
 ```sh
-rr --files pdf --progress --limit 1000 --output hubspot http://www.hubspot.com
+rr --files pdf --progress --limit 1000 --out hubspot http://www.hubspot.com
 ```  
 OR -- SAME COMMAND  
 ```sh
@@ -39,6 +39,17 @@ rr -f pdf -p -l 1000 http://www.hubspot.com
 ```  
   
 This would go to http://www.hubspot.com and crawl it looking for filetype:PDF until it crawled a max of 1,000 pages, and then it would write out a list of filepaths to a csv named hubspot (based on the website host name. Optionally we could have the script then go and autodownload all the files by adding the -a/--auto flag -- however this current example would just dump to stdout a list of all the PDF's found.
+
+    **Example: SEO mode**  
+```sh
+rr --seo --progress --limit 10 --out cnet-seo http://www.cnet.com
+```  
+OR -- SAME COMMAND  
+```sh
+rr -e -p -l 10 -o cnet-seo http://www.cnet.com
+```  
+  
+This would go to http://www.cnet.com and crawl a max of 10 pages, during which it would be collecting the onpage SEO fields on those pages - currently this means [url, page title, meta description, h1 text, h2 text], and then it would write it out to a csv named cnet-seo.
   
 
 command-line arguments
@@ -47,10 +58,11 @@ Usage: rr [MODE FLAG] [OPTIONS] Target_URL
 
 Where MODE FLAG is required, and is either:  
 	-s, --sitemap FORMAT  (only accepts CSV or XML atm)  
-	-f, --files FILETYPE  
+	-f, --files FILETYPE
+	-e, --seo  
   
 and OPTIONS is the applicable:  
-    -o, --out FILENAME                  *Dump output to selected filename --being phased out*  
+    -o, --out FILENAME                  *Dump fetch data as CSV*  
     -p, --progress						*Outputs a progressbar*  
     -v, --verbose                       *Output more information*  
     -l, --limit PAGE_LIMIT_#            *set a max on the total number of crawled pages*  

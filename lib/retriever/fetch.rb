@@ -112,6 +112,33 @@ module Retriever
 			end
 			@progressbar.finish if @prgrss
 		end
+		def good_response?(resp, url) #returns true is resp is ok to continue process, false is we need to 'next' it
+			return false if !resp
+			if resp.response_header.redirection? #we got redirected
+				lg("Redirected")
+				loc = resp.response_header.location
+				if t.host_re =~ loc #if being redirected to same host, let's add to linkstack
+			    	@linkStack.push(loc) if !@already_crawled.include?(loc) #but only if we haven't already crawled it
+			    	lg("Added to linkStack for later:  #{loc}")
+			    	return false
+			    end
+			    lg("Redirection outside of target host. No - go. #{loc}")
+			    return false
+			end
+			if (!resp.response_header.successful?) #if webpage is not text/html, let's not continue and lets also make sure we dont re-queue it
+				lg("UNSUCCESSFUL CONNECTION -- #{url}")
+				@unsuccessful_connections_count += 1
+				return false
+			end
+			if (!(resp.response_header['CONTENT_TYPE'].include?("text/html"))) #if webpage is not text/html, let's not continue and lets also make sure we dont re-queue it
+				@already_crawled.insert(url)
+				@linkStack.delete(url)
+				lg("Page Not text/html -- #{url}")
+				return false
+			end
+			return true
+		end
+
 		def asyncGetWave() #send a new wave of GET requests, using current @linkStack
 			new_stuff = []
 			EM.synchrony do
@@ -124,14 +151,7 @@ module Retriever
 			    		next
 			    	end
 			    	resp = EventMachine::HttpRequest.new(url).get
-			    	next if !resp
-			    	if (resp.response_header.successful?&&!(resp.response_header['CONTENT_TYPE'].include?("text/html"))) #if webpage is not text/html, let's not continue and lets also make sure we dont re-queue it
-			    		@already_crawled.insert(url)
-			    		@linkStack.delete(url)
-			    		lg("UNSUCCESSFUL CONNTECTION -- #{url}")
-			    		@unsuccessful_connections_count += 1
-			    		next
-			    	end
+			    	next if !good_response?(resp,url)
 			    	new_page = Retriever::Page.new(resp.response,@t)
 					lg("URL Crawled: #{url}")
 			    	@already_crawled.insert(url)
