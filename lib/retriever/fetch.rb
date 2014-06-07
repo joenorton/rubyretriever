@@ -77,10 +77,15 @@ module Retriever
 		end
 		def write
 			if @output
+				i = 0
 				CSV.open("#{@output}.csv", "w") do |csv|
-				  @data.each do |entry|
-				  	csv << [entry]
-				  end
+					if ((i == 0) && @seo)
+						csv << ['URL','Page Title','Meta Description','H1','H2']
+						i +=1
+					end
+					@data.each do |entry|
+						csv << entry
+					end
 				end
 				puts "###############################"
 				puts "File Created: #{@output}.csv"
