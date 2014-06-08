@@ -60,7 +60,7 @@ Usage: rr [MODE FLAG] [OPTIONS] Target_URL
 
 Where MODE FLAG is required, and is either:  
 	-s, --sitemap FORMAT  (only accepts CSV or XML atm)  
-	-f, --files FILETYPE
+	-f, --files FILETYPE  
 	-e, --seo  
   
 and OPTIONS is the applicable:  
