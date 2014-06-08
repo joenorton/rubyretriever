@@ -1,6 +1,6 @@
 module Retriever
 	class FetchSitemap < Fetch
-		def initialize(url,options) #recieces target URL and RR options, returns an array of all unique pages found on the site
+		def initialize(url,options) #recieves target URL and RR options, returns an array of all unique pages found on the site
 			super
 			@data = [@t.target]
 			page_one = Retriever::Page.new(@t.source,@t)
