@@ -10,7 +10,7 @@ module Retriever
 	class Fetch
 		attr_reader :maxPages, :t
 
-		def initialize(url,options)
+		def initialize(url,options) #given target URL and RR options, creates a fetch object. There is no direct output, this is a parent class that the other fetch classes build off of.
 			@connection_tally = {
 				:success => 0,
 				:error => 0,
@@ -58,7 +58,7 @@ module Retriever
 		def lg(msg)
 			puts "### #{msg}" if @v
 		end
-		def dump
+		def dump #prints current data collection to STDOUT, meant for CLI use.
 			puts "###############################"
 			if @v
 				puts "Connection Tally:"
@@ -85,7 +85,7 @@ module Retriever
 			puts "###############################"
 			puts
 		end
-		def write
+		def write #writes current data collection out to CSV in current directory
 			if @output
 				i = 0
 				CSV.open("#{@output}.csv", "w") do |csv|
@@ -104,7 +104,7 @@ module Retriever
 				puts
 			end
 		end
-		def async_crawl_and_collect()
+		def async_crawl_and_collect() #iterates over the excisting @linkStack, running asyncGetWave on it until we reach the @maxPages value.
 			while (@already_crawled.size < @maxPages)
 				if @linkStack.empty?
 					if @prgrss
@@ -116,11 +116,11 @@ module Retriever
 				end
 				new_links_arr = self.asyncGetWave()
 				next if (new_links_arr.nil? || new_links_arr.empty?)
-				new_link_arr = new_links_arr-@linkStack#set operations to see are these in our previous visited pages arr?
+				new_link_arr = new_links_arr-@linkStack #set operations to see are these in our previous visited pages arr?
 				@linkStack.concat(new_links_arr).uniq!
 				@data.concat(new_links_arr) if @s
 			end
-			@progressbar.finish if @prgrss
+			@progressbar.finish if @prgrss #if we are done, let's make sure progress bar says we are done
 		end
 		def good_response?(resp, url) #returns true is resp is ok to continue process, false is we need to 'next' it
 			return false if !resp

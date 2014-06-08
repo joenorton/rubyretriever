@@ -1,6 +1,6 @@
 module Retriever
 	class FetchFiles < Fetch
-		def initialize(url,options)
+		def initialize(url,options)  #recieves target url and RR options, returns an array of all unique files (based on given filetype) found on the site
 			super
 			@data = []
 			page_one = Retriever::Page.new(@t.source,@t)
@@ -21,7 +21,7 @@ module Retriever
 			@data.sort_by! {|x| x.length}
 			@data.uniq!
 		end
-		def download_file(path)
+		def download_file(path) #given valid url, downloads file to current directory in /rr-downloads/
 			arr = path.split('/')
 			shortname = arr.pop
 			puts "Initiating Download to: #{'/rr-downloads/' + shortname}"
@@ -32,7 +32,7 @@ module Retriever
 			end
 			puts "	SUCCESS: Download Complete"
 		end
-		def autodownload()
+		def autodownload() #when autodownload option is true, this will automatically go through the fetched file URL collection and download each one.
 			lenny = @data.count
 			puts "###################"
 			puts "### Initiating Autodownload..."
