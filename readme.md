@@ -1,4 +1,4 @@
-[RubyRetriever] (http://www.softwarebyjoe.com/rubyretriever/)  
+[RubyRetriever] (http://softwarebyjoe.com/rubyretriever/)  
 ==============
 [![Gem Version](https://badge.fury.io/rb/rubyretriever.svg)](http://badge.fury.io/rb/rubyretriever)  [![Build Status](https://travis-ci.org/joenorton/rubyretriever.svg?branch=master)](https://travis-ci.org/joenorton/rubyretriever)  
   
@@ -9,6 +9,8 @@ RubyRetriever is a Web Crawler, Site Mapper, File Harvester & Autodownloader, an
 RubyRetriever uses aynchronous HTTP requests, thanks to eventmachine and Synchrony fibers, to crawl webpages *very quickly*.  
 
 RubyRetriever does NOT respect robots.txt, and RubyRetriever currently - by default - launches up to 10 parallel GET requests at once. This is a feature, do not abuse it. Use at own risk.  
+
+v1.0 Update 6/07/2014 - Includes major code changes, a lot of bug fixes. Much better in dealing with redirects, and issues with the host changing, etc. Also, added the SEO mode -- which grabs a number of key SEO components from every page on a site. Lastly, this upate was so extensive that I could not ensure backward compatibility -- and thus, this was update 1.0!  
 
   
 getting started   
