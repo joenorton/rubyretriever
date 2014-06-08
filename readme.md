@@ -35,21 +35,21 @@ rr --files pdf --progress --limit 1000 --out hubspot http://www.hubspot.com
 ```  
 OR -- SAME COMMAND  
 ```sh
-rr -f pdf -p -l 1000 http://www.hubspot.com
+rr -f pdf -p -l 100 http://www.hubspot.com
 ```  
   
-This would go to http://www.hubspot.com and crawl it looking for filetype:PDF until it crawled a max of 1,000 pages, and then it would write out a list of filepaths to a csv named hubspot (based on the website host name. Optionally we could have the script then go and autodownload all the files by adding the -a/--auto flag -- however this current example would just dump to stdout a list of all the PDF's found.
+This would go to http://www.hubspot.com and crawl it looking for filetype:PDF until it crawled a max of 100 pages, and then it would write out a list of filepaths to a csv named hubspot (based on the website host name. Optionally we could have the script then go and autodownload all the files by adding the -a/--auto flag -- however this current example would just dump to stdout a list of all the PDF's found.
 
 **Example: SEO mode**  
 ```sh
-rr --seo --progress --limit 10 --out cnet-seo http://www.cnet.com
+rr --seo --progress --limit 100 --out cnet-seo http://www.cnet.com
 ```  
 OR -- SAME COMMAND  
 ```sh
 rr -e -p -l 10 -o cnet-seo http://www.cnet.com
 ```  
   
-This would go to http://www.cnet.com and crawl a max of 10 pages, during which it would be collecting the onpage SEO fields on those pages - currently this means [url, page title, meta description, h1 text, h2 text], and then it would write it out to a csv named cnet-seo.
+This would go to http://www.cnet.com and crawl a max of 100 pages, during which it would be collecting the onpage SEO fields on those pages - currently this means [url, page title, meta description, h1 text, h2 text], and then it would write it out to a csv named cnet-seo.
   
 
 command-line arguments

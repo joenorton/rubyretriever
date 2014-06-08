@@ -8,13 +8,13 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.version     = Retriever::VERSION
   s.name        = 'rubyretriever'
-  s.date        = '2014-06-04'
+  s.date        = '2014-06-07'
   s.summary     = "Ruby Web Crawler & File Harvester"
   s.description = "Asynchronous web crawler, file harvester & autodownloader"
   s.authors     = ["Joe Norton"]
   s.email       = ["joe@softwarebyjoe.com"]
   s.homepage    =
-    'http://www.softwarebyjoe.com/rubyretriever/'
+    'http://softwarebyjoe.com/rubyretriever/'
   s.license       = 'MIT'
    # If you need to check in files that aren't .rb files, add them here
   s.files        = Dir["{lib}/**/*.rb", "bin/*", "LICENSE", "*.md","{spec}/*.rb"]

@@ -15,7 +15,7 @@ module Retriever
       new_uri = URI(url)
       @target = new_uri.to_s
       @host = new_uri.host
-      @host_re = Regexp.new(@host)
+      @host_re = Regexp.new(@host.sub('www.',''))
       @file_re ||= file_re
     end
 
@@ -29,18 +29,22 @@ module Retriever
         }
         return false
       end
-      if (@target != resp.base_uri.to_s)
-          fail "Domain redirecting to new host: #{resp.base_uri.to_s}"
-          #new_t = Retriever::Target.new(resp.base_uri.to_s)
-          #@host = new_t.host
-          #@target = new_t.target
-          #@host_re = new_t.host_re
+      resp_url = resp.base_uri.to_s
+      if (@target != resp_url)
+          if @host_re =~ resp_url #if redirect URL is same hose, we want to re-sync our target with the right URL
+            new_t = Retriever::Target.new(resp_url)
+            @target = new_t.target
+            @host = new_t.host
+            return new_t.source
+          end
+          fail "Domain redirecting to new host: #{resp.base_uri.to_s}" #if it's not same host, we want to fail 
       end
       resp = resp.read
       if resp == ""
         fail "Domain is not working. Try the non-WWW version."
       end
-      return resp.encode('UTF-8', :invalid => :replace, :undef => :replace) #.force_encoding('UTF-8') #ran into issues with some sites without forcing UTF8 encoding, and also issues with it. Not sure atm.
+      fail "Domain not working. Try HTTPS???" if !resp
+      return resp.encode('UTF-8', 'binary', :invalid => :replace, :undef => :replace) #consider using scrub from ruby 2.1? this misses some things
     end
 
   end

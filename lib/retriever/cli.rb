@@ -1,6 +1,7 @@
 module Retriever
 	class CLI
 		def initialize(url,options)
+			
 			#kick off the fetch mode of choice
 			if options[:fileharvest]
 				@fetch = Retriever::FetchFiles.new(url, options)

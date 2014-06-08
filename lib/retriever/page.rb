@@ -62,7 +62,7 @@ module Retriever
     def parseSEO
       return [title,desc,h1,h2]
     end
-    
+
   end
 
 end

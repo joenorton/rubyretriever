@@ -50,6 +50,7 @@ module Retriever
 			if (@fh && !@output)
 				@output = "rr-#{@t.host.split('.')[1]}"
 			end
+			fail "bad page source on target -- try HTTPS?" if !@t.source
 		end
 		def errlog(msg)
 			raise "ERROR: #{msg}"
@@ -59,9 +60,11 @@ module Retriever
 		end
 		def dump
 			puts "###############################"
-			puts "Connection Tally:"
-			puts @connection_tally.to_s
-			puts "###############################"
+			if @v
+				puts "Connection Tally:"
+				puts @connection_tally.to_s
+				puts "###############################"
+			end
 			if @s
 				puts "#{@t.target} Sitemap"
 				puts "Page Count: #{@data.size}"

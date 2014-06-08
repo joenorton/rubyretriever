@@ -26,7 +26,6 @@ module Retriever
 			shortname = arr.pop
 			puts "Initiating Download to: #{'/rr-downloads/' + shortname}"
 			File.open(shortname, "wb") do |saved_file|
-			  # the following "open" is provided by open-uri
 			  open(path) do |read_file|
 			    saved_file.write(read_file.read)
 			  end
