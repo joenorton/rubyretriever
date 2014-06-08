@@ -14,7 +14,7 @@ describe "Target" do
     end
 
     it "creates host_re var" do
-      expect(t.host_re).to eq(/www.cnet.com/)
+      expect(t.host_re).to eq(/cnet.com/)
     end
 
     it "creates file_re var (when provided)" do
