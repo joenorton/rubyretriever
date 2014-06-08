@@ -30,11 +30,11 @@ module Retriever
         return false
       end
       if (@target != resp.base_uri.to_s)
-          #lg("Domain redirecting to new host: #{resp.base_uri.to_s}")
-          new_t = Retriever::Target.new(resp.base_uri.to_s)
-          @host = new_t.host
-          @target = new_t.target
-          @host_re = new_t.host_re
+          fail "Domain redirecting to new host: #{resp.base_uri.to_s}"
+          #new_t = Retriever::Target.new(resp.base_uri.to_s)
+          #@host = new_t.host
+          #@target = new_t.target
+          #@host_re = new_t.host_re
       end
       resp = resp.read
       if resp == ""
