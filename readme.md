@@ -4,11 +4,11 @@
   
 By Joe Norton  
 
-RubyRetriever is a Web Crawler, Site Mapper, File Harvester & Autodownloader, and all around nice buddy to have around.  
+RubyRetriever is a Web Crawler, Site Mapper, File Harvester & Autodownloader.
 
-RubyRetriever (RR) uses aynchronous HTTP requests, thanks to Eventmachine & Synchrony, to crawl webpages *very quickly*.  Another neat thing about RR, is RR uses a bloomfilter in order to keep track of page's it has already crawled.
+RubyRetriever (RR) uses asynchronous HTTP requests, thanks to Eventmachine & Synchrony, to crawl webpages *very quickly*.  Another neat thing about RR, is RR uses a [bloomfilter](http://en.wikipedia.org/wiki/Bloom_filter) in order to keep track of page's it has already crawled.
 
-RR does NOT respect robots.txt, and RR currently - by default - launches up to 10 parallel GET requests at once. This is a feature, do not abuse it. Use at own risk.  
+**Use at Own Risk** RR does NOT respect robots.txt, and RR currently - by default - launches up to 10 parallel GET requests at once. This is a feature, do not abuse it.
 
 **v1.0 Update 6/07/2014** - Includes major code changes, a lot of bug fixes. Much better in dealing with redirects, and issues with the host changing, etc. Also, added the SEO mode -- which grabs a number of key SEO components from every page on a site. Lastly, this update was so extensive that I could not ensure backward compatibility -- and thus, this was update 1.0!  
 
