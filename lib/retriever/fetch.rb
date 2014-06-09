@@ -18,15 +18,15 @@ module Retriever
 				:error_server => 0
 			}
 			#OPTIONS
-			@prgrss = options[:progress] ? options[:progress] : false
+			@prgrss = options[:progress]
 			@maxPages = options[:maxpages] ? options[:maxpages].to_i : 100
-			@v= options[:verbose] ? true : false
-			@output=options[:filename] ? options[:filename] : false
-			@fh = options[:fileharvest] ? options[:fileharvest] : false
+			@v = options[:verbose]
+			@output = options[:filename]
+			@fh = options[:fileharvest]
 			@file_ext = @fh.to_s
-			@s = options[:sitemap] ? options[:sitemap] : false
-			@seo = options[:seo] ? true : false
-			@autodown = options[:autodown] ? true : false
+			@s = options[:sitemap]
+			@seo = options[:seo]
+			@autodown = options[:autodown]
 			#
 			if @fh
 				tempExtStr = "."+@file_ext+'\z'
