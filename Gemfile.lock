@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rubyretriever (1.0.2)
+    rubyretriever (1.0.3)
       bloomfilter-rb
       em-http-request
       em-synchrony
