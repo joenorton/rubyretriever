@@ -35,7 +35,7 @@ SOURCE
 <a href='http://www.cnet.com/products/gadgets'>gadgets2</a>
 SOURCE
 
-      expect(links).to have(1).items
+      expect(links.size).to eq(1)
     end
 
     it "adds a protocol to urls missing them (www.)" do
@@ -52,7 +52,7 @@ SOURCE
 <a href='http://www.cnet.com/products/gadgets/' data-vanity-rewritten='true'></a>
 SOURCE
 
-      expect(links).to have(1).item
+      expect(links.size).to eq(1)
     end
 
     it "returns relative urls with full path based on hostname" do

@@ -16,7 +16,7 @@ describe "Page" do
  <a href='http://www.yahoo.com/test/'>yahoo</a> 
 SOURCE
 
-      expect(links).to have(4).items
+      expect(links.size).to eq(4)
     end
   end
 
@@ -28,7 +28,7 @@ SOURCE
  <a href='http://www.yahoo.com/test/'>yahoo</a> 
 SOURCE
 
-        expect(links).to have(1).items
+        expect(links.size).to eq(1)
     end
   end
 
@@ -38,7 +38,7 @@ SOURCE
             @source = (<<SOURCE).strip
  <link rel='stylesheet' id='gforms_reset_css-css'  href='http://www.cnet.com/wp-content/plugins/gravityforms/css/formreset.css?ver=1.7.12' type='text/css' media='all' />
 SOURCE
-        expect(links).to have(0).items
+        expect(links.size).to eq(0)
     end
   end
 
@@ -50,7 +50,7 @@ SOURCE
 http://www.google.com 
 <a href='/test.html'>test</a>
 SOURCE
-        expect(links).to have(1).items
+        expect(links.size).to eq(1)
     end
   end
 
