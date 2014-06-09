@@ -63,7 +63,7 @@ ARGV.each do|q|
     puts "### Performing File Harvest" if options[:fileharvest]
     puts "### Searching for file extension: #{options[:fileharvest]} pages" if (options[:fileharvest])
     puts "### Performing SEO Scrape" if options[:seo]   
-    puts "### Writting output to filename: #{options[:filename]}" if options[:filename]
+    puts "### Writing output to filename: #{options[:filename]}" if options[:filename]
     puts "### Being verbose"
     puts "### Stopping after #{options[:maxpages]} pages"
   end
