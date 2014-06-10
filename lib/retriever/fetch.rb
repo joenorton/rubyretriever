@@ -28,7 +28,7 @@ module Retriever
       @t = Retriever::Target.new(url, @file_re)
       @output = "rr-#{@t.host.split('.')[1]}" if @fh && !@output
 
-      setup_bloom_filter
+      @already_crawled = setup_bloom_filter
 
       @page_one = crawl_page_one
       @link_stack = create_link_stack
@@ -55,14 +55,15 @@ module Retriever
     end
 
     def setup_bloom_filter
-      @already_crawled = BloomFilter::Native.new(
+      already_crawled = BloomFilter::Native.new(
         :size => 1_000_000,
         :hashes => 5,
         :seed => 1,
         :bucket => 8,
         :raise => false
       )
-      @already_crawled.insert(@t.target)
+      already_crawled.insert(@t.target)
+      already_crawled
     end
 
     def setup_progress_bar
@@ -206,11 +207,17 @@ module Retriever
       true
     end
 
-    def push_seo_to_data(new_page)
+    def push_seo_to_data(url, new_page)
       seos = [url]
       seos.concat(new_page.parse_seo)
       @data.push(seos)
       lg('--page SEO scraped')
+    end
+
+    def push_files_to_data(new_page)
+      filez = new_page.parse_files
+      @data.concat(filez) unless filez.empty?
+      lg("--#{filez.size} files found")
     end
 
     # send a new wave of GET requests, using current @link_stack
@@ -231,21 +238,16 @@ module Retriever
           if @prgrss
             @progressbar.increment if @already_crawled.size < @max_pages
           end
-          push_seo_to_data(url) if @seo
+          push_seo_to_data(url, new_page) if @seo
           next if new_page.links.size == 0
           lg("--#{new_page.links.size} links found")
-          internal_links_arr = new_page.parse_internal_visitable
-          new_stuff.push(internal_links_arr)
-          if @fh
-            filez = new_page.parse_files
-            @data.concat(filez) unless filez.empty?
-            lg("--#{filez.size} files found")
-          end
+          new_stuff.push(new_page.parse_internal_visitable)
+          next unless @fh
+          push_files_to_data(new_page)
         end
-        new_stuff = new_stuff.flatten # all completed requests
         EventMachine.stop
       end
-      new_stuff.uniq!
+      new_stuff.flatten.uniq!
     end
   end
 end
