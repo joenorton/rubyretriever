@@ -24,8 +24,11 @@ module Retriever
       }
       setup_options(options)
       setup_progress_bar if @prgrss
+
       @t = Retriever::Target.new(url, @file_re)
       @output = "rr-#{@t.host.split('.')[1]}" if @fh && !@output
+
+      setup_bloom_filter
 
       @page_one = crawl_page_one
       @link_stack = create_link_stack
@@ -82,10 +85,11 @@ module Retriever
 
     def create_link_stack
       link_stack = @page_one.parse_internal_visitable
-      errlog("Bad URL -- #{@t.target}") unless @link_stack
+      errlog("Bad URL -- #{@t.target}") unless link_stack
       lg("#{link_stack.size - 1} links found")
       link_stack.delete(@t.target)
-      link_stack.take(@maxPages) if link_stack.size + 1 > @maxPages
+      link_stack.take(@max_pages) if ((link_stack.size + 1) > @max_pages)
+      link_stack
     end
 
     def errlog(msg)

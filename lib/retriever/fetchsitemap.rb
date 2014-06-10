@@ -5,7 +5,7 @@ module Retriever
     # returns an array of all unique pages found on the site
     def initialize(url, options)
       super
-      @data.concat(@t.target)
+      @data.push(@t.target)
       @data.concat(@link_stack)
 
       async_crawl_and_collect
