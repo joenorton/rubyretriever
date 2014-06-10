@@ -21,15 +21,15 @@ module Retriever
         :error_server => 0
       }
       # OPTIONS
-      @prgrss = options['progress']
-      @max_pages = options['maxpages'] ? options['maxpages'].to_i : 100
-      @v = options['verbose']
-      @output = options['filename']
-      @fh = options['fileharvest']
-      @file_ext = @fh.to_s
-      @s = options['sitemap']
-      @seo = options['seo']
-      @autodown = options['autodown']
+      @prgrss     = options['progress']
+      @max_pages  = options['maxpages'] ? options['maxpages'].to_i : 100
+      @v          = options['verbose']
+      @output     = options['filename']
+      @fh         = options['fileharvest']
+      @file_ext   = @fh.to_s
+      @s          = options['sitemap']
+      @seo        = options['seo']
+      @autodown   = options['autodown']
       #
       if @fh
         temp_ext_str = '.' + @file_ext + '\z'

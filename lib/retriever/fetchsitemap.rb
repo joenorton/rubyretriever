@@ -13,6 +13,7 @@ module Retriever
       lg("#{@link_stack.size - 1} links found")
 
       @link_stack.delete(@t.target)
+      @linkStack = @linkStack.take(@maxPages) if @linkStack.size + 1 > @maxPages
       @data.concat(@link_stack)
 
       async_crawl_and_collect

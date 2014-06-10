@@ -14,6 +14,7 @@ module Retriever
       errlog("Bad URL -- #{@t.target}") unless @link_stack
       lg("#{@link_stack.size - 1} links found")
       @link_stack.delete(@t.target)
+      @linkStack = @linkStack.take(@maxPages) if @linkStack.size + 1 > @maxPages
 
       @data.push(page_one.parse_seo)
 

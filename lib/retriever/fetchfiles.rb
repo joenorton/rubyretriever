@@ -16,6 +16,7 @@ module Retriever
       lg("#{@data.size} new files found")
       errlog("Bad URL -- #{@t.target}") unless @link_stack
       @link_stack.delete(@t.target)
+      @linkStack = @linkStack.take(@maxPages) if @linkStack.size + 1 > @maxPages
 
       async_crawl_and_collect
 
