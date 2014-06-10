@@ -85,7 +85,7 @@ module Retriever
       errlog("Bad URL -- #{@t.target}") unless @link_stack
       lg("#{link_stack.size - 1} links found")
       link_stack.delete(@t.target)
-      linkStack.take(@maxPages) if linkStack.size + 1 > @maxPages
+      link_stack.take(@maxPages) if link_stack.size + 1 > @maxPages
     end
 
     def errlog(msg)
