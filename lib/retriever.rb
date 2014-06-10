@@ -8,6 +8,6 @@ require 'retriever/target'
 require 'retriever/page'
 require 'retriever/openuri-redirect-patch'
 
+#
 module Retriever
-
 end

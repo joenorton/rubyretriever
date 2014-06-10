@@ -1,52 +1,44 @@
 require 'open-uri'
 
 module Retriever
-  
+  #
   class Target
-    
     HTTP_RE = Regexp.new(/^http/i).freeze
     DUB_DUB_DUB_DOT_RE = Regexp.new(/^www\./i).freeze
-    
+
     attr_reader :host, :target, :host_re, :source, :file_re
 
-    def initialize(url,file_re=nil)
-      url = "http://#{url}" if (!(HTTP_RE =~ url))
-      fail "Bad URL" if (!(/\./ =~ url))
+    def initialize(url, file_re = nil)
+      url = "http://#{url}" unless HTTP_RE =~ url
+      fail 'Bad URL' unless /\./ =~ url
       new_uri = URI(url)
       @target = new_uri.to_s
       @host = new_uri.host
-      @host_re = Regexp.new(@host.sub('www.',''))
+      @host_re = Regexp.new(@host.sub('www.', ''))
       @file_re ||= file_re
     end
 
     def source
-      resp = false
-      begin
-        resp = open(@target)
-      rescue StandardError => e
-        trap("ABRT"){
-          puts "#{@target} failed SSL Certification Verification"
-        }
-        return false
-      end
+      resp = open(@target)
       resp_url = resp.base_uri.to_s
-      if (@target != resp_url)
-          if @host_re =~ resp_url #if redirect URL is same hose, we want to re-sync our target with the right URL
-            new_t = Retriever::Target.new(resp_url)
-            @target = new_t.target
-            @host = new_t.host
-            return new_t.source
-          end
-          fail "Domain redirecting to new host: #{resp.base_uri.to_s}" #if it's not same host, we want to fail 
+      if @target != resp_url
+        fail "Domain redirecting: #{resp_url}" unless @host_re =~ resp_url
+        # if redirect URL is same host, we want to re-sync @target
+        return resync_target_and_return_source(resp_url)
       end
       resp = resp.read
-      if resp == ""
-        fail "Domain is not working. Try the non-WWW version."
-      end
-      fail "Domain not working. Try HTTPS???" if !resp
-      return resp.encode('UTF-8', 'binary', :invalid => :replace, :undef => :replace) #consider using scrub from ruby 2.1? this misses some things
+      #
+      fail 'Domain is not working. Try the non-WWW version.' if resp == ''
+      fail 'Domain not working. Try HTTPS???' unless resp
+      # consider using scrub from ruby 2.1? this misses some things
+      resp.encode('UTF-8', 'binary', :invalid => :replace, :undef => :replace)
     end
 
+    def resync_target_and_return_source(url)
+      new_t = Retriever::Target.new(url)
+      @target = new_t.target
+      @host = new_t.host
+      new_t.source
+    end
   end
-
 end

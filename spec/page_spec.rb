@@ -20,8 +20,8 @@ SOURCE
     end
   end
 
-  describe "#parseInternal" do
-    let (:links){Retriever::Page.new(@source,t).parseInternal}
+  describe "#parse_internal" do
+    let (:links){Retriever::Page.new(@source,t).parse_internal}
     it "filters links by host" do
             @source = (<<SOURCE).strip
 <a href='http://www.cnet.com/'>download</a>
@@ -32,8 +32,8 @@ SOURCE
     end
   end
 
-  describe "#parseInternalVisitable" do
-    let (:links){Retriever::Page.new(@source,t).parseInternalVisitable}
+  describe "#parse_internal_visitable" do
+    let (:links){Retriever::Page.new(@source,t).parse_internal_visitable}
     it "filters out 'unvisitable' URLS like JS, Stylesheets, Images" do
             @source = (<<SOURCE).strip
  <link rel='stylesheet' id='gforms_reset_css-css'  href='http://www.cnet.com/wp-content/plugins/gravityforms/css/formreset.css?ver=1.7.12' type='text/css' media='all' />
@@ -43,7 +43,7 @@ SOURCE
   end
 
   describe "#parseFiles" do
-    let (:links){Retriever::Page.new(@source,t).parseFiles}
+    let (:links){Retriever::Page.new(@source,t).parse_files}
     it "filters links by filetype" do
                   @source = (<<SOURCE).strip
 <a href='www.cnet.com/download.exe'>download</a>
@@ -90,5 +90,4 @@ SOURCE
         expect(page.h2).to eq(' test 4 ')
     end
   end
-
 end

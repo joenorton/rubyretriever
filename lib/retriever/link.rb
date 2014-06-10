@@ -1,4 +1,5 @@
 module Retriever
+  #
   class Link
     HTTP_RE = Regexp.new(/^http/i).freeze
     SINGLE_SLASH_RE = Regexp.new(/^\/{1}[^\/]/).freeze
@@ -18,12 +19,15 @@ module Retriever
 
       return "http://#{host}#{link}" if SINGLE_SLASH_RE =~ link
 
-      return "http:#{link}" if DOUBLE_SLASH_RE =~ link #link begins with '//' (maybe a messed up link?)
+      # link begins with '//'
+      return "http:#{link}" if DOUBLE_SLASH_RE =~ link
 
-      return "http://#{host}/#{link}" if NO_SLASH_PAGE_RE =~ link #link uses relative path with no slashes at all, people actually this - imagine that.
+      # link uses relative path with no slashes at all
+      return "http://#{host}/#{link}" if NO_SLASH_PAGE_RE =~ link
     end
 
     private
+
     attr_reader :host, :link
   end
 end
