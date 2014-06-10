@@ -9,18 +9,29 @@ require 'bloomfilter-rb'
 module Retriever
   #
   class Fetch
+    HR = '###############################'
     attr_reader :max_pages, :t
     # given target URL and RR options, creates a fetch object.
     # There is no direct output
     # this is a parent class that the other fetch classes build off of.
     def initialize(url, options)
+      @data = []
       @connection_tally = {
         :success => 0,
         :error => 0,
         :error_client => 0,
         :error_server => 0
       }
-      # OPTIONS
+      setup_options(options)
+      setup_progress_bar if @prgrss
+      @t = Retriever::Target.new(url, @file_re)
+      @output = "rr-#{@t.host.split('.')[1]}" if @fh && !@output
+
+      @page_one = crawl_page_one
+      @link_stack = create_link_stack
+    end
+
+    def setup_options(options)
       @prgrss     = options['progress']
       @max_pages  = options['maxpages'] ? options['maxpages'].to_i : 100
       @v          = options['verbose']
@@ -38,19 +49,9 @@ module Retriever
         # when FH is not true, and autodown is true
         errlog('Cannot AUTODOWNLOAD when not in FILEHARVEST MODE') if @autodown
       end
-      if @prgrss
-        # verbose & progressbar conflict
-        errlog('CANNOT RUN VERBOSE & PROGRESSBAR AT SAME TIME, CHOOSE ONE, -v or -p') if @v
-        prgress_vars = {
-          :title => 'Pages',
-          :starting_at => 1,
-          :total => @max_pages,
-          :format => '%a |%b>%i| %c/%C %t'
-        }
-        @progressbar = ProgressBar.create(prgress_vars)
-      end
-      @t = Retriever::Target.new(url, @file_re)
-      @output = "rr-#{@t.host.split('.')[1]}" if @fh && !@output
+    end
+
+    def setup_bloom_filter
       @already_crawled = BloomFilter::Native.new(
         :size => 1_000_000,
         :hashes => 5,
@@ -59,6 +60,32 @@ module Retriever
         :raise => false
       )
       @already_crawled.insert(@t.target)
+    end
+
+    def setup_progress_bar
+      # verbose & progressbar conflict
+      errlog('CANNOT RUN VERBOSE & PROGRESSBAR AT SAME TIME, CHOOSE ONE, -v or -p') if @v
+      prgress_vars = {
+        :title => 'Pages',
+        :starting_at => 1,
+        :total => @max_pages,
+        :format => '%a |%b>%i| %c/%C %t'
+      }
+      @progressbar = ProgressBar.create(prgress_vars)
+    end
+
+    def crawl_page_one
+      page_one = Retriever::Page.new(@t.source, @t)
+      lg("URL Crawled: #{@t.target}")
+      page_one
+    end
+
+    def create_link_stack
+      link_stack = @page_one.parse_internal_visitable
+      errlog("Bad URL -- #{@t.target}") unless @link_stack
+      lg("#{link_stack.size - 1} links found")
+      link_stack.delete(@t.target)
+      linkStack.take(@maxPages) if linkStack.size + 1 > @maxPages
     end
 
     def errlog(msg)
@@ -71,11 +98,11 @@ module Retriever
 
     # prints current data collection to STDOUT
     def dump
-      puts '###############################'
+      puts HR
       if @v
         puts 'Connection Tally:'
         puts @connection_tally.to_s
-        puts '###############################'
+        puts HR
       end
       if @s
         puts "#{@t.target} Sitemap"
@@ -90,11 +117,11 @@ module Retriever
       else
         fail 'ERROR - Cannot dump - Mode Not Found'
       end
-      puts '###############################'
+      puts HR
       @data.each do |line|
         puts line
       end
-      puts '###############################'
+      puts HR
       puts
     end
 
@@ -111,10 +138,10 @@ module Retriever
           csv << entry
         end
       end
-      puts '###############################'
+      puts HR
       puts "File Created: #{@output}.csv"
       puts "Object Count: #{@data.size}"
-      puts '###############################'
+      puts HR
       puts
     end
 
@@ -159,7 +186,6 @@ module Retriever
       # lets not continue if unsuccessful connection
       unless hdr.successful?
         lg("UNSUCCESSFUL CONNECTION -- #{url}")
-
         @connection_tally[:error] += 1
         @connection_tally[:error_server] += 1 if hdr.server_error?
         @connection_tally[:error_client] += 1 if hdr.client_error?
@@ -176,6 +202,13 @@ module Retriever
       true
     end
 
+    def push_seo_to_data(new_page)
+      seos = [url]
+      seos.concat(new_page.parse_seo)
+      @data.push(seos)
+      lg('--page SEO scraped')
+    end
+
     # send a new wave of GET requests, using current @link_stack
     def process_link_stack
       new_stuff = []
@@ -186,7 +219,6 @@ module Retriever
           next if @already_crawled.include?(url)
 
           resp = EventMachine::HttpRequest.new(url).get
-
           next unless good_response?(resp, url)
           lg("Page Fetched: #{url}")
           @already_crawled.insert(url)
@@ -195,12 +227,7 @@ module Retriever
           if @prgrss
             @progressbar.increment if @already_crawled.size < @max_pages
           end
-          if @seo
-            seos = [url]
-            seos.concat(new_page.parse_seo)
-            @data.push(seos)
-            lg('--page SEO scraped')
-          end
+          push_seo_to_data(url) if @seo
           next if new_page.links.size == 0
           lg("--#{new_page.links.size} links found")
           internal_links_arr = new_page.parse_internal_visitable

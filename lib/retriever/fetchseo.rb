@@ -6,17 +6,7 @@ module Retriever
     #   on all unique pages found on the site
     def initialize(url, options)
       super
-      @data = []
-      page_one = Retriever::Page.new(@t.source, @t)
-      lg("URL Crawled: #{@t.target}")
-
-      @link_stack = page_one.parse_internal_visitable
-      errlog("Bad URL -- #{@t.target}") unless @link_stack
-      lg("#{@link_stack.size - 1} links found")
-      @link_stack.delete(@t.target)
-      @linkStack = @linkStack.take(@maxPages) if @linkStack.size + 1 > @maxPages
-
-      @data.push(page_one.parse_seo)
+      @data.push(@page_one.parse_seo)
 
       async_crawl_and_collect
 

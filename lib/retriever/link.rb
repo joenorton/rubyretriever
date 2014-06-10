@@ -2,8 +2,8 @@ module Retriever
   #
   class Link
     HTTP_RE = Regexp.new(/^http/i).freeze
-    SINGLE_SLASH_RE = Regexp.new(/^\/{1}[^\/]/).freeze
-    DOUBLE_SLASH_RE = Regexp.new(/^\/{2}[^\/]/).freeze
+    SINGLE_SLASH_RE = Regexp.new(%r(^/{1}[^/])).freeze
+    DOUBLE_SLASH_RE = Regexp.new(%r(^/{2}[^/])).freeze
     NO_SLASH_PAGE_RE = Regexp.new(/^[a-z0-9\-\_\=\?\.]+\z/ix).freeze
     DUB_DUB_DUB_DOT_RE = Regexp.new(/^www\./i).freeze
 
