@@ -3,7 +3,7 @@ require 'open-uri'
 module Retriever
   #
   class Target
-    HTTP_RE = Regexp.new(/^http/i).freeze
+    HTTP_RE            = Regexp.new(/^http/i).freeze
     DUB_DUB_DUB_DOT_RE = Regexp.new(/^www\./i).freeze
 
     attr_reader :host, :target, :host_re, :source, :file_re, :scheme

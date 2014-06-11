@@ -6,10 +6,10 @@ module Retriever
     HTTP_RE = Regexp.new(/^http/i).freeze
     DUB_DUB_DUB_DOT_RE = Regexp.new(/^www\./i).freeze
 
-    TITLE_RE = Regexp.new(/<title>(.*)<\/title>/i).freeze
-    DESC_RE = Regexp.new(/<meta[^>]*name=[\"|\']description[\"|\'][^>]*content=[\"]([^\"]*)[\"][^>]*>/i).freeze
-    H1_RE = Regexp.new(/<h1>(.*)<\/h1>/i).freeze
-    H2_RE = Regexp.new(/<h2>(.*)<\/h2>/i).freeze
+    TITLE_RE  = Regexp.new(/<title>(.*)<\/title>/i).freeze
+    DESC_RE   = Regexp.new(/<meta[^>]*name=[\"|\']description[\"|\'][^>]*content=[\"]([^\"]*)[\"][^>]*>/i).freeze
+    H1_RE     = Regexp.new(/<h1>(.*)<\/h1>/i).freeze
+    H2_RE     = Regexp.new(/<h2>(.*)<\/h2>/i).freeze
 
     attr_reader :links, :source, :t
 
@@ -33,15 +33,15 @@ module Retriever
     end
 
     def parse_internal
-      links.keep_if { |x| @t.host_re =~ x }
+      links.select { |x| @t.host_re =~ x }
     end
 
     def parse_internal_visitable
-      parse_internal.keep_if { |x| !(NONPAGE_EXT_RE =~ x) }
+      parse_internal.select { |x| !(NONPAGE_EXT_RE =~ x) }
     end
 
     def parse_files(arr)
-      arr.keep_if { |x| @t.file_re =~ x }
+      arr.select { |x| @t.file_re =~ x }
     end
 
     def title
