@@ -9,14 +9,14 @@ module Retriever
     attr_reader :host, :target, :host_re, :source, :file_re, :scheme
 
     def initialize(url, file_re = nil)
-      url = "http://#{url}" unless HTTP_RE =~ url
       fail 'Bad URL' unless /\./ =~ url
-      target_uri = URI(url)
-      @target = target_uri.to_s
-      @host = target_uri.host
-      @host_re = Regexp.new(@host.sub('www.', ''))
-      @file_re ||= file_re
-      @scheme = target_uri.scheme
+      url         = "http://#{url}" unless HTTP_RE =~ url
+      target_uri  = URI(url)
+      @target     = target_uri.to_s
+      @host       = target_uri.host
+      @host_re    = Regexp.new(@host.sub('www.', ''))
+      @file_re  ||= file_re
+      @scheme     = target_uri.scheme
     end
 
     def source
@@ -36,9 +36,9 @@ module Retriever
     end
 
     def resync_target_and_return_source(url)
-      new_t = Retriever::Target.new(url)
+      new_t   = Retriever::Target.new(url)
       @target = new_t.target
-      @host = new_t.host
+      @host   = new_t.host
       @scheme = new_t.scheme
       new_t.source
     end

@@ -34,6 +34,65 @@ module Retriever
       @link_stack = create_link_stack
     end
 
+    def errlog(msg)
+      fail "ERROR: #{msg}"
+    end
+
+    def lg(msg)
+      puts "### #{msg}" if @v
+    end
+
+    # prints current data collection to STDOUT
+    def dump
+      puts HR
+      if @v
+        puts 'Connection Tally:'
+        puts @connection_tally.to_s
+        puts HR
+      end
+      if @s
+        puts "#{@t.target} Sitemap"
+        puts "Page Count: #{@data.size}"
+      elsif @fh
+        puts "Target URL: #{@t.target}"
+        puts "Filetype: #{@file_ext}"
+        puts "File Count: #{@data.size}"
+      elsif @seo
+        puts "#{@t.target} SEO Metrics"
+        puts "Page Count: #{@data.size}"
+      else
+        fail 'ERROR - Cannot dump - Mode Not Found'
+      end
+      puts HR
+      @data.each do |line|
+        puts line
+      end
+      puts HR
+      puts
+    end
+
+    # writes current data collection out to CSV in current directory
+    def write
+      return false unless @output
+      i = 0
+      CSV.open("#{@output}.csv", 'w') do |csv|
+        if (i == 0) && @seo
+          csv << ['URL', 'Page Title', 'Meta Description', 'H1', 'H2']
+          i += 1
+        end
+        @data.each do |entry|
+          csv << entry
+        end
+      end
+      puts HR
+      puts "File Created: #{@output}.csv"
+      puts "Object Count: #{@data.size}"
+      puts HR
+      puts
+    end
+
+    private
+
     def setup_options(options)
       @prgrss     = options['progress']
       @max_pages  = options['maxpages'] ? options['maxpages'].to_i : 100
@@ -91,63 +150,6 @@ module Retriever
       link_stack.delete(@t.target)
       link_stack.take(@max_pages) if (link_stack.size + 1) > @max_pages
       link_stack
-    end
-
-    def errlog(msg)
-      fail "ERROR: #{msg}"
-    end
-
-    def lg(msg)
-      puts "### #{msg}" if @v
-    end
-
-    # prints current data collection to STDOUT
-    def dump
-      puts HR
-      if @v
-        puts 'Connection Tally:'
-        puts @connection_tally.to_s
-        puts HR
-      end
-      if @s
-        puts "#{@t.target} Sitemap"
-        puts "Page Count: #{@data.size}"
-      elsif @fh
-        puts "Target URL: #{@t.target}"
-        puts "Filetype: #{@file_ext}"
-        puts "File Count: #{@data.size}"
-      elsif @seo
-        puts "#{@t.target} SEO Metrics"
-        puts "Page Count: #{@data.size}"
-      else
-        fail 'ERROR - Cannot dump - Mode Not Found'
-      end
-      puts HR
-      @data.each do |line|
-        puts line
-      end
-      puts HR
-      puts
-    end
-
-    # writes current data collection out to CSV in current directory
-    def write
-      return false unless @output
-      i = 0
-      CSV.open("#{@output}.csv", 'w') do |csv|
-        if (i == 0) && @seo
-          csv << ['URL', 'Page Title', 'Meta Description', 'H1', 'H2']
-          i += 1
-        end
-        @data.each do |entry|
-          csv << entry
-        end
-      end
-      puts HR
-      puts "File Created: #{@output}.csv"
-      puts "Object Count: #{@data.size}"
-      puts HR
-      puts
     end
 
     def end_crawl_notice
@@ -226,7 +228,7 @@ module Retriever
     def page_from_response(url, response)
       lg("Page Fetched: #{url}")
       @already_crawled.insert(url)
-      @progressbar.increment if @prgress && (@already_crawled.size < @max_pages)
+      @progressbar.increment if @prgrss && (@already_crawled.size < @max_pages)
       Retriever::Page.new(response, @t)
     end
 

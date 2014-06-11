@@ -28,17 +28,17 @@ module Retriever
       puts '  SUCCESS: Download Complete'
     end
 
+    private
+
     def iterate_thru_collection_and_download
-      file_counter = 0
       lenn = @data.count
-      @data.each do |entry|
+      @data.each_with index do |entry, i|
         begin
           download_file(entry)
         rescue StandardError
-          puts 'ERROR: failed to download - #{entry}'
+          lg('ERROR: failed to download - #{entry}')
         end
-        file_counter += 1
-        lg("    File [#{file_counter} of #{lenn}]\n")
+        lg("    File [#{i + 1} of #{lenn}]\n")
       end
     end
 

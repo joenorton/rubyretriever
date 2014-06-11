@@ -14,6 +14,8 @@ module Retriever
       @data.uniq!
     end
 
+    private
+
     # produces valid XML sitemap based on page collection fetched.
     # Writes to current directory.
     def gen_xml
