@@ -22,7 +22,8 @@ SOURCE
   end
 
   describe '#parse_internal' do
-    let(:links) { Retriever::Page.new(@source, t).parse_internal }
+    let(:page) { Retriever::Page.new(@source, t) }
+    let(:links) { page.parse_internal }
     it 'filters links by host' do
       @source = (<<SOURCE).strip
 <a href='http://www.cnet.com/'>download</a>
@@ -34,7 +35,8 @@ SOURCE
   end
 
   describe '#parse_internal_visitable' do
-    let(:links) { Retriever::Page.new(@source, t).parse_internal_visitable }
+    let(:page) { Retriever::Page.new(@source, t) }
+    let(:links) { page.parse_internal_visitable }
     it "filters out 'unvisitable' URLS like JS, Stylesheets, Images" do
       @source = (<<SOURCE).strip
  <link rel='stylesheet' id='gforms_reset_css-css'  href='http://www.cnet.com/wp-content/plugins/gravityforms/css/formreset.css?ver=1.7.12' type='text/css' media='all' />
@@ -43,15 +45,16 @@ SOURCE
     end
   end
 
-  describe '#parseFiles' do
-    let(:links) { Retriever::Page.new(@source, t).parse_files }
+  describe '#parse_files' do
+    let(:page) { Retriever::Page.new(@source, t) }
+    let(:files) { page.parse_files(page.parse_internal) }
     it 'filters links by filetype' do
       @source = (<<SOURCE).strip
 <a href='www.cnet.com/download.exe'>download</a>
 http://www.google.com
 <a href='/test.html'>test</a>
 SOURCE
-      expect(links.size).to eq(1)
+      expect(files.size).to eq(1)
     end
   end
 

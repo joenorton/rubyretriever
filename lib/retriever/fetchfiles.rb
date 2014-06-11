@@ -5,7 +5,7 @@ module Retriever
   class FetchFiles < Fetch
     def initialize(url, options)
       super
-      temp_file_collection = @page_one.parse_files
+      temp_file_collection = @page_one.parse_files(@page_one.parse_internal)
       @data.concat(tempFileCollection) if temp_file_collection.size > 0
       lg("#{@data.size} new files found")
 
@@ -28,31 +28,6 @@ module Retriever
       puts '  SUCCESS: Download Complete'
     end
 
-    private
-
-    def iterate_thru_collection_and_download
-      lenn = @data.count
-      @data.each_with index do |entry, i|
-        begin
-          download_file(entry)
-        rescue StandardError
-          lg('ERROR: failed to download - #{entry}')
-        end
-        lg("    File [#{i + 1} of #{lenn}]\n")
-      end
-    end
-
-    def move_to_download_dir(dir_name = 'rr-downloads')
-      if File.directory?(dir_name)
-        Dir.chdir(dir_name)
-      else
-        puts 'creating #{dir_name} Directory'
-        Dir.mkdir(dir_name)
-        Dir.chdir(dir_name)
-      end
-      puts "Initiating Download to: '/#{dir_name}/'"
-    end
-
     def autodownload
       # go through the fetched file URL collection and download each one.
       puts HR
@@ -63,6 +38,31 @@ module Retriever
       move_to_download_dir
       iterate_thru_collection_and_download
       Dir.chdir('..')
+    end
+
+    private
+
+    def iterate_thru_collection_and_download
+      lenn = @data.count
+      @data.each_with_index do |entry, i|
+        begin
+          download_file(entry)
+        rescue StandardError
+          puts "ERROR: failed to download - #{entry}"
+        end
+        lg("    File [#{i + 1} of #{lenn}]\n")
+      end
+    end
+
+    def move_to_download_dir(dir_name = 'rr-downloads')
+      if File.directory?(dir_name)
+        Dir.chdir(dir_name)
+      else
+        puts "creating #{dir_name} Directory"
+        Dir.mkdir(dir_name)
+        Dir.chdir(dir_name)
+      end
+      puts "Downloading files to local directory: '/#{dir_name}/'"
     end
   end
 end

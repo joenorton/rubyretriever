@@ -220,7 +220,7 @@ module Retriever
     end
 
     def push_files_to_data(new_page)
-      filez = new_page.parse_files
+      filez = new_page.parse_files(new_page.parse_internal)
       @data.concat(filez) unless filez.empty?
       lg("--#{filez.size} files found")
     end

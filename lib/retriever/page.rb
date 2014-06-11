@@ -33,15 +33,15 @@ module Retriever
     end
 
     def parse_internal
-      links.select { |linky| (@t.host_re =~ linky) }
+      links.keep_if { |x| @t.host_re =~ x }
     end
 
     def parse_internal_visitable
-      parse_internal.select { |linky| (!(NONPAGE_EXT_RE =~ linky)) }
+      parse_internal.keep_if { |x| !(NONPAGE_EXT_RE =~ x) }
     end
 
-    def parse_files
-      links.select { |linky| (@t.file_re =~ linky) }
+    def parse_files(arr)
+      arr.keep_if { |x| @t.file_re =~ x }
     end
 
     def title
