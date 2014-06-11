@@ -150,24 +150,27 @@ module Retriever
       puts
     end
 
+    def end_crawl_notice
+      @progressbar.log("Can't find any more links.") if @prgress
+      lg("Can't find any more links.")
+    end
+
     # iterates over the existing @link_stack
     # running until we reach the @max_pages value.
     def async_crawl_and_collect
       while @already_crawled.size < @max_pages
         if @link_stack.empty?
-          if @prgrss
-            @progressbar.log("Can't find any more links.")
-          else
-            lg("Can't find any more links.")
-          end
+          end_crawl_notice
           break
         end
         new_links_arr = process_link_stack
         next if new_links_arr.nil? || new_links_arr.empty?
         # set operations to see are these in our previous visited pages arr
         new_links_arr -= @link_stack
+        next if new_links_arr.empty?
         @link_stack.concat(new_links_arr).uniq!
-        @data.concat(new_links_arr) if @s
+        next unless @s
+        @data.concat(new_links_arr)
       end
       # done, make sure progress bar says we are done
       @progressbar.finish if @prgrss
@@ -220,6 +223,13 @@ module Retriever
       lg("--#{filez.size} files found")
     end
 
+    def page_from_response(url, response)
+      lg("Page Fetched: #{url}")
+      @already_crawled.insert(url)
+      @progressbar.increment if @prgress && (@already_crawled.size < @max_pages)
+      Retriever::Page.new(response, @t)
+    end
+
     # send a new wave of GET requests, using current @link_stack
     def process_link_stack
       new_stuff = []
@@ -228,22 +238,17 @@ module Retriever
         EM::Synchrony::FiberIterator.new(@link_stack, concurrency).each do |url|
           next if @already_crawled.size >= @max_pages
           next if @already_crawled.include?(url)
-
           resp = EventMachine::HttpRequest.new(url).get
           next unless good_response?(resp, url)
-          lg("Page Fetched: #{url}")
-          @already_crawled.insert(url)
-
-          new_page = Retriever::Page.new(resp.response, @t)
-          if @prgrss
-            @progressbar.increment if @already_crawled.size < @max_pages
-          end
-          push_seo_to_data(url, new_page) if @seo
-          next if new_page.links.size == 0
-          lg("--#{new_page.links.size} links found")
-          new_stuff.push(new_page.parse_internal_visitable)
+          current_page = page_from_response(url, resp.response)
+          # non-link dependent modes
+          push_seo_to_data(url, current_page) if @seo
+          next unless current_page.links.size > 0
+          lg("--#{current_page.links.size} links found")
+          new_stuff.push(current_page.parse_internal_visitable)
+          # link dependent modes
           next unless @fh
-          push_files_to_data(new_page)
+          push_files_to_data(current_page)
         end
         EventMachine.stop
       end
