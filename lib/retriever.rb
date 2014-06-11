@@ -6,7 +6,7 @@ require 'retriever/cli'
 require 'retriever/link'
 require 'retriever/target'
 require 'retriever/page'
-require 'retriever/openuri-redirect-patch'
+require 'retriever/openuri_redirect_patch'
 
 #
 module Retriever

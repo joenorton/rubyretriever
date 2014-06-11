@@ -1,5 +1,4 @@
 require 'retriever'
 
-describe "Fetch" do
-	
+describe 'Fetch' do
 end
