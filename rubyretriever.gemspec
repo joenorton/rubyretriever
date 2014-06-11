@@ -8,25 +8,24 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.version     = Retriever::VERSION
   s.name        = 'rubyretriever'
-  s.date        = '2014-06-08'
-  s.summary     = "Ruby Web Crawler & File Harvester"
-  s.description = "Asynchronous web crawler, file harvester & autodownloader"
-  s.authors     = ["Joe Norton"]
-  s.email       = ["joe@softwarebyjoe.com"]
-  s.homepage    =
-    'http://softwarebyjoe.com/rubyretriever/'
-  s.license       = 'MIT'
-   # If you need to check in files that aren't .rb files, add them here
-  s.files        = Dir["{lib}/**/*.rb", "bin/*", "LICENSE", "*.md","{spec}/*.rb"]
+  s.date        = '2014-06-10'
+  s.summary     = 'Ruby Web Crawler & File Harvester'
+  s.description = 'Asynchronous web crawler, file harvester & autodownloader'
+  s.authors     = ['Joe Norton']
+  s.email       = ['joe@softwarebyjoe.com']
+  s.homepage    = 'http://softwarebyjoe.com/rubyretriever/'
+  s.license     = 'MIT'
+  # If you need to check in files that aren't .rb files, add them here
+  s.files        = Dir['{lib}/**/*.rb', 'bin/*', 'LICENSE', '*.md',
+                       '{spec}/*.rb']
   s.require_path = 'lib'
-    # lol - required for validation
   s.rubyforge_project         = 'rubyretriever'
 
   # If you need an executable, add it here
-  s.executables = ["rr"]
-  s.required_rubygems_version = ">= 1.3.6"
+  s.executables = ['rr']
+  s.required_rubygems_version = '>= 1.3.6'
 
-    # If you have other dependencies, add them here
+  # If you have other dependencies, add them here
   s.add_runtime_dependency 'em-synchrony'
   s.add_runtime_dependency 'em-http-request'
   s.add_runtime_dependency 'ruby-progressbar'

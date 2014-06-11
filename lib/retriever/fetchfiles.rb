@@ -1,65 +1,68 @@
 module Retriever
-	class FetchFiles < Fetch
-		def initialize(url,options)  #recieves target url and RR options, returns an array of all unique files (based on given filetype) found on the site
-			super
-			@data = []
-			page_one = Retriever::Page.new(@t.source,@t)
-			@linkStack = page_one.parseInternalVisitable
-			lg("URL Crawled: #{@t.target}")
-			lg("#{@linkStack.size-1} new links found")
+  # recieves target url and RR options
+  # returns an array of all unique files (based on given filetype)
+  #   found on the target site
+  class FetchFiles < Fetch
+    def initialize(url, options)
+      super
+      temp_file_collection = @page_one.parse_files(@page_one.parse_internal)
+      @data.concat(tempFileCollection) if temp_file_collection.size > 0
+      lg("#{@data.size} new files found")
 
-			tempFileCollection = page_one.parseFiles
-			@data.concat(tempFileCollection) if tempFileCollection.size>0
-			lg("#{@data.size} new files found")
-			errlog("Bad URL -- #{@t.target}") if !@linkStack
+      async_crawl_and_collect
 
-			@linkStack.delete(@t.target) if @linkStack.include?(@t.target)
-			@linkStack = @linkStack.take(@maxPages) if (@linkStack.size+1 > @maxPages)
+      @data.sort_by! { |x| x.length }
+      @data.uniq!
+    end
 
-			self.async_crawl_and_collect()
+    def download_file(path)
+      # given valid url, downloads file to current directory in /rr-downloads/
+      arr = path.split('/')
+      shortname = arr.pop
+      puts "Initiating Download of: #{shortname}"
+      File.open(shortname, 'wb') do |saved_file|
+        open(path) do |read_file|
+          saved_file.write(read_file.read)
+        end
+      end
+      puts '  SUCCESS: Download Complete'
+    end
 
-			@data.sort_by! {|x| x.length}
-			@data.uniq!
-		end
-		def download_file(path) #given valid url, downloads file to current directory in /rr-downloads/
-			arr = path.split('/')
-			shortname = arr.pop
-			puts "Initiating Download to: #{'/rr-downloads/' + shortname}"
-			File.open(shortname, "wb") do |saved_file|
-			  open(path) do |read_file|
-			    saved_file.write(read_file.read)
-			  end
-			end
-			puts "	SUCCESS: Download Complete"
-		end
-		def autodownload() #when autodownload option is true, this will automatically go through the fetched file URL collection and download each one.
-			lenny = @data.count
-			puts "###################"
-			puts "### Initiating Autodownload..."
-			puts "###################"
-			puts "#{lenny} - #{@file_ext}'s Located"
-			puts "###################"
-			if File::directory?("rr-downloads")
-			 Dir.chdir("rr-downloads")
-			else
-			puts "creating rr-downloads Directory"
-			 Dir.mkdir("rr-downloads")
-			 Dir.chdir("rr-downloads")
-			end
-			file_counter = 0
-			@data.each do |entry|
-				begin	
-					self.download_file(entry)
-					file_counter+=1
-					lg("		File [#{file_counter} of #{lenny}]")
-					puts
-				rescue StandardError => e
-					puts "ERROR: failed to download - #{entry}"
-					puts e.message
-					puts
-				end
-			end
-			Dir.chdir("..")
-		end
-	end
+    def autodownload
+      # go through the fetched file URL collection and download each one.
+      puts HR
+      puts '### Initiating Autodownload...'
+      puts HR
+      puts "#{@data.count} - #{@file_ext}'s Located"
+      puts HR
+      move_to_download_dir
+      iterate_thru_collection_and_download
+      Dir.chdir('..')
+    end
+
+    private
+
+    def iterate_thru_collection_and_download
+      lenn = @data.count
+      @data.each_with_index do |entry, i|
+        begin
+          download_file(entry)
+        rescue StandardError
+          puts "ERROR: failed to download - #{entry}"
+        end
+        lg("    File [#{i + 1} of #{lenn}]\n")
+      end
+    end
+
+    def move_to_download_dir(dir_name = 'rr-downloads')
+      if File.directory?(dir_name)
+        Dir.chdir(dir_name)
+      else
+        puts "creating #{dir_name} Directory"
+        Dir.mkdir(dir_name)
+        Dir.chdir(dir_name)
+      end
+      puts "Downloading files to local directory: '/#{dir_name}/'"
+    end
+  end
 end
