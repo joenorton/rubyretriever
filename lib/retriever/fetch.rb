@@ -23,10 +23,10 @@ module Retriever
         :error_server => 0
       }
       setup_options(options)
-      setup_progress_bar if @prgrss
+      setup_progress_bar if @progress
 
       @t = Retriever::Target.new(url, @file_re)
-      @output = "rr-#{@t.host.split('.')[1]}" if @fh && !@output
+      @output = "rr-#{@t.host.split('.')[1]}" if @fileharvest && !@output
 
       @already_crawled = setup_bloom_filter
 
@@ -39,21 +39,21 @@ module Retriever
     end
 
     def lg(msg)
-      puts "### #{msg}" if @v
+      puts "### #{msg}" if @verbose
     end
 
     # prints current data collection to STDOUT
     def dump
       puts HR
-      if @v
+      if @verbose
         puts 'Connection Tally:'
         puts @connection_tally.to_s
         puts HR
       end
-      if @s
+      if @sitemap
         puts "#{@t.target} Sitemap"
         puts "Page Count: #{@data.size}"
-      elsif @fh
+      elsif @fileharvest
         puts "Target URL: #{@t.target}"
         puts "Filetype: #{@file_ext}"
         puts "File Count: #{@data.size}"
@@ -94,17 +94,17 @@ module Retriever
     private
 
     def setup_options(options)
-      @prgrss     = options['progress']
-      @max_pages  = options['maxpages'] ? options['maxpages'].to_i : 100
-      @v          = options['verbose']
-      @output     = options['filename']
-      @fh         = options['fileharvest']
-      @file_ext   = @fh.to_s
-      @s          = options['sitemap']
-      @seo        = options['seo']
-      @autodown   = options['autodown']
+      @progress     = options['progress']
+      @max_pages    = options['maxpages'] ? options['maxpages'].to_i : 100
+      @verbose      = options['verbose']
+      @output       = options['filename']
+      @fileharvest  = options['fileharvest']
+      @file_ext     = @fileharvest.to_s
+      @sitemap      = options['sitemap']
+      @seo          = options['seo']
+      @autodown     = options['autodown']
       #
-      if @fh
+      if @fileharvest
         temp_ext_str = '.' + @file_ext + '\z'
         @file_re = Regexp.new(temp_ext_str).freeze
       else
@@ -127,7 +127,7 @@ module Retriever
 
     def setup_progress_bar
       # verbose & progressbar conflict
-      errlog('CANNOT RUN VERBOSE & PROGRESSBAR AT SAME TIME, CHOOSE ONE, -v or -p') if @v
+      errlog('CANNOT RUN VERBOSE & PROGRESSBAR AT SAME TIME, CHOOSE ONE, -v or -p') if @verbose
       prgress_vars = {
         :title => 'Pages',
         :starting_at => 1,
@@ -171,11 +171,11 @@ module Retriever
         new_links_arr -= @link_stack
         next if new_links_arr.empty?
         @link_stack.concat(new_links_arr).uniq!
-        next unless @s
+        next unless @sitemap
         @data.concat(new_links_arr)
       end
       # done, make sure progress bar says we are done
-      @progressbar.finish if @prgrss
+      @progressbar.finish if @progress
     end
 
     # returns true is resp is ok to continue
@@ -228,7 +228,7 @@ module Retriever
     def page_from_response(url, response)
       lg("Page Fetched: #{url}")
       @already_crawled.insert(url)
-      @progressbar.increment if @prgrss && (@already_crawled.size < @max_pages)
+      @progressbar.increment if @progress && (@already_crawled.size < @max_pages)
       Retriever::Page.new(response, @t)
     end
 
@@ -249,7 +249,7 @@ module Retriever
           lg("--#{current_page.links.size} links found")
           new_stuff.push(current_page.parse_internal_visitable)
           # link dependent modes
-          next unless @fh
+          next unless @fileharvest
           push_files_to_data(current_page)
         end
         EventMachine.stop
