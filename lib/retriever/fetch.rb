@@ -50,25 +50,22 @@ module Retriever
         puts @connection_tally.to_s
         puts HR
       end
-      if @sitemap
-        puts "#{@t.target} Sitemap"
-        puts "Page Count: #{@data.size}"
-      elsif @fileharvest
         puts "Target URL: #{@t.target}"
-        puts "Filetype: #{@file_ext}"
-        puts "File Count: #{@data.size}"
+      if @sitemap
+        puts 'Sitemap'
+      elsif @fileharvest
+        puts "File harvest by type: #{@file_ext}"
       elsif @seo
-        puts "#{@t.target} SEO Metrics"
-        puts "Page Count: #{@data.size}"
+        puts 'SEO Metrics'
       else
         fail 'ERROR - Cannot dump - Mode Not Found'
       end
+      puts "Count: #{@data.size}"
       puts HR
       @data.each do |line|
         puts line
       end
-      puts HR
-      puts
+      puts HR + "\n"
     end
 
     # writes current data collection out to CSV in current directory
@@ -99,13 +96,12 @@ module Retriever
       @verbose      = options['verbose']
       @output       = options['filename']
       @fileharvest  = options['fileharvest']
-      @file_ext     = @fileharvest.to_s
       @sitemap      = options['sitemap']
       @seo          = options['seo']
       @autodown     = options['autodown']
       #
       if @fileharvest
-        temp_ext_str = '.' + @file_ext + '\z'
+        temp_ext_str = '.' + @fileharvest + '\z'
         @file_re = Regexp.new(temp_ext_str).freeze
       else
         # when FH is not true, and autodown is true

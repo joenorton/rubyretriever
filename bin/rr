@@ -51,7 +51,7 @@ options = {}
 
 optparse.parse!
 if ARGV[0].nil?
-  abort('###Missing Required Argument\nUsage: rr [mode] [options] Target_URL')
+  abort("###Missing Required Argument\nUsage: rr [mode] [options] Target_URL")
 end
 
 ARGV.each do|q|
