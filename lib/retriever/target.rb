@@ -3,13 +3,12 @@ require 'open-uri'
 module Retriever
   #
   class Target
-    HTTP_RE            = Regexp.new(/^http/i).freeze
-    DUB_DUB_DUB_DOT_RE = Regexp.new(/^www\./i).freeze
+    HTTP_RE    = Regexp.new(/^http/i).freeze
 
     attr_reader :host, :target, :host_re, :source, :file_re, :scheme
 
     def initialize(url, file_re = nil)
-      fail 'Bad URL' unless /\./ =~ url
+      fail 'Bad URL' unless url.include?('.')
       url         = "http://#{url}" unless HTTP_RE =~ url
       target_uri  = URI(url)
       @target     = target_uri.to_s

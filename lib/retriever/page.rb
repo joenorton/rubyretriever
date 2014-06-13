@@ -1,16 +1,32 @@
 module Retriever
   #
   class Page
-    HREF_CONTENTS_RE = Regexp.new(/\shref=['|"]([^\s][a-z0-9\.\/\:\-\%\+\?\!\=\&\,\:\;\~\_]+)['|"][\s|\W]/ix).freeze
-    NONPAGE_EXT_RE = Regexp.new(/\.(?:css|js|png|gif|jpg|mp4|wmv|flv|mp3|wav|doc|txt|ico|xml)/ix).freeze
-    HTTP_RE = Regexp.new(/^http/i).freeze
-    DUB_DUB_DUB_DOT_RE = Regexp.new(/^www\./i).freeze
-
-    TITLE_RE  = Regexp.new(/<title>(.*)<\/title>/i).freeze
-    DESC_RE   = Regexp.new(/<meta[^>]*name=[\"|\']description[\"|\'][^>]*content=[\"]([^\"]*)[\"][^>]*>/i).freeze
+    HTTP_RE   = Regexp.new(/^http/i).freeze
     H1_RE     = Regexp.new(/<h1>(.*)<\/h1>/i).freeze
     H2_RE     = Regexp.new(/<h2>(.*)<\/h2>/i).freeze
-
+    TITLE_RE  = Regexp.new(/<title>(.*)<\/title>/i).freeze
+    DESC_RE   = Regexp.new(/<meta[^>]*name=[\"|\']description[\"|\']
+                          [^>]*content=[\"]
+                          (
+                            [^\"]*
+                          )
+                          [\"]
+                          [^>]
+                          *>
+                          /ix).freeze
+    HREF_CONTENTS_RE = Regexp.new(/\shref=
+                                  ['|"]
+                                  (
+                                    [^\s]
+                                    [a-z0-9\.\/\:\-\%\+\?\!\=\&\,\:\;\~\_]+
+                                  )
+                                  ['|"]
+                                  [\s|\W]
+                                  /ix).freeze
+    NONPAGE_EXT_RE = Regexp.new(/\.
+                                (?:css|js|png|gif|jpg|mp4|
+                                wmv|flv|mp3|wav|doc|txt|ico|xml)
+                                /ix).freeze
     attr_reader :links, :source, :t
 
     def initialize(source, t)
