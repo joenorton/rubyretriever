@@ -9,7 +9,8 @@ module Retriever
       @data.concat(@link_stack)
 
       async_crawl_and_collect
-
+      # done, make sure progress bar says we are done
+      @progressbar.finish if @progress
       @data.sort_by! { |x| x.length } if @data.size > 1
       @data.uniq!
     end

@@ -24,12 +24,8 @@ module Retriever
       }
       setup_options(options)
       setup_progress_bar if @progress
-
       @t = Retriever::Target.new(url, @file_re)
-      @output = "rr-#{@t.host.split('.')[1]}" if @fileharvest && !@output
-
       @already_crawled = setup_bloom_filter
-
       @page_one = crawl_page_one
       @link_stack = create_link_stack
     end
@@ -50,15 +46,13 @@ module Retriever
         puts @connection_tally.to_s
         puts HR
       end
-        puts "Target URL: #{@t.target}"
+      puts "Target URL: #{@t.target}"
       if @sitemap
         puts 'Sitemap'
       elsif @fileharvest
         puts "File harvest by type: #{@file_ext}"
       elsif @seo
         puts 'SEO Metrics'
-      else
-        fail 'ERROR - Cannot dump - Mode Not Found'
       end
       puts "Count: #{@data.size}"
       puts HR
@@ -99,14 +93,8 @@ module Retriever
       @sitemap      = options['sitemap']
       @seo          = options['seo']
       @autodown     = options['autodown']
-      #
-      if @fileharvest
-        temp_ext_str = '.' + @fileharvest + '\z'
-        @file_re = Regexp.new(temp_ext_str).freeze
-      else
-        # when FH is not true, and autodown is true
-        errlog('Cannot AUTODOWNLOAD when not in FILEHARVEST MODE') if @autodown
-      end
+      @file_re      = Regexp.new(".#{@fileharvest}\z").freeze if @fileharvest
+      @output       = "rr-#{@t.host.split('.')[1]}" if @fileharvest && !@output
     end
 
     def setup_bloom_filter
@@ -170,8 +158,6 @@ module Retriever
         next unless @sitemap
         @data.concat(new_links_arr)
       end
-      # done, make sure progress bar says we are done
-      @progressbar.finish if @progress
     end
 
     # returns true is resp is ok to continue
@@ -183,7 +169,7 @@ module Retriever
         lg("#{url} Redirected to #{loc}")
         if t.host_re =~ loc
           @link_stack.push(loc) unless @already_crawled.include?(loc)
-          lg('--Added to linkStack for later')
+          lg('--Added to stack for later')
           return false
         end
         lg("Redirection outside of target host. No - go. #{loc}")
@@ -224,7 +210,9 @@ module Retriever
     def page_from_response(url, response)
       lg("Page Fetched: #{url}")
       @already_crawled.insert(url)
-      @progressbar.increment if @progress && (@already_crawled.size < @max_pages)
+      if @progress && (@already_crawled.size < @max_pages)
+        @progressbar.increment
+      end
       Retriever::Page.new(response, @t)
     end
 

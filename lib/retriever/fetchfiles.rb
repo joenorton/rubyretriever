@@ -10,7 +10,8 @@ module Retriever
       lg("#{@data.size} new files found")
 
       async_crawl_and_collect
-
+      # done, make sure progress bar says we are done
+      @progressbar.finish if @progress
       @data.sort_by! { |x| x.length }
       @data.uniq!
     end
