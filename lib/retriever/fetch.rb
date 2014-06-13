@@ -17,10 +17,10 @@ module Retriever
     def initialize(url, options)
       @data = []
       @connection_tally = {
-        :success => 0,
-        :error => 0,
-        :error_client => 0,
-        :error_server => 0
+        success: 0,
+        error: 0,
+        error_client: 0,
+        error_server: 0
       }
       setup_options(options)
       setup_progress_bar if @progress
@@ -99,11 +99,11 @@ module Retriever
 
     def setup_bloom_filter
       already_crawled = BloomFilter::Native.new(
-        :size => 1_000_000,
-        :hashes => 5,
-        :seed => 1,
-        :bucket => 8,
-        :raise => false
+        size: 1_000_000,
+        hashes: 5,
+        seed: 1,
+        bucket: 8,
+        raise: false
       )
       already_crawled.insert(@t.target)
       already_crawled
@@ -113,10 +113,10 @@ module Retriever
       # verbose & progressbar conflict
       errlog('CANNOT RUN VERBOSE & PROGRESSBAR AT SAME TIME, CHOOSE ONE, -v or -p') if @verbose
       prgress_vars = {
-        :title => 'Pages',
-        :starting_at => 1,
-        :total => @max_pages,
-        :format => '%a |%b>%i| %c/%C %t'
+        title: 'Pages',
+        starting_at: 1,
+        total: @max_pages,
+        format: '%a |%b>%i| %c/%C %t'
       }
       @progressbar = ProgressBar.create(prgress_vars)
     end

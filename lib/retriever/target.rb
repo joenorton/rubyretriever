@@ -32,7 +32,7 @@ module Retriever
       fail 'Domain is not working. Try the non-WWW version.' if resp == ''
       fail 'Domain not working. Try HTTPS???' unless resp
       # consider using scrub from ruby 2.1? this misses some things
-      resp.encode('UTF-8', 'binary', :invalid => :replace, :undef => :replace)
+      resp.encode('UTF-8', 'binary', invalid: :replace, undef: :replace)
     end
 
     def resync_target_and_return_source(url)
