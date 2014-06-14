@@ -5,7 +5,7 @@ module Retriever
     SINGLE_SLASH_RE = Regexp.new(%r(^/{1}[^/])).freeze
     DOUBLE_SLASH_RE = Regexp.new(%r(^/{2}[^/])).freeze
     NO_SLASH_PAGE_RE = Regexp.new(/^[a-z0-9\-\_\=\?\.]+\z/ix).freeze
-    DUB_DUB_DUB_DOT_RE = Regexp.new(/^www\./i).freeze
+    WWW_DOT_RE = Regexp.new(/^www\./i).freeze
 
     def initialize(scheme, host, link)
       @scheme = scheme
@@ -16,7 +16,7 @@ module Retriever
     def path
       return link if HTTP_RE =~ link
 
-      return "#{@scheme}://#{link}" if DUB_DUB_DUB_DOT_RE =~ link
+      return "#{@scheme}://#{link}" if WWW_DOT_RE =~ link
 
       return "#{@scheme}://#{host}#{link}" if SINGLE_SLASH_RE =~ link
 
