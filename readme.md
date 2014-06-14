@@ -6,13 +6,27 @@ By Joe Norton
 
 RubyRetriever is a Web Crawler, Site Mapper, File Harvester & Autodownloader.
 
-RubyRetriever (RR) uses asynchronous HTTP requests, thanks to [Eventmachine](https://github.com/eventmachine/eventmachine) & [Synchrony](https://github.com/igrigorik/em-synchrony), to crawl webpages *very quickly*.  Another neat thing about RR, is it uses a ruby implementation of the [bloomfilter](https://github.com/igrigorik/bloomfilter-rb) in order to keep track of page's it has already crawled.
-
-**Use at Own Risk**   
-RR does NOT respect robots.txt, and RR currently - by default - launches up to 10 parallel GET requests at once. This is a feature, do not abuse it.
-
 **v1.0 Update (6/07/2014)** - Includes major code changes, a lot of bug fixes. Much better in dealing with redirects, and issues with the host changing, etc. Also, added the SEO mode -- which grabs a number of key SEO components from every page on a site. Lastly, this update was so extensive that I could not ensure backward compatibility -- and thus, this was update 1.0!  
+mission  
+-------
+RubyRetriever aims to be the best crawling, and scraping package for Ruby.    
 
+RubyRetriever (RR) uses asynchronous HTTP requests, thanks to [Eventmachine](https://github.com/eventmachine/eventmachine) & [Synchrony](https://github.com/igrigorik/em-synchrony), to crawl webpages *very quickly*.  Another neat thing about RR, is it uses a ruby implementation of the [bloomfilter](https://github.com/igrigorik/bloomfilter-rb) in order to keep track of page's it has already crawled.  
+
+features  
+--------  
+* Asynchronous HTTP Requests thru EM & Synchrony  
+* Bloom filter for tracking pages visited.  
+* 3 CLI modes: 1) Sitemap, 2) File Harvest, 3) SEO   
+
+use-cases  
+---------
+RubyRetriever can do multiple things for you, with a single command at the terminal RR can:  
+1. Crawl your website and output a *valid XML sitemap* based on what it found.  
+2. Crawl a target website and *download all files of a given filetype*.  
+3. Crawl a target website and *collect important SEO information* such as page titles, meta descriptions, h1 tags, etc. and write it to CSV.  
+
+Help & Forks Welcome!  
   
 getting started   
 -----------

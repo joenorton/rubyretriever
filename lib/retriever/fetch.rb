@@ -41,25 +41,21 @@ module Retriever
     # prints current data collection to STDOUT
     def dump
       puts HR
-      if @verbose
-        puts 'Connection Tally:'
-        puts @connection_tally.to_s
-        puts HR
-      end
+      puts "Connection Tally:\n#{@connection_tally}\n#{HR}" if @verbose
       puts "Target URL: #{@t.target}"
       if @sitemap
         puts 'Sitemap'
       elsif @fileharvest
-        puts "File harvest by type: #{@file_ext}"
+        puts "File harvest by type: #{@fileharvest}"
       elsif @seo
         puts 'SEO Metrics'
       end
-      puts "Count: #{@data.size}"
+      puts "Data Dump -- Object Count: #{@data.size}"
       puts HR
       @data.each do |line|
         puts line
       end
-      puts HR + "\n"
+      puts
     end
 
     # writes current data collection out to CSV in current directory
@@ -111,7 +107,7 @@ module Retriever
 
     def setup_progress_bar
       # verbose & progressbar conflict
-      errlog('CANNOT RUN VERBOSE & PROGRESSBAR AT SAME TIME, CHOOSE ONE, -v or -p') if @verbose
+      errlog('CANNOT RUN VERBOSE & PROGRESSBAR AT SAME TIME') if @verbose
       prgress_vars = {
         title: 'Pages',
         starting_at: 1,
