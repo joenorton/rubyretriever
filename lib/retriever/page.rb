@@ -1,3 +1,5 @@
+require 'addressable/uri'
+
 module Retriever
   #
   class Page
@@ -27,6 +29,7 @@ module Retriever
                                 (?:css|js|png|gif|jpg|mp4|
                                 wmv|flv|mp3|wav|doc|txt|ico|xml)
                                 /ix).freeze
+
     attr_reader :links, :source, :t
 
     def initialize(source, t)
@@ -45,11 +48,11 @@ module Retriever
         # meant to be a loose filter to catch all reasonable HREF attributes.
         link = match[0]
         Link.new(@t.scheme, @t.host, link).path
-      end.uniq
+      end.compact.uniq
     end
 
     def parse_internal
-      links.select { |x| @t.host_re =~ x }
+      links.select { |x| @t.host == Addressable::URI.parse(x).host }
     end
 
     def parse_internal_visitable

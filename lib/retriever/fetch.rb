@@ -133,8 +133,9 @@ module Retriever
     end
 
     def end_crawl_notice
-      @progressbar.log("Can't find any more links.") if @prgress
-      lg("Can't find any more links.")
+      notice = "#{HR}\nENDING CRAWL\nCan't find any more links."
+      @progressbar.log(notice) if @progress
+      lg(notice)
     end
 
     # iterates over the existing @link_stack
@@ -148,7 +149,7 @@ module Retriever
         new_links_arr = process_link_stack
         next if new_links_arr.nil? || new_links_arr.empty?
         # set operations to see are these in our previous visited pages arr
-        new_links_arr -= @link_stack
+        new_links_arr.keep_if { |each| !@already_crawled.include?(each) }
         next if new_links_arr.empty?
         @link_stack.concat(new_links_arr).uniq!
         next unless @sitemap
@@ -164,7 +165,7 @@ module Retriever
         loc = hdr.location
         lg("#{url} Redirected to #{loc}")
         if t.host_re =~ loc
-          @link_stack.push(loc) unless @already_crawled.include?(loc)
+          @new_stuff.push(loc) unless @already_crawled.include?(loc)
           lg('--Added to stack for later')
           return false
         end
@@ -182,7 +183,6 @@ module Retriever
       # let's not continue if not text/html
       unless hdr['CONTENT_TYPE'].include?('text/html')
         @already_crawled.insert(url)
-        @link_stack.delete(url)
         lg("Page Not text/html -- #{url}")
         return false
       end
@@ -212,9 +212,14 @@ module Retriever
       Retriever::Page.new(response, @t)
     end
 
+    def new_visitable_links(current_page)
+      lg("--#{current_page.links.size} links found")
+      current_page.parse_internal_visitable
+    end
+
     # send a new wave of GET requests, using current @link_stack
     def process_link_stack
-      new_stuff = []
+      @new_stuff = []
       EM.synchrony do
         concurrency = 10
         EM::Synchrony::FiberIterator.new(@link_stack, concurrency).each do |url|
@@ -226,15 +231,16 @@ module Retriever
           # non-link dependent modes
           push_seo_to_data(url, current_page) if @seo
           next unless current_page.links.size > 0
-          lg("--#{current_page.links.size} links found")
-          new_stuff.push(current_page.parse_internal_visitable)
+          @new_stuff.push(new_visitable_links(current_page))
           # link dependent modes
           next unless @fileharvest
           push_files_to_data(current_page)
         end
         EventMachine.stop
       end
-      new_stuff.flatten.uniq!
+      # empty the stack. most clean way
+      @link_stack = []
+      @new_stuff.flatten.uniq!
     end
   end
 end
