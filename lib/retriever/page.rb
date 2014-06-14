@@ -31,7 +31,7 @@ module Retriever
 
     def initialize(source, t)
       @t = t
-      @source = source.encode('UTF-8', :invalid => :replace, :undef => :replace)
+      @source = source.encode('UTF-8', invalid: :replace, undef: :replace)
       @links = nil
     end
 
