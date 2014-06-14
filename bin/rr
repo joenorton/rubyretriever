@@ -1,53 +1,54 @@
 #! /usr/bin/env ruby
-
 require 'retriever'
 require 'optparse'
 
 options = {}
- optparse = OptionParser.new do |opts|
-   # Set a banner, displayed at the top
-   # of the help screen.
-   opts.banner = 'Usage: rr [MODE FLAG] [options] Target_URL'
-   options['sitemap'] = false
-   opts.on('-s', '--sitemap [FORMAT]', 'MODE FLAG: Sitemap mode') do |output_type|
-     options['sitemap'] = output_type || ''
-   end
-   options['fileharvest'] = false
-   opts.on('-f', '--files FILETYPE', 'MODE FLAG: Fileharvest mode') do |file_ext|
-     options['fileharvest'] = file_ext
-   end
-   options['seo'] = false
-   opts.on('-e', '--seo', 'MODE FLAG: SEO mode') do
-     options['seo'] = true
-   end
-   options['filename'] = nil
-   opts.on('-o', '--out FILENAME', 'Dump output to selected filename') do |filename|
-     options['filename'] = filename
-   end
-   # Define the options, and what they do
-   options['verbose'] = false
-   opts.on('-v', '--verbose', 'Output more information') do
-     options['verbose'] = true
-   end
-   options['progress'] = false
-   opts.on('-p', '--progress', 'Output progress bar') do
-     options['progress'] = true
-   end
-   options['maxpages'] = false
-   opts.on('-l', '--limit PAGE_LIMIT_#', 'set a max on the total number of crawled pages') do |maxpages|
-     options['maxpages'] = maxpages
-   end
-   options['autodown'] = false
-   opts.on('-a', '--auto', 'Automatically download all files of filetype located') do
-     options['autodown'] = true
-   end
-   # This displays the help screen, all programs are
-   # assumed to have this option.
-   opts.on('-h', '--help', 'Display this screen') do
-     puts opts
-     exit
-   end
- end
+optparse = OptionParser.new do |opts|
+  # Set a banner, displayed at the top
+  # of the help screen.
+  opts.banner = 'Usage: rr [MODE FLAG] [options] Target_URL'
+  options['sitemap'] = false
+  opts.on('-s', '--sitemap [FORMAT]', 'MODE FLAG: Sitemap mode') do |type|
+    options['sitemap'] = type || ''
+  end
+  options['fileharvest'] = false
+  opts.on('-f', '--files FILETYPE', 'MODE FLAG: Fileharvest mode') do |file_e|
+    options['fileharvest'] = file_e
+  end
+  options['seo'] = false
+  opts.on('-e', '--seo', 'MODE FLAG: SEO mode') do
+    options['seo'] = true
+  end
+  options['filename'] = nil
+  opts.on('-o', '--out FILENAME', 'Dump output to file') do |file|
+    options['filename'] = file
+  end
+  # Define the options, and what they do
+  options['verbose'] = false
+  opts.on('-v', '--verbose', 'Output more information') do
+    options['verbose'] = true
+  end
+  options['progress'] = false
+  opts.on('-p', '--progress', 'Output progress bar') do
+    options['progress'] = true
+  end
+  options['maxpages'] = false
+  opts.on('-l',
+          '--limit PAGE_LIMIT_#',
+          'set a max on the total number of crawled pages') do |maxp|
+    options['maxpages'] = maxp
+  end
+  options['autodown'] = false
+  opts.on('-a', '--auto', 'Automatically download all files located') do
+    options['autodown'] = true
+  end
+  # This displays the help screen, all programs are
+  # assumed to have this option.
+  opts.on('-h', '--help', 'Display this screen') do
+    puts opts
+    exit
+  end
+end
 
 optparse.parse!
 if ARGV[0].nil?
@@ -61,9 +62,11 @@ ARGV.each do|q|
     puts '### Creating Sitemap' if options['sitemap']
     puts "### Outputting in format: #{options['sitemap']}" if options['sitemap']
     puts '### Performing File Harvest' if options['fileharvest']
-    puts "### Searching for file extension: #{options['fileharvest']} pages" if options['fileharvest']
+    if options['fileharvest']
+      puts "### Searching for filetype: #{options['fileharvest']}"
+    end
     puts '### Performing SEO Scrape' if options['seo']
-    puts "### Writing output to filename: #{options['filename']}" if options['filename']
+    puts "### Writing to file: #{options['filename']}" if options['filename']
     puts '### Being verbose'
     puts "### Stopping after #{options['maxpages']} pages"
   end
