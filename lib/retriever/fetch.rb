@@ -25,9 +25,11 @@ module Retriever
       setup_options(options)
       setup_progress_bar if @progress
       @t = Retriever::Target.new(url, @file_re)
+      @output = "rr-#{@t.host.split('.')[1]}" if @fileharvest && !@output
       @already_crawled = setup_bloom_filter
       @page_one = crawl_page_one
       @link_stack = create_link_stack
+      @temp_link_stack = []
     end
 
     def errlog(msg)
@@ -90,7 +92,6 @@ module Retriever
       @seo          = options['seo']
       @autodown     = options['autodown']
       @file_re      = Regexp.new(".#{@fileharvest}\z").freeze if @fileharvest
-      @output       = "rr-#{@t.host.split('.')[1]}" if @fileharvest && !@output
     end
 
     def setup_bloom_filter
@@ -147,14 +148,15 @@ module Retriever
           break
         end
         new_links_arr = process_link_stack
+        @temp_link_stack = []
         next if new_links_arr.nil? || new_links_arr.empty?
         # set operations to see are these in our previous visited pages arr
-        new_links_arr.keep_if { |each| !@already_crawled.include?(each) }
         next if new_links_arr.empty?
-        @link_stack.concat(new_links_arr).uniq!
+        @link_stack.concat(new_links_arr)
         next unless @sitemap
         @data.concat(new_links_arr)
       end
+      @data.uniq!
     end
 
     # returns true is resp is ok to continue
@@ -165,7 +167,7 @@ module Retriever
         loc = hdr.location
         lg("#{url} Redirected to #{loc}")
         if t.host_re =~ loc
-          @new_stuff.push(loc) unless @already_crawled.include?(loc)
+          @temp_link_stack.push(loc) unless @already_crawled.include?(loc)
           lg('--Added to stack for later')
           return false
         end
@@ -218,8 +220,9 @@ module Retriever
     end
 
     # send a new wave of GET requests, using current @link_stack
+    # at end of the loop it empties link_stack
+    # puts new links into temporary stack
     def process_link_stack
-      @new_stuff = []
       EM.synchrony do
         concurrency = 10
         EM::Synchrony::FiberIterator.new(@link_stack, concurrency).each do |url|
@@ -231,7 +234,7 @@ module Retriever
           # non-link dependent modes
           push_seo_to_data(url, current_page) if @seo
           next unless current_page.links.size > 0
-          @new_stuff.push(new_visitable_links(current_page))
+          @temp_link_stack.push(new_visitable_links(current_page))
           # link dependent modes
           next unless @fileharvest
           push_files_to_data(current_page)
@@ -240,7 +243,7 @@ module Retriever
       end
       # empty the stack. most clean way
       @link_stack = []
-      @new_stuff.flatten.uniq!
+      @temp_link_stack.flatten.uniq!
     end
   end
 end

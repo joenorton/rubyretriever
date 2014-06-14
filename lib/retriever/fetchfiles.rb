@@ -13,7 +13,6 @@ module Retriever
       # done, make sure progress bar says we are done
       @progressbar.finish if @progress
       @data.sort_by! { |x| x.length }
-      @data.uniq!
     end
 
     def download_file(path)
