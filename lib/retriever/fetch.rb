@@ -150,8 +150,6 @@ module Retriever
         new_links_arr = process_link_stack
         @temp_link_stack = []
         next if new_links_arr.nil? || new_links_arr.empty?
-        # set operations to see are these in our previous visited pages arr
-        next if new_links_arr.empty?
         @link_stack.concat(new_links_arr)
         next unless @sitemap
         @data.concat(new_links_arr)
@@ -243,6 +241,9 @@ module Retriever
       end
       # empty the stack. most clean way
       @link_stack = []
+      # temp contains redirects + new visitable links
+      # we will re-initialize it as empty right after this function
+      # in the parent method 'async crawl and collect'
       @temp_link_stack.flatten.uniq!
     end
   end
