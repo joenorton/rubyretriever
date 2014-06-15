@@ -6,7 +6,7 @@ By Joe Norton
 
 RubyRetriever is a Web Crawler, Site Mapper, File Harvester & Autodownloader.  
 
-RubyRetriever (RR) uses asynchronous HTTP requests, thanks to [Eventmachine](https://github.com/eventmachine/eventmachine) & [Synchrony](https://github.com/igrigorik/em-synchrony), to crawl webpages *very quickly*.  Another neat thing about RR, is it uses a ruby implementation of the [bloomfilter](https://github.com/igrigorik/bloomfilter-rb) in order to keep track of page's it has already crawled.  
+RubyRetriever (RR) uses asynchronous HTTP requests, thanks to [Eventmachine](https://github.com/eventmachine/eventmachine) & [Synchrony](https://github.com/igrigorik/em-synchrony), to crawl webpages *very quickly*.  Another neat thing about RR, is it uses a ruby implementation of the [bloomfilter](https://github.com/igrigorik/bloomfilter-rb) in order to keep track of pages it has already crawled.  
 
 **v1.0 Update (6/07/2014)** - Includes major code changes, a lot of bug fixes. Much better in dealing with redirects, and issues with the host changing, etc. Also, added the SEO mode -- which grabs a number of key SEO components from every page on a site. Lastly, this update was so extensive that I could not ensure backward compatibility -- and thus, this was update 1.0!  
 mission  
