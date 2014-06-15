@@ -6,7 +6,7 @@ module Retriever
     def initialize(url, options)
       super
       temp_file_collection = @page_one.parse_files(@page_one.parse_internal)
-      @data.concat(tempFileCollection) if temp_file_collection.size > 0
+      @data.concat(temp_file_collection) if temp_file_collection.size > 0
       lg("#{@data.size} new files found")
 
       async_crawl_and_collect

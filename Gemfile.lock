@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rubyretriever (1.2.2)
+    rubyretriever (1.2.3)
       addressable
       bloomfilter-rb
       em-http-request
