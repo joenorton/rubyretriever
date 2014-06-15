@@ -6,29 +6,33 @@ By Joe Norton
 
 RubyRetriever is a Web Crawler, Site Mapper, File Harvester & Autodownloader.  
 
-RubyRetriever (RR) uses asynchronous HTTP requests, thanks to [Eventmachine](https://github.com/eventmachine/eventmachine) & [Synchrony](https://github.com/igrigorik/em-synchrony), to crawl webpages *very quickly*.  Another neat thing about RR, is it uses a ruby implementation of the [bloomfilter](https://github.com/igrigorik/bloomfilter-rb) in order to keep track of pages it has already crawled.  
+RubyRetriever (RR) uses asynchronous HTTP requests via [Eventmachine](https://github.com/eventmachine/eventmachine) & [Synchrony](https://github.com/igrigorik/em-synchrony) to crawl webpages *very quickly*. RR also uses a Ruby implementation of the [bloomfilter](https://github.com/igrigorik/bloomfilter-rb) in order to keep track of pages it has already crawled.  
 
-**v1.0 Update (6/07/2014)** - Includes major code changes, a lot of bug fixes. Much better in dealing with redirects, and issues with the host changing, etc. Also, added the SEO mode -- which grabs a number of key SEO components from every page on a site. Lastly, this update was so extensive that I could not ensure backward compatibility -- and thus, this was update 1.0!  
-mission  
+**v1.0 Update (6/07/2014)** - Includes major code changes and a lot of bug fixes. It's now much better in dealing with redirects, issues with the host changing, etc. Also added the SEO mode, which grabs a number of key SEO components from every page on a site. Lastly, this update was so extensive that I could not ensure backward compatibility; thus, this was update 1.0!
+
+Mission  
 -------
-RubyRetriever aims to be the best command-line crawling, and scraping package written in Ruby.    
+RubyRetriever aims to be the best command-line crawling and scraping package written in Ruby.    
 
-features  
+Features  
 --------  
 * Asynchronous HTTP Requests thru EM & Synchrony  
-* Bloom filter for tracking pages visited.  
-* 3 CLI modes: 1) Sitemap, 2) File Harvest, 3) SEO   
+* Bloom filter for tracking visited pages  
+* 3 CLI modes
+	* Sitemap
+	* File Harvest
+	* SEO   
 
-use-cases  
+Use cases  
 ---------
-RubyRetriever can do multiple things for you, with a single command at the terminal RR can:  
+RubyRetriever can do multiple things for you. With a single command at the terminal, RR can:  
 1. Crawl your website and output a *valid XML sitemap* based on what it found.  
 2. Crawl a target website and *download all files of a given filetype*.  
-3. Crawl a target website and *collect important SEO information* such as page titles, meta descriptions, h1 tags, etc. and write it to CSV.  
+3. Crawl a target website, *collect important SEO information* such as page titles, meta descriptions and h1 tags, and write it to CSV.  
 
 Help & Forks Welcome!  
   
-getting started   
+Getting started   
 -----------
 Install the gem
 ```sh
@@ -44,7 +48,7 @@ OR -- SAME COMMAND
 rr -s csv -p -l 100 http://www.cnet.com
 ```  
   
-This would go to http://www.cnet.com and map it until it crawled a max of 100 pages, and then it would write it out to a csv named cnet. Optionally, we can also use the format XML and then rubyretriever would output that same URL list into a valid XML sitemap that can be submitted to Google -- but that is not what this current example would do.  
+This would map http://www.cnet.com until it crawled a max of 100 pages, then write the results to a CSV named cnet. Optionally, you could also use the format XML and RR would output the same URL list into a valid XML sitemap that could be submitted to Google.  
   
  **Example: File Harvesting mode**  
 ```sh
@@ -55,7 +59,7 @@ OR -- SAME COMMAND
 rr -f pdf -p -l 100 http://www.hubspot.com
 ```  
   
-This would go to http://www.hubspot.com and crawl it looking for filetype:PDF until it crawled a max of 100 pages, and then it would write out a list of filepaths to a csv named hubspot (based on the website host name. Optionally we could have the script then go and autodownload all the files by adding the -a/--auto flag -- however this current example would just dump to stdout a list of all the PDF's found.
+This would crawl http://www.hubspot.com looking for filetype:PDF until it hit a max of 100 pages, then write out a list of filepaths to a CSV named hubspot (based on the website host name). Optionally, you could have the script autodownload all the files by adding the -a/--auto flag.
 
 **Example: SEO mode**  
 ```sh
@@ -66,7 +70,7 @@ OR -- SAME COMMAND
 rr -e -p -l 10 -o cnet-seo http://www.cnet.com
 ```  
   
-This would go to http://www.cnet.com and crawl a max of 100 pages, during which it would be collecting the onpage SEO fields on those pages - currently this means [url, page title, meta description, h1 text, h2 text], and then it would write it out to a csv named cnet-seo.
+This would go to http://www.cnet.com and crawl a max of 100 pages, during which it would collect the SEO fields on those pages - this currently means [url, page title, meta description, h1 text, h2 text]. It would then write the fields to a csv named cnet-seo.
   
 
 command-line arguments
