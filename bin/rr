@@ -56,7 +56,7 @@ if ARGV[0].nil?
 end
 
 ARGV.each do|q|
-  if options[:verbose]
+  if options['verbose']
     puts '###############################'
     puts '### [RubyRetriever]'
     puts '### Creating Sitemap' if options['sitemap']
