@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.name        = 'rubyretriever'
   s.date        = '2014-06-10'
   s.summary     = 'Ruby Web Crawler & File Harvester'
-  s.description = 'Asynchronous web crawler, file harvester & autodownloader'
+  s.description = "Asynchronous web crawler, file harvester & autodownloader"
   s.authors     = ['Joe Norton']
   s.email       = ['joe@softwarebyjoe.com']
   s.homepage    = 'http://softwarebyjoe.com/rubyretriever/'
