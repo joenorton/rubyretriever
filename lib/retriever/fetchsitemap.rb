@@ -5,14 +5,14 @@ module Retriever
     # returns an array of all unique pages found on the site
     def initialize(url, options)
       super
-      @data.push(@t.target)
-      @data.concat(@link_stack)
+      @result.push(@t.target)
+      @result.concat(@link_stack)
 
       async_crawl_and_collect
       # done, make sure progress bar says we are done
       @progressbar.finish if @progress
-      @data.sort_by! { |x| x.length } if @data.size > 1
-      @data.uniq!
+      @result.sort_by! { |x| x.length } if @result.size > 1
+      @result.uniq!
     end
 
     private
@@ -24,7 +24,7 @@ module Retriever
       f = File.open("sitemap-#{filename}.xml", 'w+')
       f << "<?xml version='1.0' encoding='UTF-8'?>"
       f << "<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>"
-      @data.each do |url|
+      @result.each do |url|
         f << "<url><loc>#{url}</loc></url>"
       end
       f << '</urlset>'
@@ -35,7 +35,7 @@ module Retriever
     def print_file_info(filename)
       puts HR
       puts "File Created: sitemap-#{filename}.xml"
-      puts "Object Count: #{@data.size}"
+      puts "Object Count: #{@result.size}"
       puts HR + "\n"
     end
   end

@@ -6,13 +6,13 @@ module Retriever
     def initialize(url, options)
       super
       temp_file_collection = @page_one.parse_files(@page_one.parse_internal)
-      @data.concat(temp_file_collection) if temp_file_collection.size > 0
-      lg("#{@data.size} new files found")
+      @result.concat(temp_file_collection) if temp_file_collection.size > 0
+      lg("#{@result.size} new files found")
 
       async_crawl_and_collect
       # done, make sure progress bar says we are done
       @progressbar.finish if @progress
-      @data.sort_by! { |x| x.length }
+      @result.sort_by! { |x| x.length }
     end
 
     def download_file(path)
@@ -33,7 +33,7 @@ module Retriever
       puts HR
       puts '### Initiating Autodownload...'
       puts HR
-      puts "#{@data.count} - #{@file_ext}'s Located"
+      puts "#{@result.count} - #{@file_ext}'s Located"
       puts HR
       move_to_download_dir
       iterate_thru_collection_and_download
@@ -43,8 +43,8 @@ module Retriever
     private
 
     def iterate_thru_collection_and_download
-      lenn = @data.count
-      @data.each_with_index do |entry, i|
+      lenn = @result.count
+      @result.each_with_index do |entry, i|
         begin
           download_file(entry)
         rescue StandardError

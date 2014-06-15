@@ -10,12 +10,12 @@ module Retriever
   #
   class Fetch
     HR = '###############################'
-    attr_reader :max_pages, :t
+    attr_reader :max_pages, :t, :result
     # given target URL and RR options, creates a fetch object.
     # There is no direct output
     # this is a parent class that the other fetch classes build off of.
     def initialize(url, options)
-      @data = []
+      @result = []
       @connection_tally = {
         success: 0,
         error: 0,
@@ -52,9 +52,9 @@ module Retriever
       elsif @seo
         puts 'SEO Metrics'
       end
-      puts "Data Dump -- Object Count: #{@data.size}"
+      puts "Data Dump -- Object Count: #{@result.size}"
       puts HR
-      @data.each do |line|
+      @result.each do |line|
         puts line
       end
       puts
@@ -69,13 +69,13 @@ module Retriever
           csv << ['URL', 'Page Title', 'Meta Description', 'H1', 'H2']
           i += 1
         end
-        @data.each do |entry|
+        @result.each do |entry|
           csv << entry
         end
       end
       puts HR
       puts "File Created: #{@output}.csv"
-      puts "Object Count: #{@data.size}"
+      puts "Object Count: #{@result.size}"
       puts HR
       puts
     end
@@ -152,9 +152,9 @@ module Retriever
         next if new_links_arr.nil? || new_links_arr.empty?
         @link_stack.concat(new_links_arr)
         next unless @sitemap
-        @data.concat(new_links_arr)
+        @result.concat(new_links_arr)
       end
-      @data.uniq!
+      @result.uniq!
     end
 
     # returns true is resp is ok to continue
@@ -193,13 +193,13 @@ module Retriever
     def push_seo_to_data(url, new_page)
       seos = [url]
       seos.concat(new_page.parse_seo)
-      @data.push(seos)
+      @result.push(seos)
       lg('--page SEO scraped')
     end
 
     def push_files_to_data(new_page)
       filez = new_page.parse_files(new_page.parse_internal)
-      @data.concat(filez) unless filez.empty?
+      @result.concat(filez) unless filez.empty?
       lg("--#{filez.size} files found")
     end
 
