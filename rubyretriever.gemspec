@@ -8,9 +8,9 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.version     = Retriever::VERSION
   s.name        = 'rubyretriever'
-  s.date        = '2014-06-10'
+  s.date        = '2014-06-14'
   s.summary     = 'Ruby Web Crawler & File Harvester'
-  s.description = "Asynchronous web crawler, file harvester & autodownloader"
+  s.description = 'Asynchronous web crawler, scraper and file harvester'
   s.authors     = ['Joe Norton']
   s.email       = ['joe@softwarebyjoe.com']
   s.homepage    = 'http://softwarebyjoe.com/rubyretriever/'
