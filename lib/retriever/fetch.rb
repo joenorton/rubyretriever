@@ -191,14 +191,14 @@ module Retriever
       true
     end
 
-    def push_seo_to_data(url, new_page)
+    def push_seo_to_result(url, new_page)
       seos = [url]
       seos.concat(new_page.parse_seo)
       @result.push(seos)
       lg('--page SEO scraped')
     end
 
-    def push_files_to_data(new_page)
+    def push_files_to_result(new_page)
       filez = new_page.parse_files(new_page.parse_internal)
       @result.concat(filez) unless filez.empty?
       lg("--#{filez.size} files found")
@@ -218,6 +218,12 @@ module Retriever
       current_page.parse_internal_visitable
     end
 
+    def push_custom_to_result(url, current_page, &block)
+      data = block.call current_page
+      @result.concat(data) unless data.empty?
+      lg("-- PageIterator called on: #{url}")
+    end
+
     # send a new wave of GET requests, using current @link_stack
     # at end of the loop it empties link_stack
     # puts new links into temporary stack
@@ -231,21 +237,19 @@ module Retriever
           next unless good_response?(resp, url)
           current_page = page_from_response(url, resp.response)
           # non-link dependent modes
-          push_seo_to_data(url, current_page) if @seo
-          @result.push(block.call current_page) if @iterator && block_given?
+          push_seo_to_result(url, current_page) if @seo
+          push_custom_to_result(url, current_page, &block) if @iterator && block_given?
           next unless current_page.links.size > 0
           @temp_link_stack.push(new_visitable_links(current_page))
           # link dependent modes
           next unless @fileharvest
-          push_files_to_data(current_page)
+          push_files_to_result(current_page)
         end
         EventMachine.stop
       end
       # empty the stack. most clean way
       @link_stack = []
       # temp contains redirects + new visitable links
-      # we will re-initialize it as empty right after this function
-      # in the parent method 'async crawl and collect'
       @temp_link_stack.flatten.uniq!
     end
   end
