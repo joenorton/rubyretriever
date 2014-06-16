@@ -6,7 +6,7 @@ t = Retriever::Target.new('http://www.cnet.com/reviews/', /\.exe\z/)
 describe 'Page' do
 
   describe '#links' do
-    let(:links) { Retriever::Page.new(@source, t).links }
+    let(:links) { Retriever::Page.new('http://www.cnet.com/reviews/', @source, t).links }
     it 'collects all unique href links on the page' do
       @source = (<<SOURCE).strip
 <a href='www.cnet.com/download.exe'>download</a>
@@ -22,7 +22,7 @@ SOURCE
   end
 
   describe '#parse_internal' do
-    let(:page) { Retriever::Page.new(@source, t) }
+    let(:page) { Retriever::Page.new('http://www.cnet.com/reviews/', @source, t) }
     let(:links) { page.parse_internal }
     it 'filters links by host' do
       @source = (<<SOURCE).strip
@@ -35,7 +35,7 @@ SOURCE
   end
 
   describe '#parse_internal_visitable' do
-    let(:page) { Retriever::Page.new(@source, t) }
+    let(:page) { Retriever::Page.new('http://www.cnet.com/reviews/', @source, t) }
     let(:links) { page.parse_internal_visitable }
     it "filters out 'unvisitable' URLS like JS, Stylesheets, Images" do
       @source = (<<SOURCE).strip
@@ -46,7 +46,7 @@ SOURCE
   end
 
   describe '#parse_files' do
-    let(:page) { Retriever::Page.new(@source, t) }
+    let(:page) { Retriever::Page.new('http://www.cnet.com/reviews/', @source, t) }
     let(:files) { page.parse_files(page.parse_internal) }
     it 'filters links by filetype' do
       @source = (<<SOURCE).strip
@@ -59,7 +59,7 @@ SOURCE
   end
 
   describe '#title' do
-    let(:page) { Retriever::Page.new(@source, t) }
+    let(:page) { Retriever::Page.new('http://www.cnet.com/reviews/', @source, t) }
     it 'returns page title' do
       @source = (<<SOURCE).strip
 <title>test</title>
@@ -68,7 +68,7 @@ SOURCE
     end
   end
   describe '#desc' do
-    let(:page) { Retriever::Page.new(@source, t) }
+    let(:page) { Retriever::Page.new('http://www.cnet.com/reviews/', @source, t) }
     it 'returns meta description' do
       @source = (<<SOURCE).strip
 <meta name='description' content="test2 ">
@@ -77,7 +77,7 @@ SOURCE
     end
   end
   describe '#h1' do
-    let(:page) { Retriever::Page.new(@source, t) }
+    let(:page) { Retriever::Page.new('http://www.cnet.com/reviews/', @source, t) }
     it 'returns h1 text' do
       @source = (<<SOURCE).strip
 <h1>test 3</h1>
@@ -86,7 +86,7 @@ SOURCE
     end
   end
   describe '#h2' do
-    let(:page) { Retriever::Page.new(@source, t) }
+    let(:page) { Retriever::Page.new('http://www.cnet.com/reviews/', @source, t) }
     it 'returns h2 text' do
       @source = (<<SOURCE).strip
 <h2> test 4 </h2>
