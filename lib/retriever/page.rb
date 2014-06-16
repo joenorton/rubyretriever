@@ -30,9 +30,10 @@ module Retriever
                                 wmv|flv|mp3|wav|doc|txt|ico|xml)
                                 /ix).freeze
 
-    attr_reader :links, :source, :t
+    attr_reader :links, :source, :t, :url
 
-    def initialize(source, t)
+    def initialize(url, source, t)
+      @url = url
       @t = t
       @source = source.encode('UTF-8', invalid: :replace, undef: :replace)
       @links = nil

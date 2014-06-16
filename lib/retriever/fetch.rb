@@ -120,7 +120,7 @@ module Retriever
     end
 
     def crawl_page_one
-      page_one = Retriever::Page.new(@t.source, @t)
+      page_one = Retriever::Page.new(@t.target, @t.source, @t)
       lg("URL Crawled: #{@t.target}")
       page_one
     end
@@ -210,7 +210,7 @@ module Retriever
       if @progress && (@already_crawled.size < @max_pages)
         @progressbar.increment
       end
-      Retriever::Page.new(response, @t)
+      Retriever::Page.new(url, response, @t)
     end
 
     def new_visitable_links(current_page)
@@ -220,7 +220,7 @@ module Retriever
 
     def push_custom_to_result(url, current_page, &block)
       data = block.call current_page
-      @result.concat(data) unless data.empty?
+      @result.push(data) unless data.empty?
       lg("-- PageIterator called on: #{url}")
     end
 
