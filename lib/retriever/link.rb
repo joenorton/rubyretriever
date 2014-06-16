@@ -8,7 +8,12 @@ module Retriever
     WWW_DOT_RE = Regexp.new(/^www\./i).freeze
 
     def initialize(target_scheme, target_host, this_link)
-      @link_uri = Addressable::URI.parse(this_link)
+      begin
+        @link_uri = Addressable::URI.parse(Addressable::URI.encode(this_link)).normalize
+      rescue Addressable::URI::InvalidURIError => e
+        dummy_link = Retriever::Link.new(target_scheme, target_host, target_host)
+        @link_uri = Addressable::URI.parse(dummy_link.path)
+      end
       @scheme = target_scheme
       @host = target_host
       @this_link = @link_uri.to_s

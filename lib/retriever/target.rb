@@ -11,7 +11,7 @@ module Retriever
     def initialize(url, file_re = nil)
       fail 'Bad URL' unless url.include?('.')
       url         = "http://#{url}" unless HTTP_RE =~ url
-      target_uri  = Addressable::URI.parse(url)
+      target_uri  = Addressable::URI.parse(Addressable::URI.encode(url))
       @target     = target_uri.to_s
       @host       = target_uri.host
       @host_re    = Regexp.new(@host.sub('www.', ''))

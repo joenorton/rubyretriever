@@ -52,7 +52,7 @@ module Retriever
     end
 
     def parse_internal
-      links.select { |x| @t.host == Addressable::URI.parse(x).host }
+      links.select { |x| @t.host == Addressable::URI.parse(Addressable::URI.encode(x)).host }
     end
 
     def parse_internal_visitable
