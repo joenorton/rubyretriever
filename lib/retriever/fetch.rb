@@ -15,6 +15,7 @@ module Retriever
     # There is no direct output
     # this is a parent class that the other fetch classes build off of.
     def initialize(url, options)
+      @iterator = false
       @result = []
       @connection_tally = {
         success: 0,
@@ -141,13 +142,13 @@ module Retriever
 
     # iterates over the existing @link_stack
     # running until we reach the @max_pages value.
-    def async_crawl_and_collect
+    def async_crawl_and_collect(&block)
       while @already_crawled.size < @max_pages
         if @link_stack.empty?
           end_crawl_notice
           break
         end
-        new_links_arr = process_link_stack
+        new_links_arr = process_link_stack(&block)
         @temp_link_stack = []
         next if new_links_arr.nil? || new_links_arr.empty?
         @link_stack.concat(new_links_arr)
@@ -220,7 +221,7 @@ module Retriever
     # send a new wave of GET requests, using current @link_stack
     # at end of the loop it empties link_stack
     # puts new links into temporary stack
-    def process_link_stack
+    def process_link_stack(&block)
       EM.synchrony do
         concurrency = 10
         EM::Synchrony::FiberIterator.new(@link_stack, concurrency).each do |url|
@@ -231,6 +232,7 @@ module Retriever
           current_page = page_from_response(url, resp.response)
           # non-link dependent modes
           push_seo_to_data(url, current_page) if @seo
+          @result.push(block.call current_page) if @iterator && block_given?
           next unless current_page.links.size > 0
           @temp_link_stack.push(new_visitable_links(current_page))
           # link dependent modes
