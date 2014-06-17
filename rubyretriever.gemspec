@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'retriever/version'
 
 Gem::Specification.new do |s|
-  s.required_ruby_version = '>= 1.8.6'
+  s.required_ruby_version = '>= 2.0.0'
   s.platform    = Gem::Platform::RUBY
   s.version     = Retriever::VERSION
   s.name        = 'rubyretriever'
