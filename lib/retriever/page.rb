@@ -1,4 +1,5 @@
 require 'addressable/uri'
+require 'htmlentities'
 
 module Retriever
   #
@@ -35,7 +36,8 @@ module Retriever
     def initialize(url, source, t)
       @url = url
       @t = t
-      @source = source.encode('UTF-8', invalid: :replace, undef: :replace)
+      @coder = HTMLEntities.new
+      @source = @coder.decode(source.encode('UTF-8', invalid: :replace, undef: :replace))
       @links = nil
     end
 

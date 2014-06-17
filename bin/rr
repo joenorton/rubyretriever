@@ -32,7 +32,7 @@ optparse = OptionParser.new do |opts|
   opts.on('-p', '--progress', 'Output progress bar') do
     options['progress'] = true
   end
-  options['maxpages'] = false
+  options['maxpages'] = 100
   opts.on('-l',
           '--limit PAGE_LIMIT_#',
           'set a max on the total number of crawled pages') do |maxp|

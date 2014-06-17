@@ -1,5 +1,3 @@
-require 'retriever'
-#
 module Retriever
   #
   class PageIterator < Fetch
