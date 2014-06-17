@@ -1,9 +1,10 @@
 module Retriever
   #
   class PageIterator < Fetch
-    # recieves target url and RR options
-    # returns an array of onpage SEO related fields
-    #   on all unique pages found on the site
+    # recieves target url and RR options, and a block
+    # runs the block on all pages during crawl, pushing
+    #   the returned value of the block onto a result stack
+    #   the complete data returned from the crawl is accessible thru self.result
     def initialize(url, options, &block)
       super
       fail 'block required for PageIterator' unless block_given?
