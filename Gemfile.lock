@@ -6,6 +6,7 @@ PATH
       bloomfilter-rb
       em-http-request
       em-synchrony
+      htmlentities
       ruby-progressbar
 
 GEM
@@ -27,6 +28,7 @@ GEM
     em-synchrony (1.0.3)
       eventmachine (>= 1.0.0.beta.1)
     eventmachine (1.0.3)
+    htmlentities (4.3.2)
     http_parser.rb (0.6.0)
     rake (10.3.2)
     redis (3.1.0)
