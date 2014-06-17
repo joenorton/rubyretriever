@@ -238,7 +238,7 @@ module Retriever
           current_page = page_from_response(url, resp.response)
           # non-link dependent modes
           push_seo_to_result(url, current_page) if @seo
-          push_custom_to_result(url, current_page, &block) if @iterator && block_given?
+          push_custom_to_result(url, current_page, &block) if @iterator
           next unless current_page.links.size > 0
           @temp_link_stack.push(new_visitable_links(current_page))
           # link dependent modes

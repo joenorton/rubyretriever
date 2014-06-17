@@ -1,3 +1,4 @@
+require 'retriever/core_ext'
 require 'retriever/fetch'
 require 'retriever/fetchfiles'
 require 'retriever/fetchsitemap'
