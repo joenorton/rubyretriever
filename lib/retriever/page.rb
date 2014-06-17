@@ -1,5 +1,6 @@
 require 'addressable/uri'
-
+#
+using SourceString
 module Retriever
   #
   class Page
@@ -30,11 +31,12 @@ module Retriever
                                 wmv|flv|mp3|wav|doc|txt|ico|xml)
                                 /ix).freeze
 
-    attr_reader :links, :source, :t
+    attr_reader :links, :source, :t, :url
 
-    def initialize(source, t)
+    def initialize(url, source, t)
+      @url = url
       @t = t
-      @source = source.encode('UTF-8', invalid: :replace, undef: :replace)
+      @source = source.encode_utf8_and_replace
       @links = nil
     end
 
@@ -64,19 +66,19 @@ module Retriever
     end
 
     def title
-      TITLE_RE =~ @source ? @source.match(TITLE_RE)[1] : ''
+      TITLE_RE =~ @source ? @source.match(TITLE_RE)[1].decode_html : ''
     end
 
     def desc
-      DESC_RE =~ @source ? @source.match(DESC_RE)[1] : ''
+      DESC_RE =~ @source ? @source.match(DESC_RE)[1].decode_html  : ''
     end
 
     def h1
-      H1_RE =~ @source ? @source.match(H1_RE)[1] : ''
+      H1_RE =~ @source ? @source.match(H1_RE)[1].decode_html  : ''
     end
 
     def h2
-      H2_RE =~ @source ? @source.match(H2_RE)[1] : ''
+      H2_RE =~ @source ? @source.match(H2_RE)[1].decode_html  : ''
     end
 
     def parse_seo

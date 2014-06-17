@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'retriever/version'
 
 Gem::Specification.new do |s|
-  s.required_ruby_version = '>= 1.8.6'
+  s.required_ruby_version = '>= 2.0.0'
   s.platform    = Gem::Platform::RUBY
   s.version     = Retriever::VERSION
   s.name        = 'rubyretriever'
@@ -31,6 +31,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'ruby-progressbar'
   s.add_runtime_dependency 'bloomfilter-rb'
   s.add_runtime_dependency 'addressable'
+  s.add_runtime_dependency 'htmlentities'
 
   s.add_development_dependency 'bundler', '~> 1.6'
   s.add_development_dependency 'rake', '~> 10.3'
