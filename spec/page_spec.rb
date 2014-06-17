@@ -17,7 +17,7 @@ describe 'Page' do
  <a href='http://www.yahoo.com/test/'>yahoo</a>
 SOURCE
 
-      expect(links.size).to eq(4)
+      expect(page.links.size).to eq(4)
     end
   end
 
