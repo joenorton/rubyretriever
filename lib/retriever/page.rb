@@ -1,5 +1,6 @@
 require 'addressable/uri'
 #
+using SourceString
 module Retriever
   #
   class Page
