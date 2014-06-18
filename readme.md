@@ -25,7 +25,8 @@ Features
 
 Use cases  
 ---------
-RubyRetriever can do multiple things for you. With a single command at the terminal, RR can:  
+RubyRetriever can do multiple things for you. As an Executable
+With a single command at the terminal, RR can:  
 1. Crawl your website and output a *valid XML sitemap* based on what it found.  
 2. Crawl a target website and *download all files of a given filetype*.  
 3. Crawl a target website, *collect important SEO information* such as page titles, meta descriptions and h1 tags, and write it to CSV.  
@@ -38,7 +39,33 @@ Install the gem
 ```sh
 gem install rubyretriever
 ```  
+  
+Using as a Library
+------------------
+Sample Script  
+```sh
+require 'retriever'  
+opts = {  
+	'maxpages' => 1  
+}  
+t = Retriever::PageIterator.new('http://www.basecamp.com', opts) { |x| x.title }  
+puts t.result  
+```  
+Available methods on the page iterator:  
+* #url - returns full URL of current page  
+* #source - returns raw page source code  
+* #title - returns html decoded verson of curent page title  
+* #desc - returns html decoded verson of curent page meta description  
+* #h1  - returns html decoded verson of current page's h1 tag  
+* #h2  - returns html decoded verson of current page's h2 tag
+* #links - returns array of all links on the page  
+* #parse_internal - returns array of current page's internal (same host) links  
+* #parse_internal_visitable - returns @parse_internal plus added filtering of only links that are visitable  
+* #parse_seo - returns array of current page's html decoded title, desc, h1 and h2  
+* #parse_files - returns array of downloaded files of type supplied as RR options (fileharvest options)  
 
+Using the Executable  
+--------------------
  **Example: Sitemap mode**  
 ```sh
 rr --sitemap CSV --progress --limit 100 http://www.cnet.com

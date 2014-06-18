@@ -61,7 +61,7 @@ module Retriever
       parse_internal.select { |x| !(NONPAGE_EXT_RE =~ x) }
     end
 
-    def parse_files(arr)
+    def parse_files(arr = parse_internal)
       arr.select { |x| @t.file_re =~ x }
     end
 
