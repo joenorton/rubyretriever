@@ -122,6 +122,8 @@ Current Requirements
 em-synchrony  
 ruby-progressbar  
 bloomfilter-rb  
+addressable  
+htmlentities  
 
 License
 -------  
