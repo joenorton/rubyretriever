@@ -48,7 +48,7 @@ require 'retriever'
 opts = {  
 	'maxpages' => 1  
 }  
-t = Retriever::PageIterator.new('http://www.basecamp.com', opts) { |x| x.title }  
+t = Retriever::PageIterator.new('http://www.basecamp.com', opts) { |current_page| current_page.title }  
 puts t.result  
 >> Basecamp is everyone’s favorite project management app.  
 ```  
