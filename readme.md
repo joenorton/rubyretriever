@@ -52,17 +52,17 @@ t = Retriever::PageIterator.new('http://www.basecamp.com', opts) { |x| x.title }
 puts t.result  
 ```  
 Available methods on the page iterator:  
-* #url - returns full URL of current page  
-* #source - returns raw page source code  
-* #title - returns html decoded verson of curent page title  
-* #desc - returns html decoded verson of curent page meta description  
-* #h1  - returns html decoded verson of current page's h1 tag  
-* #h2  - returns html decoded verson of current page's h2 tag
-* #links - returns array of all links on the page  
-* #parse_internal - returns array of current page's internal (same host) links  
-* #parse_internal_visitable - returns @parse_internal plus added filtering of only links that are visitable  
-* #parse_seo - returns array of current page's html decoded title, desc, h1 and h2  
-* #parse_files - returns array of downloaded files of type supplied as RR options (fileharvest options)  
+* **#url** - returns full URL of current page  
+* **#source** - returns raw page source code  
+* **#title** - returns html decoded verson of curent page title  
+* **#desc** - returns html decoded verson of curent page meta description  
+* **#h1**  - returns html decoded verson of current page's h1 tag  
+* **#h2**  - returns html decoded verson of current page's h2 tag
+* **#links** - returns array of all links on the page  
+* **#parse_internal** - returns array of current page's internal (same host) links  
+* **#parse_internal_visitable** - returns @parse_internal plus added filtering of only links that are visitable  
+* **#parse_seo** - returns array of current page's html decoded title, desc, h1 and h2  
+* **#parse_files** - returns array of downloaded files of type supplied as RR options (fileharvest options)  
 
 Using the Executable  
 --------------------
