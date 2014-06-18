@@ -51,8 +51,9 @@ opts = {
 t = Retriever::PageIterator.new('http://www.basecamp.com', opts) { |current_page| 
 	  current_page.title 
 	}  
-puts t.result  
-  
+puts t.result
+```
+```sh
 >> Basecamp is everyone’s favorite project management app.  
 ```  
 Available methods on the page iterator:  
