@@ -50,6 +50,7 @@ opts = {
 }  
 t = Retriever::PageIterator.new('http://www.basecamp.com', opts) { |x| x.title }  
 puts t.result  
+**$ Basecamp is everyone’s favorite project management app.**  
 ```  
 Available methods on the page iterator:  
 * **#url** - returns full URL of current page  
