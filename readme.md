@@ -65,7 +65,7 @@ Available methods on the page iterator:
 * **#h2**  - returns html decoded verson of current page's h2 tag
 * **#links** - returns array of all links on the page  
 * **#parse_internal** - returns array of current page's internal (same host) links  
-* **#parse_internal_visitable** - returns @parse_internal plus added filtering of only links that are visitable  
+* **#parse_internal_visitable** - returns #parse_internal plus added filtering of only links that are visitable  
 * **#parse_seo** - returns array of current page's html decoded title, desc, h1 and h2  
 * **#parse_files** - returns array of downloaded files of type supplied as RR options (fileharvest options)  
 
