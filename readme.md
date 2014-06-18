@@ -40,7 +40,7 @@ Install the gem
 gem install rubyretriever
 ```  
   
-Using as a Library
+Using as a Library (starting as of version 1.3.0 -- yet to be released)  
 ------------------
 Sample Script  
 ```ruby
