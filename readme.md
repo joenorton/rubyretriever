@@ -44,18 +44,18 @@ Using as a Library (starting as of version 1.3.0 -- yet to be released)
 ------------------
 Sample Script  
 ```ruby
-require 'retriever'  
-opts = {  
-	'maxpages' => 1  
-}  
-t = Retriever::PageIterator.new('http://www.basecamp.com', opts) { |current_page| 
-	  current_page.title 
-	}  
-puts t.result
+require 'retriever'
+opts = {
+  'maxpages' => 1
+}
+t = Retriever::PageIterator.new('http://www.basecamp.com', opts) do |page|
+  [page.url, page.title]
+end
+puts t.result.to_s
 ```
 
 ```sh
->> Basecamp is everyone’s favorite project management app.  
+>> [["http://www.basecamp.com", "Basecamp is everyone’s favorite project management app."]]  
 ```  
 Available methods on the page iterator:  
 * **#url** - returns full URL of current page  

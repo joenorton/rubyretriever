@@ -1,9 +1,14 @@
 require 'retriever'
 require 'open-uri'
 
-t = Retriever::Target.new('http://www.cnet.com/reviews/', /\.exe\z/)
-
 describe 'Target' do
+  let(:t) do
+    Retriever::Target.new('http://www.cnet.com/reviews/', /\.exe\z/)
+  end
+
+  let(:redirecting_url) do
+    Retriever::Target.new('http://software-by-joe.appspot.com').source
+  end
 
   it 'creates target var' do
     expect(t.target).to eq('http://www.cnet.com/reviews/')
@@ -37,8 +42,7 @@ describe 'Target' do
     end
 
     it 'fails if target redirects to new host' do
-      expect { Retriever::Target.new('http://tinyurl.com/nkfkypa').source }
-      .to raise_error
+      expect { redirecting_url }.to raise_error
     end
   end
 end

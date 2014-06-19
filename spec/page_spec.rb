@@ -4,6 +4,15 @@ require 'retriever/fetch'
 t = Retriever::Target.new('http://www.cnet.com/reviews/', /\.exe\z/)
 
 describe 'Page' do
+  describe '#url' do
+    let(:page) { Retriever::Page.new('http://www.cnet.com/', @source, t) }
+    it 'returns current page URL' do
+      @source = (<<SOURCE).strip
+<a href='http://www.cnet.com/'>download</a>
+SOURCE
+      expect(page.url).to eq('http://www.cnet.com/')
+    end
+  end
 
   describe '#links' do
     let(:page) { Retriever::Page.new('http://www.cnet.com/', @source, t) }
