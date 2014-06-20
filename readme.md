@@ -40,38 +40,6 @@ Install the gem
 gem install rubyretriever
 ```  
   
-Using as a Library (starting as of version 1.3.0 -- yet to be released)  
-------------------
-
-If you want to write to collect something other than the above mentioned on a 'per page' basis then you want to use the PageIterator class. Then you can run whatever block you want against each individual page's source code located during the crawl.   
-
-Sample Script using **PageIterator**  
-```ruby
-require 'retriever'
-opts = {
-  'maxpages' => 1
-}
-t = Retriever::PageIterator.new('http://www.basecamp.com', opts) do |page|
-  [page.url, page.title]
-end
-puts t.result.to_s
-```
-
-```sh
->> [["http://www.basecamp.com", "Basecamp is everyone’s favorite project management app."]]  
-```  
-Available methods on the page iterator:  
-* **#url** - returns full URL of current page  
-* **#source** - returns raw page source code  
-* **#title** - returns html decoded verson of curent page title  
-* **#desc** - returns html decoded verson of curent page meta description  
-* **#h1**  - returns html decoded verson of current page's h1 tag  
-* **#h2**  - returns html decoded verson of current page's h2 tag
-* **#links** - returns array of all links on the page  
-* **#parse_internal** - returns array of current page's internal (same host) links  
-* **#parse_internal_visitable** - returns #parse_internal plus added filtering of only links that are visitable  
-* **#parse_seo** - returns array of current page's html decoded title, desc, h1 and h2  
-* **#parse_files** - returns array of downloaded files of type supplied as RR options (fileharvest options)  
 
 Using the Executable  
 --------------------
@@ -125,6 +93,41 @@ and OPTIONS is the applicable:
     -l, --limit PAGE_LIMIT_#            *set a max on the total number of crawled pages*  
     -h, --help                          *Display this screen*  
   
+
+Using as a Library (starting as of version 1.3.0 -- yet to be released)  
+------------------
+
+If you want to collect something, other than that which the executable allows, on a 'per page' basis then you want to use the PageIterator class. Then you can run whatever block you want against each individual page's source code located during the crawl.   
+
+Sample Script using **PageIterator**  
+```ruby
+require 'retriever'
+opts = {
+  'maxpages' => 1
+}
+t = Retriever::PageIterator.new('http://www.basecamp.com', opts) do |page|
+  [page.url, page.title]
+end
+puts t.result.to_s
+```
+
+```sh
+>> [["http://www.basecamp.com", "Basecamp is everyone’s favorite project management app."]]  
+```  
+Available methods on the page iterator:  
+* **#url** - returns full URL of current page  
+* **#source** - returns raw page source code  
+* **#title** - returns html decoded verson of curent page title  
+* **#desc** - returns html decoded verson of curent page meta description  
+* **#h1**  - returns html decoded verson of current page's h1 tag  
+* **#h2**  - returns html decoded verson of current page's h2 tag
+* **#links** - returns array of all links on the page  
+* **#parse_internal** - returns array of current page's internal (same host) links  
+* **#parse_internal_visitable** - returns #parse_internal plus added filtering of only links that are visitable  
+* **#parse_seo** - returns array of current page's html decoded title, desc, h1 and h2  
+* **#parse_files** - returns array of downloaded files of type supplied as RR options (fileharvest options)  
+
+
 Current Requirements
 ------------ 
 em-synchrony  
