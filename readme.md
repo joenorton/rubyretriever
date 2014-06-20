@@ -42,7 +42,10 @@ gem install rubyretriever
   
 Using as a Library (starting as of version 1.3.0 -- yet to be released)  
 ------------------
-Sample Script  
+
+If you want to write to collect something other than the above mentioned on a 'per page' basis then you want to use the PageIterator class. Then you can run whatever block you want against each individual page's source code located during the crawl.   
+
+Sample Script using **PageIterator**  
 ```ruby
 require 'retriever'
 opts = {
