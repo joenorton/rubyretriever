@@ -2,6 +2,7 @@
 *.rbc
 *.xml
 *.csv
+*.sublime-workspace
 /.config
 /coverage/
 /InstalledFiles
