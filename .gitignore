@@ -3,6 +3,7 @@
 *.xml
 *.csv
 *.sublime-workspace
+.coveralls.yml
 /.config
 /coverage/
 /InstalledFiles
