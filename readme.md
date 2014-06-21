@@ -45,36 +45,36 @@ Using the Executable
 --------------------
  **Example: Sitemap mode**  
 ```sh
-$ rr --sitemap CSV --progress --limit 100 http://www.cnet.com
+$ rr --sitemap CSV --progress --limit 10 http://www.cnet.com
 ```  
 OR -- SAME COMMAND  
 ```sh
-$ rr -s csv -p -l 100 http://www.cnet.com
+$ rr -s csv -p -l 10 http://www.cnet.com
 ```  
   
-This would map http://www.cnet.com until it crawled a max of 100 pages, then write the results to a CSV named cnet. Optionally, you could also use the format XML and RR would output the same URL list into a valid XML sitemap that could be submitted to Google.  
+This would map http://www.cnet.com until it crawled a max of 10 pages, then write the results to a CSV named cnet. Optionally, you could also use the format XML and RR would output the same URL list into a valid XML sitemap that could be submitted to Google.  
   
  **Example: File Harvesting mode**  
 ```sh
-$ rr --files pdf --progress --limit 1000 --out hubspot http://www.hubspot.com
+$ rr --files pdf --progress --limit 10 --out hubspot http://www.hubspot.com
 ```  
 OR -- SAME COMMAND  
 ```sh
-$ rr -f pdf -p -l 100 http://www.hubspot.com
+$ rr -f pdf -p -l 10 http://www.hubspot.com
 ```  
   
-This would crawl http://www.hubspot.com looking for filetype:PDF until it hit a max of 100 pages, then write out a list of filepaths to a CSV named hubspot (based on the website host name). Optionally, you could have the script autodownload all the files by adding the -a/--auto flag.
+This would crawl http://www.hubspot.com looking for filetype:PDF until it hit a max of 10 pages, then write out a list of filepaths to a CSV named hubspot (based on the website host name). Optionally, you could have the script autodownload all the files by adding the -a/--auto flag.
 
 **Example: SEO mode**  
 ```sh
-$ rr --seo --progress --limit 100 --out cnet-seo http://www.cnet.com
+$ rr --seo --progress --limit 10 --out cnet-seo http://www.cnet.com
 ```  
 OR -- SAME COMMAND  
 ```sh
 $ rr -e -p -l 10 -o cnet-seo http://www.cnet.com
 ```  
   
-This would go to http://www.cnet.com and crawl a max of 100 pages, during which it would collect the SEO fields on those pages - this currently means [url, page title, meta description, h1 text, h2 text]. It would then write the fields to a csv named cnet-seo.
+This would go to http://www.cnet.com and crawl a max of 10 pages, during which it would collect the SEO fields on those pages - this currently means [url, page title, meta description, h1 text, h2 text]. It would then write the fields to a csv named cnet-seo.
   
 
 command-line arguments
