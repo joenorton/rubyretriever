@@ -8,7 +8,7 @@ RubyRetriever is a Web Crawler & Scraper, File Harvester and Autodownloader
 
 RubyRetriever (RR) uses asynchronous HTTP requests via [Eventmachine](https://github.com/eventmachine/eventmachine) & [Synchrony](https://github.com/igrigorik/em-synchrony) to crawl webpages *very quickly*. RR also uses a Ruby implementation of the [bloomfilter](https://github.com/igrigorik/bloomfilter-rb) in order to keep track of pages it has already crawled.  
 
-**v1.3.0 Update (6/22/2014)** - The major change in this update is the new PageIterator class which adds functionality for library/script usage. Now you can run custom blocks against each page during crawl. This update also includes more tests, and other code improvements to improve modularity and testability.
+**v1.3.0 Update (6/22/2014)** - The major change in this update is the new PageIterator class which adds functionality for library/script usage. Now you can run custom blocks against each page during the crawl. This update also includes more tests, and other code improvements to improve modularity and testability.
 
 **v1.0 Update (6/07/2014)** - Includes major code changes and a lot of bug fixes. It's now much better in dealing with redirects, issues with the host changing, etc. Also added the SEO mode, which grabs a number of key SEO components from every page on a site. Lastly, this update was so extensive that I could not ensure backward compatibility; thus, this was update 1.0!
 
