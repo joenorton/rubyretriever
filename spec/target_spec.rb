@@ -6,10 +6,6 @@ describe 'Target' do
     Retriever::Target.new('http://www.cnet.com/reviews/', /\.exe\z/)
   end
 
-  let(:redirecting_url) do
-    Retriever::Target.new('http://software-by-joe.appspot.com').source
-  end
-
   it 'creates target var' do
     expect(t.target).to eq('http://www.cnet.com/reviews/')
   end
@@ -35,6 +31,9 @@ describe 'Target' do
   end
 
   describe '#source' do
+    let(:redirecting_url) do
+      Retriever::Target.new('http://software-by-joe.appspot.com').source
+    end
 
     it 'opens URL and returns source as String' do
       expect(Retriever::Target.new('http://techcrunch.com/').source.class)

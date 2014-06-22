@@ -46,11 +46,11 @@ describe 'Fetch' do
       r.good_response?(resp,'http://www.yahoo.com')
     end
 
-    it 'returns false if the resp is nil' do
+    it 'returns false if the response is empty' do
       expect(nil_response).to eq(false)
     end
 
-    it 'returns false on unsuccessful host' do
+    it 'returns false on unsuccessful connection' do
       expect(unsuccessful_resp).to eq(false)
     end
 
@@ -58,7 +58,7 @@ describe 'Fetch' do
       expect(redir_resp).to eq(false)
     end
 
-    it 'returns false on bad content type' do
+    it 'returns false on non-visitable content type' do
       expect(bad_content_type_resp).to eq(false)
     end
 
