@@ -5,6 +5,7 @@ module Retriever
   class FetchFiles < Fetch
     def initialize(url, options)
       super
+      start
       temp_file_collection = @page_one.parse_files(@page_one.parse_internal)
       @result.concat(temp_file_collection) if temp_file_collection.size > 0
       lg("#{@result.size} new files found")
