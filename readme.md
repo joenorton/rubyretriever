@@ -27,11 +27,14 @@ Features
 
 Use cases  
 ---------
-RubyRetriever can do multiple things for you. As an Executable
+**As an Executable**  
 With a single command at the terminal, RR can:  
 1. Crawl your website and output a *valid XML sitemap* based on what it found.  
 2. Crawl a target website and *download all files of a given filetype*.  
 3. Crawl a target website, *collect important SEO information* such as page titles, meta descriptions and h1 tags, and write it to CSV.  
+
+**Used in Custom scripts**  
+As of version 1.3.0, with the PageIterator class you can pass a custom block that will get run against each page during a crawl, and collect the results in an array. This means you can define for yourself whatever it is you want to collect from each page during the crawl.  
 
 Help & Forks Welcome!  
   
