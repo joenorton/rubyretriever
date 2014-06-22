@@ -28,6 +28,9 @@ module Retriever
       @t = Retriever::Target.new(url, @file_re)
       @output = "rr-#{@t.host.split('.')[1]}" if @fileharvest && !@output
       @already_crawled = setup_bloom_filter
+    end
+
+    def start
       @page_one = crawl_page_one
       @link_stack = create_link_stack
       @temp_link_stack = []
@@ -79,6 +82,39 @@ module Retriever
       puts "Object Count: #{@result.size}"
       puts HR
       puts
+    end
+
+ # returns true is resp is ok to continue
+    def good_response?(resp, url)
+      return false unless resp
+      hdr = resp.response_header
+      if hdr.redirection?
+        loc = hdr.location
+        lg("#{url} Redirected to #{loc}")
+        if t.host_re =~ loc
+          @temp_link_stack.push(loc) unless @already_crawled.include?(loc)
+          lg('--Added to stack for later')
+          return false
+        end
+        lg("Redirection outside of target host. No - go. #{loc}")
+        return false
+      end
+      # lets not continue if unsuccessful connection
+      unless hdr.successful?
+        lg("UNSUCCESSFUL CONNECTION -- #{url}")
+        @connection_tally[:error] += 1
+        @connection_tally[:error_server] += 1 if hdr.server_error?
+        @connection_tally[:error_client] += 1 if hdr.client_error?
+        return false
+      end
+      # let's not continue if not text/html
+      unless hdr['CONTENT_TYPE'] =~ %r{(text/html|application/xhtml+xml)}
+        @already_crawled.insert(url)
+        lg("Page Not text/html -- #{url}")
+        return false
+      end
+      @connection_tally[:success] += 1
+      true
     end
 
     private
@@ -156,39 +192,6 @@ module Retriever
         @result.concat(new_links_arr)
       end
       @result.uniq!
-    end
-
-    # returns true is resp is ok to continue
-    def good_response?(resp, url)
-      return false unless resp
-      hdr = resp.response_header
-      if hdr.redirection?
-        loc = hdr.location
-        lg("#{url} Redirected to #{loc}")
-        if t.host_re =~ loc
-          @temp_link_stack.push(loc) unless @already_crawled.include?(loc)
-          lg('--Added to stack for later')
-          return false
-        end
-        lg("Redirection outside of target host. No - go. #{loc}")
-        return false
-      end
-      # lets not continue if unsuccessful connection
-      unless hdr.successful?
-        lg("UNSUCCESSFUL CONNECTION -- #{url}")
-        @connection_tally[:error] += 1
-        @connection_tally[:error_server] += 1 if hdr.server_error?
-        @connection_tally[:error_client] += 1 if hdr.client_error?
-        return false
-      end
-      # let's not continue if not text/html
-      unless hdr['CONTENT_TYPE'].include?('text/html')
-        @already_crawled.insert(url)
-        lg("Page Not text/html -- #{url}")
-        return false
-      end
-      @connection_tally[:success] += 1
-      true
     end
 
     def push_seo_to_result(url, new_page)

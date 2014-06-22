@@ -6,6 +6,7 @@ module Retriever
     #   on all unique pages found on the site
     def initialize(url, options)
       super
+      start
       @result.push(@page_one.parse_seo)
 
       async_crawl_and_collect

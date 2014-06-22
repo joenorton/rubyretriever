@@ -7,6 +7,7 @@ module Retriever
     #   the complete data returned from the crawl is accessible thru self.result
     def initialize(url, options, &block)
       super
+      start
       fail 'block required for PageIterator' unless block_given?
       @iterator = true
       @result.push(block.call @page_one)
