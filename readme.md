@@ -24,6 +24,7 @@ Features
 	* Sitemap
 	* File Harvest
 	* SEO   
+* Run a Custom Block on a Per-Page basis (PageIterator)  
 
 Use cases  
 ---------
