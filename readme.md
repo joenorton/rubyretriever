@@ -56,14 +56,14 @@ This would map http://www.cnet.com until it crawled a max of 10 pages, then writ
   
  **Example: File Harvesting mode**  
 ```sh
-$ rr --files txt --verbose --limit 10 http://textfiles.com/programming/
+$ rr --files txt --verbose --limit 1 http://textfiles.com/programming/
 ```  
 OR -- SAME COMMAND  
 ```sh
-$ rr -f txt -v -l 10 http://textfiles.com/programming/
+$ rr -f txt -v -l 1 http://textfiles.com/programming/
 ```  
   
-This would crawl http://textfiles.com/programming/ looking for txt files until it hit a max of 10 pages, then write out a list of filepaths to txt files to the terminal. Optionally, you could have the script autodownload all the files by adding the -a/--auto flag.
+This would crawl http://textfiles.com/programming/ looking for txt files for only a single page, then write out a list of filepaths to txt files to the terminal. Optionally, you could have the script autodownload all the files by adding the -a/--auto flag.
 
 **Example: SEO mode**  
 ```sh
