@@ -4,7 +4,7 @@
   
 By Joe Norton  
 
-RubyRetriever is a Web Crawler & Scraper, File Harvester and Autodownloader 
+RubyRetriever is a Web Crawler, Scraper & File Harvester. Available as an executable or as a library.
 
 RubyRetriever (RR) uses asynchronous HTTP requests via [Eventmachine](https://github.com/eventmachine/eventmachine) & [Synchrony](https://github.com/igrigorik/em-synchrony) to crawl webpages *very quickly*. RR also uses a Ruby implementation of the [bloomfilter](https://github.com/igrigorik/bloomfilter-rb) in order to keep track of pages it has already crawled.  
 
