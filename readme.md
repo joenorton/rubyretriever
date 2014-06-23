@@ -19,11 +19,13 @@ RubyRetriever aims to be the best command-line crawling and scraping package wri
 Features  
 --------  
 * Asynchronous HTTP Requests thru EM & Synchrony  
-* Bloom filter for tracking visited pages  
-* 3 CLI modes
-	* Sitemap
-	* File Harvest
-	* SEO   
+* Bloom filter for tracking visited pages
+* Supports HTTPS  
+* Follows 301 redirects (if to same host)  
+* 3 CLI modes  
+	* Sitemap - Find all links on a website, output a valid XML sitemap, or just a CSV  
+	* File Harvest - find all files linked to on a website, option to autodownload  
+	* SEO  - collect important SEO info from every page, output to a CSV (or STDOUT)  
 * Run a Custom Block on a Per-Page basis (PageIterator)  
 
 Use cases  
