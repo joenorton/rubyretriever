@@ -4,9 +4,9 @@
   
 By Joe Norton  
 
-RubyRetriever is a Web Crawler, Scraper & File Harvester. Available as an executable or as a library.
+RubyRetriever is a Web Crawler, Scraper & File Harvester. Available as a command-line executable and as a crawling framework.
 
-RubyRetriever (RR) uses asynchronous HTTP requests via [Eventmachine](https://github.com/eventmachine/eventmachine) & [Synchrony](https://github.com/igrigorik/em-synchrony) to crawl webpages *very quickly*. RR also uses a Ruby implementation of the [bloomfilter](https://github.com/igrigorik/bloomfilter-rb) in order to keep track of pages it has already crawled.  
+RubyRetriever (RR) uses asynchronous HTTP requests via [Eventmachine](https://github.com/eventmachine/eventmachine) & [Synchrony](https://github.com/igrigorik/em-synchrony) to crawl webpages *very quickly*. RR also uses a Ruby implementation of the [bloomfilter](https://github.com/igrigorik/bloomfilter-rb) in order to keep track of pages it has already crawled in a memory efficient manner.  
 
 **v1.3.0 Update (6/22/2014)** - The major change in this update is the new PageIterator class which adds functionality for library/script usage. Now you can run custom blocks against each page during the crawl. This update also includes more tests, and other code improvements to improve modularity and testability.
 
@@ -15,6 +15,15 @@ RubyRetriever (RR) uses asynchronous HTTP requests via [Eventmachine](https://gi
 Mission  
 -------
 RubyRetriever aims to be the best command-line crawling and scraping package written in Ruby.    
+
+
+Roadmap?  
+Not sure. Feel free to offer your thoughts.  
+
+Some Potential Ideas:  
+* 'freeroam mode' - to go on cruising the net endlessly in fileharvest mode  
+* 'dead-link finder' mode  
+* 'validate robots.txt' mode - outputs the bot-exposed sitemap of your site  
 
 Features  
 --------  
