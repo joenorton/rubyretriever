@@ -24,6 +24,7 @@ Some Potential Ideas:
 * 'freeroam mode' - to go on cruising the net endlessly in fileharvest mode  
 * 'dead-link finder' mode  
 * 'validate robots.txt' mode - outputs the bot-exposed sitemap of your site  
+* more sophisticated SEO analysis? would anyone care?  
 
 Features  
 --------  
