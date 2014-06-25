@@ -14,7 +14,7 @@ RubyRetriever (RR) uses asynchronous HTTP requests via [Eventmachine](https://gi
 
 Mission  
 -------
-RubyRetriever aims to be the best command-line crawling and scraping package written in Ruby.    
+RubyRetriever aims to be the best command-line crawling and scraping package written in Ruby and a replacement for paid software such as Screaming Frog SEO Spider.    
 
 
 Roadmap?  
