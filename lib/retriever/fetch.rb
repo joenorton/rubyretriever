@@ -84,7 +84,7 @@ module Retriever
       puts
     end
 
- # returns true is resp is ok to continue
+    # returns true is resp is ok to continue
     def good_response?(resp, url)
       return false unless resp
       hdr = resp.response_header

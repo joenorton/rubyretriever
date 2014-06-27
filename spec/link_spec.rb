@@ -3,7 +3,9 @@ require 'retriever'
 describe 'Link' do
 
   t = Retriever::Target.new('http://www.cnet.com/reviews/')
-  let(:links) { Retriever::Page.new('http://www.cnet.com/reviews/', @source, t).links }
+  let(:links) do
+    Retriever::Page.new('http://www.cnet.com/reviews/', @source, t).links
+  end
 
   it 'collects links in anchor tags' do
     @source = (<<SOURCE).strip

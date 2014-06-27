@@ -11,7 +11,7 @@ describe 'Fetch' do
     end
 
     let(:nil_response) do
-      r.good_response?(nil,'http://www.yahoo.com')
+      r.good_response?(nil, 'http://www.yahoo.com')
     end
 
     let(:unsuccessful_resp) do
@@ -20,14 +20,14 @@ describe 'Fetch' do
       resp.stub(:successful?).and_return(false)
       resp.stub(:server_error?).and_return(false)
       resp.stub(:client_error?).and_return(false)
-      r.good_response?(resp,'http://www.yahoo.com')
+      r.good_response?(resp, 'http://www.yahoo.com')
     end
 
     let(:redir_resp) do
       resp.stub(:response_header).and_return(resp)
       resp.stub(:redirection?).and_return(true)
       resp.stub(:location).and_return('http://www.google.com')
-      r.good_response?(resp,'http://www.yahoo.com')
+      r.good_response?(resp, 'http://www.yahoo.com')
     end
 
     let(:bad_content_type_resp) do
@@ -35,7 +35,7 @@ describe 'Fetch' do
       resp.stub(:redirection?).and_return(false)
       resp.stub(:successful?).and_return(true)
       resp['CONTENT_TYPE'] = 'image/jpeg'
-      r.good_response?(resp,'http://www.yahoo.com')
+      r.good_response?(resp, 'http://www.yahoo.com')
     end
 
     let(:success_resp) do
@@ -43,7 +43,7 @@ describe 'Fetch' do
       resp.stub(:redirection?).and_return(false)
       resp.stub(:successful?).and_return(true)
       resp['CONTENT_TYPE'] = 'text/html'
-      r.good_response?(resp,'http://www.yahoo.com')
+      r.good_response?(resp, 'http://www.yahoo.com')
     end
 
     it 'returns false if the response is empty' do

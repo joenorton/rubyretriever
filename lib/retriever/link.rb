@@ -9,10 +9,11 @@ module Retriever
 
     def initialize(target_scheme, target_host, this_link)
       begin
-        @link_uri = Addressable::URI.parse(Addressable::URI.encode(this_link)).normalize
-      rescue Addressable::URI::InvalidURIError => e
-        dummy_link = Retriever::Link.new(target_scheme, target_host, target_host)
-        @link_uri = Addressable::URI.parse(dummy_link.path)
+        this_link = Addressable::URI.encode(this_link)
+        @link_uri = Addressable::URI.parse(this_link)
+      rescue Addressable::URI::InvalidURIError
+        dummy = Retriever::Link.new(target_scheme, target_host, target_host)
+        @link_uri = Addressable::URI.parse(dummy.path)
       end
       @scheme = target_scheme
       @host = target_host
