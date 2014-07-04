@@ -22,9 +22,9 @@ Not sure. Feel free to offer your thoughts.
 
 Some Potential Ideas:  
 * 'freeroam mode' - to go on cruising the net endlessly in fileharvest mode  
-* 'dead-link finder' mode  
+* 'dead-link finder' mode - collects links returning 404, or other error msgs    
 * 'validate robots.txt' mode - outputs the bot-exposed sitemap of your site  
-* more sophisticated SEO analysis? replace screaming frog?  
+* more sophisticated SEO analysis? replace screaming frog? this would include checks for canonical URL, maybe some keyword density checks, content length checks, etc.    
 
 Features  
 --------  
