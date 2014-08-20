@@ -1,5 +1,5 @@
 module Retriever
-  # recieves target url and RR options
+  # receives target url and RR options
   # returns an array of all unique files (based on given filetype)
   #   found on the target site
   class FetchFiles < Fetch

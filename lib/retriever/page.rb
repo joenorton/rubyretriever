@@ -40,7 +40,7 @@ module Retriever
       @links = nil
     end
 
-    # recieves page source as string
+    # receives page source as string
     # returns array of unique href links
     def links
       return @links if @links
