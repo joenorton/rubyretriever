@@ -1,3 +1,4 @@
+require 'nokogiri'
 require 'addressable/uri'
 #
 using SourceString
@@ -65,6 +66,11 @@ module Retriever
 
     def parse_files(arr = parse_internal)
       arr.select { |x| @t.file_re =~ x }
+    end
+
+    def parse_by_css(selector)
+      nokogiri_doc = Nokogiri::HTML(@source)
+      nokogiri_doc.css(selector).text
     end
 
     def title
