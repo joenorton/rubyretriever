@@ -1,7 +1,7 @@
 module Retriever
   #
   class FetchSEO < Fetch
-    # recieves target url and RR options
+    # receives target url and RR options
     # returns an array of onpage SEO related fields
     #   on all unique pages found on the site
     def initialize(url, options)
