@@ -1,7 +1,7 @@
 module Retriever
   #
   class FetchSitemap < Fetch
-    # recieves target URL and RR options
+    # receives target URL and RR options
     # returns an array of all unique pages found on the site
     def initialize(url, options)
       super

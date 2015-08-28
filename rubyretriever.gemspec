@@ -32,8 +32,10 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'bloomfilter-rb'
   s.add_runtime_dependency 'addressable'
   s.add_runtime_dependency 'htmlentities'
+  s.add_runtime_dependency 'nokogiri'
 
   s.add_development_dependency 'bundler', '~> 1.6'
   s.add_development_dependency 'rake', '~> 10.3'
   s.add_development_dependency 'rspec', '~> 2.14'
+  s.add_development_dependency 'pry'
 end

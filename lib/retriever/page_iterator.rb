@@ -1,7 +1,7 @@
 module Retriever
   #
   class PageIterator < Fetch
-    # recieves target url and RR options, and a block
+    # receives target url and RR options, and a block
     # runs the block on all pages during crawl, pushing
     #   the returned value of the block onto a result stack
     #   the complete data returned from the crawl is accessible thru self.result
