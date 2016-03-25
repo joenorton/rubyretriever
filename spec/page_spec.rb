@@ -27,9 +27,10 @@ describe 'Page' do
   end
 
   describe '#links' do
-    let(:page) { Retriever::Page.new('http://www.cnet.com/', common_source, t) }
-    it 'collects all unique href links on the page' do
-      expect(page.links.size).to eq(4)
+    let(:source) { "<a href='/profile/'>profile</a><a href='#top'>top</a> <link rel='stylesheet' id='gforms_reset_css-css'  href='http://www.cnet.com/wp-content/plugins/gravityforms/css/formreset.css?ver=1.7.12' type='text/css' media='all' />" }
+    let(:page) { Retriever::Page.new('http://www.cnet.com/', source, t) }
+    it 'collects all unique href links on the page, skips div anchors' do
+      expect(page.links.size).to eq(2)
     end
   end
 
@@ -42,11 +43,11 @@ describe 'Page' do
   end
 
   describe '#parse_internal_visitable' do
-    let(:source) { "<link rel='stylesheet' id='gforms_reset_css-css'  href='http://www.cnet.com/wp-content/plugins/gravityforms/css/formreset.css?ver=1.7.12' type='text/css' media='all' />" }
+    let(:source) { "<a href='/profile/'>profile</a> <link rel='stylesheet' id='gforms_reset_css-css'  href='http://www.cnet.com/wp-content/plugins/gravityforms/css/formreset.css?ver=1.7.12' type='text/css' media='all' />" }
     let(:page) { Retriever::Page.new('http://www.cnet.com/', source, t) }
     let(:links) { page.parse_internal_visitable }
     it "filters out 'unvisitable' URLS like JS, Stylesheets, Images" do
-      expect(links.size).to eq(0)
+      expect(links.size).to eq(1)
     end
   end
 

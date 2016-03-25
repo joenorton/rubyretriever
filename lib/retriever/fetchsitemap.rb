@@ -16,8 +16,6 @@ module Retriever
       @result.uniq!
     end
 
-    private
-
     # produces valid XML sitemap based on page collection fetched.
     # Writes to current directory.
     def gen_xml
@@ -32,6 +30,8 @@ module Retriever
       f.close
       print_file_info(filename)
     end
+
+    private
 
     def print_file_info(filename)
       puts HR

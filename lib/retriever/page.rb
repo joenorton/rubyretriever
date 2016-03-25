@@ -5,6 +5,7 @@ using SourceString
 module Retriever
   #
   class Page
+    HASH_RE   = Regexp.new(/^#/i).freeze
     HTTP_RE   = Regexp.new(/^http/i).freeze
     H1_RE     = Regexp.new(/<h1>(.*)<\/h1>/i).freeze
     H2_RE     = Regexp.new(/<h2>(.*)<\/h2>/i).freeze
@@ -50,6 +51,7 @@ module Retriever
         # filter some malformed URLS that come in
         # meant to be a loose filter to catch all reasonable HREF attributes.
         link = match[0]
+        next if HASH_RE =~ link
         Link.new(@t.scheme, @t.host, link, @url).path
       end.compact.uniq
     end
