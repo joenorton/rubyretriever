@@ -117,6 +117,15 @@ module Retriever
       true
     end
 
+    def filter_out_querystrings(path)
+      if path.include?('?')
+        uri = Addressable::URI.parse(path)
+        uri.query_values = {}
+        return uri.to_s.chomp('?')
+      end
+      path
+    end
+
     private
 
     def setup_options(options)

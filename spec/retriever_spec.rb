@@ -1,10 +1,11 @@
 require 'retriever'
+require 'retriever/fetchfiles'
 
 describe 'Fetch' do
+  let(:r) do
+    Retriever::Fetch.new('http://www.yahoo.com', {})
+  end
   describe '#good_response?' do
-    let(:r) do
-      Retriever::Fetch.new('http://www.yahoo.com', {})
-    end
 
     let(:resp) do
       {}
@@ -64,6 +65,20 @@ describe 'Fetch' do
 
     it 'returns true otherwise' do
       expect(success_resp).to eq(true)
+    end
+  end
+  describe '#filter_out_querystrings' do
+    let(:normal_url) do
+      r.filter_out_querystrings('http://mises.org/test.mp3')
+    end
+    let(:query_string_url) do
+      r.filter_out_querystrings('http://mises.org/system/tdf/Robert%20Nozick%20and%20Murray%20Rothbard%20David%20Gordon.mp3?file=1&amp;type=audio')
+    end
+    it 'accepts standard urls' do
+      expect(normal_url).to eq('http://mises.org/test.mp3')
+    end
+    it 'strips query params' do
+      expect(query_string_url).to eq('http://mises.org/system/tdf/Robert%20Nozick%20and%20Murray%20Rothbard%20David%20Gordon.mp3')
     end
   end
 end
