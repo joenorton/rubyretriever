@@ -66,4 +66,25 @@ describe 'Fetch' do
       expect(success_resp).to eq(true)
     end
   end
+
+  describe Retriever::FetchSitemap do
+    let(:options) do
+      { limit: 1, progress: false }
+    end
+
+    let(:url) { 'http://www.yahoo.com' }
+
+    let(:removed_sitemap) { FileUtils.rm(Dir.pwd + '/sitemap-yahoo.xml').first }
+
+    subject { described_class.new(url, options) }
+
+    before do
+      subject.gen_xml
+    end
+
+    it 'generates xml' do
+      sitemap_file = removed_sitemap
+      expect(sitemap_file).to match 'sitemap-yahoo.xml'
+    end
+  end
 end
