@@ -48,7 +48,7 @@ SOURCE
     expect(links).to include('http://www.cnet.com/download.exe')
   end
 
-  it "doesn't care about any extra attributes on the anchor tag" do
+  it "doesn\'t care about any extra attributes on the anchor tag" do
     @source = (<<SOURCE).strip
 <a href='http://www.cnet.com/products/gadgets/'>gadgets </a>
 <a href='http://www.cnet.com/products/gadgets/' data-vanity-rewritten='true'>
@@ -65,6 +65,13 @@ SOURCE
 SOURCE
 
     expect(links).to include('http://www.cnet.com/test.html',
-                             'http://www.cnet.com/cpage_18')
+                             'http://www.cnet.com/reviews/cpage_18')
+  end
+  it 'collects files even when query strings exist' do
+    @source = (<<SOURCE).strip
+    <a href='http://mises.org/system/tdf/Robert%20Nozick%20and%20Murray%20Rothbard%20David%20Gordon.mp3?file=1&amp;type=audio' type='audio/mpeg; length=22217599' title='Robert Nozick and Murray Rothbard David Gordon.mp3'>Download audio file</a></span></div>
+SOURCE
+
+    expect(links).to include('http://mises.org/system/tdf/Robert%20Nozick%20and%20Murray%20Rothbard%20David%20Gordon.mp3?file=1&amp;type=audio')
   end
 end

@@ -128,7 +128,7 @@ module Retriever
       @sitemap      = options['sitemap']
       @seo          = options['seo']
       @autodown     = options['autodown']
-      @file_re      = Regexp.new(/.#{@fileharvest}\z/).freeze if @fileharvest
+      @file_re      = Regexp.new(/.#{@fileharvest}/).freeze if @fileharvest
     end
 
     def setup_bloom_filter

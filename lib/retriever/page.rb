@@ -50,7 +50,7 @@ module Retriever
         # filter some malformed URLS that come in
         # meant to be a loose filter to catch all reasonable HREF attributes.
         link = match[0]
-        Link.new(@t.scheme, @t.host, link).path
+        Link.new(@t.scheme, @t.host, link, @url).path
       end.compact.uniq
     end
 
