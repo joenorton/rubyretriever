@@ -6,7 +6,7 @@ module Retriever
   class Target
     HTTP_RE    = Regexp.new(/^http/i).freeze
 
-    attr_reader :host, :target, :host_re, :source, :file_re, :scheme
+    attr_reader :host, :target, :host_re, :source, :file_re, :scheme, :port
 
     def initialize(url, file_re = nil)
       fail 'Bad URL' unless url.include?('.')
@@ -17,6 +17,7 @@ module Retriever
       @host_re    = Regexp.new(@host.sub('www.', ''))
       @file_re  ||= file_re
       @scheme     = target_uri.scheme
+      @port       = target_uri.port
     end
 
     def source

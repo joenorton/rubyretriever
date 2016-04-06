@@ -18,6 +18,14 @@ describe 'Target' do
     expect(t.host_re).to eq(/cnet.com/)
   end
 
+  it 'creates port var (no port specified)' do
+    expect(t.port).to be_nil
+  end
+
+  it 'creates port var (with port specified)' do
+    expect(Retriever::Target.new('http://www.cnet.com:3000/reviews/', /\.exe\z/).port).to be(3000)
+  end
+
   it 'creates file_re var (when provided)' do
     expect(t.file_re).to eq(/\.exe\z/)
   end
