@@ -52,8 +52,14 @@ module Retriever
         # meant to be a loose filter to catch all reasonable HREF attributes.
         link = match[0]
         next if HASH_RE =~ link
-        Link.new(@t.scheme, @t.host, link, @url).path
+        Link.new(@t.scheme, host_with_port, link, @url).path
       end.compact.uniq
+    end
+
+    def host_with_port
+      return @t.host if @t.port.nil?
+
+      @t.host + ':' + @t.port.to_s
     end
 
     def parse_internal
