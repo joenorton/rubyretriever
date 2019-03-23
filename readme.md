@@ -140,6 +140,7 @@ puts t.result.to_s
 Available methods on the page iterator:  
 * **#url** - returns full URL of current page  
 * **#source** - returns raw page source code  
+* **#headers** - returns the page's response headers  
 * **#title** - returns html decoded verson of curent page title  
 * **#desc** - returns html decoded verson of curent page meta description  
 * **#h1**  - returns html decoded verson of current page's h1 tag  
