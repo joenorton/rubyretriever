@@ -42,6 +42,10 @@ module Retriever
       @links = nil
     end
 
+    def headers
+      @t.headers
+    end
+
     # receives page source as string
     # returns array of unique href links
     def links

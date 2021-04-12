@@ -52,4 +52,28 @@ describe 'Target' do
       expect { redirecting_url }.to raise_error
     end
   end
+
+  describe '#source' do
+    let(:redirecting_url) do
+      Retriever::Target.new('http://software-by-joe.appspot.com').source
+    end
+
+    it 'opens URL and returns source as String' do
+      expect(Retriever::Target.new('http://techcrunch.com/').source.class)
+          .to eq(String)
+    end
+
+    it 'fails if target redirects to new host' do
+      expect { redirecting_url }.to raise_error
+    end
+  end
+
+  describe '#headers' do
+    let(:target) {Retriever::Target.new('http://techcrunch.com/')}
+    it 'opens the URL and sets the headers' do
+      expect(target.source).to_not be_empty
+      expect(target.headers).to_not be_empty
+    end
+  end
+
 end

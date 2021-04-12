@@ -232,7 +232,7 @@ module Retriever
 
     def push_custom_to_result(url, current_page, &block)
       data = block.call current_page
-      @result.push(data) unless data.empty?
+      @result.push(data) unless data.nil? || data.empty?
       lg("-- PageIterator called on: #{url}")
     end
 
