@@ -26,6 +26,13 @@ describe 'Page' do
     end
   end
 
+  describe '#headers' do
+    let(:page) { Retriever::Page.new('http://www.cnet.com/', t.source, t) }
+    it 'returns current page response HEADERS' do
+      expect(page.headers).to_not be_empty
+    end
+  end
+
   describe '#links' do
     let(:source) { "<a href='/profile/'>profile</a><a href='#top'>top</a> <link rel='stylesheet' id='gforms_reset_css-css'  href='http://www.cnet.com/wp-content/plugins/gravityforms/css/formreset.css?ver=1.7.12' type='text/css' media='all' />" }
     let(:page) { Retriever::Page.new('http://www.cnet.com/', source, t) }

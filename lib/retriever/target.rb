@@ -6,7 +6,7 @@ module Retriever
   class Target
     HTTP_RE    = Regexp.new(/^http/i).freeze
 
-    attr_reader :host, :target, :host_re, :source, :file_re, :scheme, :port
+    attr_reader :host, :target, :host_re, :source, :file_re, :scheme, :port, :headers
 
     def initialize(url, file_re = nil)
       fail 'Bad URL' unless url.include?('.')
@@ -18,6 +18,7 @@ module Retriever
       @file_re  ||= file_re
       @scheme     = target_uri.scheme
       @port       = target_uri.port
+      @headers    = {}
     end
 
     def source
@@ -28,7 +29,10 @@ module Retriever
         # if redirect URL is same host, we want to re-sync @target
         return resync_target_and_return_source(resp_url)
       end
-      resp = resp.read
+      
+      @headers = resp.meta
+      resp     = resp.read
+
       #
       fail 'Domain is not working. Try the non-WWW version.' if resp == ''
       fail 'Domain not working. Try HTTPS???' unless resp
@@ -37,11 +41,14 @@ module Retriever
     end
 
     def resync_target_and_return_source(url)
-      new_t   = Retriever::Target.new(url)
-      @target = new_t.target
-      @host   = new_t.host
-      @scheme = new_t.scheme
-      new_t.source
+      new_t    = Retriever::Target.new(url)
+      @target  = new_t.target
+      @host    = new_t.host
+      @scheme  = new_t.scheme
+      source   = new_t.source
+      @headers = new_t.headers
+      
+      source
     end
   end
 end
